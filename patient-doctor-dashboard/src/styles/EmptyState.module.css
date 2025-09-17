@@ -1,0 +1,125 @@
+/* EmptyState Component Styles */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 4rem 2rem;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  border-radius: 16px;
+  border: 2px dashed #dee2e6;
+  margin: 2rem 0;
+  transition: all 0.3s ease;
+}
+
+.emptyState:hover {
+  border-color: var(--color-secondary, #3498db);
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+}
+
+.emptyStateIcon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+  opacity: 0.8;
+  filter: grayscale(30%);
+  transition: all 0.3s ease;
+}
+
+.emptyState:hover .emptyStateIcon {
+  opacity: 1;
+  filter: grayscale(0%);
+  transform: scale(1.1);
+}
+
+.emptyStateTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-primary, #2c3e50);
+  margin: 0 0 1rem 0;
+  letter-spacing: -0.025em;
+}
+
+.emptyStateMessage {
+  font-size: 1rem;
+  color: var(--color-dark-gray, #7f8c8d);
+  line-height: 1.6;
+  margin: 0 0 2rem 0;
+  max-width: 400px;
+}
+
+.emptyStateAction {
+  background: linear-gradient(135deg, var(--color-secondary, #3498db) 0%, var(--color-secondary-dark, #2980b9) 100%);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.emptyStateAction::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.emptyStateAction:hover::before {
+  left: 100%;
+}
+
+.emptyStateAction:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(52, 152, 219, 0.4);
+}
+
+.emptyStateAction:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .emptyState {
+    padding: 3.5rem 2rem;
+  }
+  
+  .emptyStateIcon {
+    font-size: 3.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .emptyState {
+    padding: 3rem 1.5rem;
+    border-radius: 8px;
+  }
+  
+  .emptyStateIcon {
+    font-size: 3rem;
+  }
+  
+  .emptyStateTitle {
+    font-size: 1.25rem;
+  }
+  
+  .emptyStateMessage {
+    font-size: 0.9rem;
+  }
+  
+  .emptyStateAction {
+    padding: 0.875rem 1.5rem;
+    font-size: 0.9rem;
+    width: 100%;
+  }
+}

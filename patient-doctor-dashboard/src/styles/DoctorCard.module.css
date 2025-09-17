@@ -1,0 +1,449 @@
+/* DoctorCard Component Styles */
+.doctorCard {
+  border-radius: 16px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  margin: 0;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  max-width: 100%;
+  word-wrap: break-word;
+  background: transparent;
+  display: flex;
+  flex-direction: column;
+  height: 5rem;
+}
+
+.doctorCard.expanded {
+  height: auto;
+}
+
+.activeCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(135deg, var(--color-success, #27ae60) 0%, var(--color-success-light, #2ecc71) 100%);
+  z-index: 1;
+}
+
+.activeCard .doctorCardHeader {
+  border-color: var(--color-success, #27ae60);
+}
+
+.activeCard.expanded .doctorCardBody {
+  border-color: var(--color-success, #27ae60);
+}
+
+.inactiveCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(135deg, var(--color-danger, #e74c3c) 0%, var(--color-danger-light, #ec7063) 100%);
+  z-index: 1;
+}
+
+.inactiveCard .doctorCardHeader {
+  border-color: var(--color-danger, #e74c3c);
+  opacity: 0.9;
+}
+
+.inactiveCard.expanded .doctorCardBody {
+  border-color: var(--color-danger, #e74c3c);
+}
+
+.doctorCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+.doctorCardHeader {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  padding: 1rem 1.5rem;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 16px;
+  border: 2px solid #e9ecef;
+  overflow: hidden;
+  margin: 0;
+  flex: 1;
+}
+
+.expanded .doctorCardHeader {
+  border-radius: 16px 16px 0 0;
+  border-bottom: none;
+  flex: none;
+}
+
+.doctorCardHeader:hover {
+  background: linear-gradient(135deg, #f1f3f4 0%, #f8f9fa 100%);
+}
+
+.headerLeft {
+  flex: 1;
+  min-width: 0; /* Allows text truncation */
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-shrink: 0;
+}
+
+.expandIcon {
+  font-size: 1rem;
+  color: #4a5568;
+  transition: transform 0.2s ease, color 0.2s ease;
+  user-select: none;
+  cursor: pointer;
+  padding: 0.25rem;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  min-height: 24px;
+  margin-left: 1rem;
+}
+
+.expandIcon:hover {
+  color: #2d3748;
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.expandIcon.expanded {
+  transform: rotate(180deg);
+  color: #2d3748;
+}
+
+.doctorInfo {
+  flex: 1;
+  min-width: 0;
+}
+
+.doctorCardHeader h3 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1a202c;
+  letter-spacing: -0.025em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.cardActions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  transition: all 0.2s ease;
+}
+
+.statusActive {
+  background: rgba(39, 174, 96, 0.1);
+  color: var(--color-success, #27ae60);
+  border: 1px solid rgba(39, 174, 96, 0.3);
+}
+
+.statusInactive {
+  background: rgba(231, 76, 60, 0.1);
+  color: var(--color-danger, #e74c3c);
+  border: 1px solid rgba(231, 76, 60, 0.3);
+}
+
+.statusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  animation: pulse 2s infinite;
+}
+
+.statusActive .statusDot {
+  background: var(--color-success, #27ae60);
+}
+
+.statusInactive .statusDot {
+  background: var(--color-danger, #e74c3c);
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.5; }
+  100% { opacity: 1; }
+}
+
+.doctorId {
+  font-size: 0.875rem;
+  color: #718096;
+  font-weight: 500;
+  background: #e2e8f0;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  display: inline-block;
+  white-space: nowrap;
+}
+
+.doctorStatus {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 1rem;
+}
+
+.statusBadge {
+  padding: 0.5rem 1rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.statusBadge.active {
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  color: white;
+  border-color: #48bb78;
+}
+
+.statusBadge.inactive {
+  background: linear-gradient(135deg, #ed8936 0%, #dd6b20 100%);
+  color: white;
+  border-color: #ed8936;
+}
+
+.deleteButton {
+  background: linear-gradient(135deg, #ff6b6b 0%, #ee5a52 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 4px rgba(255, 107, 107, 0.3);
+  white-space: nowrap;
+}
+
+.deleteButton:hover {
+  background: linear-gradient(135deg, #ff5252 0%, #d32f2f 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(255, 107, 107, 0.4);
+}
+
+.deleteButton:focus {
+  outline: none;
+  box-shadow: 0 4px 8px rgba(255, 107, 107, 0.4), 0 0 0 3px rgba(255, 107, 107, 0.5);
+}
+
+.doctorCardBody {
+  padding: 1.5rem 2rem 2rem 2rem;
+  background: #ffffff;
+  border: 2px solid #e9ecef;
+  border-top: none;
+  border-radius: 0 0 16px 16px;
+  margin-top: -2px;
+  max-height: 400px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Custom scrollbar styling */
+.doctorCardBody::-webkit-scrollbar {
+  width: 6px;
+}
+
+.doctorCardBody::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.doctorCardBody::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+
+.doctorCardBody::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+.infoGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.25rem;
+}
+
+.infoItem {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  min-width: 0; /* Allows text truncation */
+}
+
+.infoItem strong {
+  color: #2d3748;
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  white-space: nowrap;
+}
+
+.infoItem span {
+  color: #4a5568;
+  font-size: 1rem;
+  line-height: 1.6;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.specialization {
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  color: white !important;
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.license {
+  background: #e2e8f0;
+  color: #2d3748 !important;
+  padding: 0.25rem 0.75rem;
+  border-radius: 8px;
+  font-family: 'Monaco', 'Menlo', monospace;
+  font-size: 0.875rem !important;
+  display: inline-block;
+}
+
+.experience {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white !important;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-weight: 600;
+  display: inline-block;
+  font-size: 0.875rem !important;
+}
+
+.fee {
+  background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+  color: white !important;
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  font-weight: 700;
+  display: inline-block;
+  font-size: 1.125rem !important;
+}
+
+.hours {
+  background: #f7fafc;
+  color: #2d3748 !important;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  border: 2px solid #e2e8f0;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.educationList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.educationItem {
+  background: #f7fafc;
+  color: #2d3748 !important;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  border-left: 4px solid #4facfe;
+  font-weight: 500;
+  display: block !important;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .doctorCardHeader,
+  .doctorCardContent {
+    padding: 1.5rem;
+  }
+  
+  .detailsGrid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .doctorActions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .doctorCard {
+    border-radius: 8px;
+    margin-bottom: 1rem;
+  }
+  
+  .doctorCardHeader,
+  .doctorCardContent {
+    padding: 1rem;
+  }
+  
+  .doctorCardHeader {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  
+  .detailsGrid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .detailsGrid .detailItem {
+    padding: 0.75rem;
+  }
+  
+  .doctorCardHeader h3 {
+    font-size: 1.25rem;
+  }
+  
+  .doctorActions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .doctorActions button {
+    width: 100%;
+  }
+}
