@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DocX - Doctor Portal Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet"/>
+<script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#3182ce",
+                        "background-light": "#f7fafc",
+                        "background-dark": "#13191f",
+                    },
+                    fontFamily: {
+                        "display": ["Inter", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark">
+<div class="flex h-screen w-full flex-col">
+<!-- Top Nav Bar -->
+<header class="flex h-16 shrink-0 items-center justify-between border-b border-solid border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-6 z-10">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3 text-[#1a202c] dark:text-white">
+<span class="material-symbols-outlined text-primary text-3xl"> medical_services </span>
+<h2 class="text-xl font-bold leading-tight tracking-[-0.015em]">DocX</h2>
+</div>
+</div>
+<div class="flex flex-1 justify-center px-8">
+<label class="flex w-full max-w-lg">
+<div class="flex w-full flex-1 items-stretch rounded-lg h-10">
+<div class="text-[#718096] dark:text-gray-400 flex bg-gray-100 dark:bg-gray-700 items-center justify-center pl-4 rounded-l-lg">
+<span class="material-symbols-outlined"> search </span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden rounded-lg text-[#1a202c] dark:text-white focus:outline-0 focus:ring-2 focus:ring-primary/50 border-none bg-gray-100 dark:bg-gray-700 h-full placeholder:text-[#718096] dark:placeholder:text-gray-400 px-4 rounded-l-none border-l-0 pl-2 text-base font-normal leading-normal" placeholder="Search patients, appointments..." value=""/>
+</div>
+</label>
+</div>
+<div class="flex items-center gap-4">
+<button class="flex h-10 w-10 cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-700 text-[#4a5568] dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600">
+<span class="material-symbols-outlined"> notifications </span>
+</button>
+<button class="flex h-10 w-10 cursor-pointer items-center justify-center overflow-hidden rounded-lg bg-gray-100 dark:bg-gray-700 text-[#4a5568] dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600">
+<span class="material-symbols-outlined"> chat_bubble </span>
+</button>
+<div class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10" data-alt="Avatar of Dr. Emily Carter" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuC7akO90tWDWAYd-tex-IQIEP1_VhyXM3GFQul8gnlafEh0dufXFToQQrAA-e0UVp9Ez7kxJUWXSQXik4OVDDgKaf0kMYTnb2CuIBxkpFQaeu7vPxNGTs--n2o49QxKgb-ud4KIyk7n7kUptW6vcIJaS1b2bRz3nzARlx-wm5CEtlNx8alK6ksYmMRQwxve2fFhXbqJFDaNsjJirjBxIf7BioGfjoMzPYEut1o66eKW1Y0M87zfGgtKRcjHsfVaVOnEeYKmzxawrw");'></div>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<!-- Side Nav Bar -->
+<aside class="flex h-full w-60 shrink-0 flex-col justify-between border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-4">
+<div class="flex flex-col gap-6">
+<nav class="flex flex-col gap-2">
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-[#4a5568] dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" href="#">
+<span class="material-symbols-outlined"> grid_view </span>
+<p class="text-sm font-medium leading-normal">Dashboard</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg bg-primary/10 px-3 py-2 text-primary dark:bg-primary/20 dark:text-primary-300" href="#">
+<span class="material-symbols-outlined"> group </span>
+<p class="text-sm font-bold leading-normal">Patients</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-[#4a5568] dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" href="#">
+<span class="material-symbols-outlined"> calendar_month </span>
+<p class="text-sm font-medium leading-normal">Appointments</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-[#4a5568] dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" href="#">
+<span class="material-symbols-outlined"> folder_shared </span>
+<p class="text-sm font-medium leading-normal">Medical Records</p>
+</a>
+<a class="flex items-center gap-3 rounded-lg px-3 py-2 text-[#4a5568] dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" href="#">
+<span class="material-symbols-outlined"> settings </span>
+<p class="text-sm font-medium leading-normal">Settings</p>
+</a>
+</nav>
+</div>
+<!-- Logout Button -->
+<div class="flex flex-col pt-4 border-t border-gray-200 dark:border-gray-700">
+<button class="flex items-center gap-3 rounded-lg px-3 py-2 text-[#4a5568] dark:text-gray-300 hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20 dark:hover:text-red-400 transition-colors cursor-pointer bg-transparent border-none w-full text-left">
+<span class="material-symbols-outlined"> logout </span>
+<span class="text-sm font-medium leading-normal">Logout</span>
+</button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="flex-1 overflow-y-auto p-8">
+<div class="mx-auto max-w-7xl">
+<!-- Page Heading -->
+<div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+<h1 class="text-[#1a202c] dark:text-white text-3xl font-bold leading-tight tracking-tight">Today's Schedule</h1>
+<div class="flex items-center gap-3">
+<button class="flex h-10 cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-lg bg-primary px-5 text-sm font-bold text-white shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-gray-900">
+<span class="material-symbols-outlined text-lg"> add </span>
+<span>Add Medical Note</span>
+</button>
+<button class="flex h-10 cursor-pointer items-center justify-center gap-2 overflow-hidden rounded-lg bg-primary px-5 text-sm font-bold text-white shadow-sm hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 dark:focus:ring-offset-gray-900">
+                                View All Patients
+                            </button>
+</div>
+</div>
+<!-- Stats Cards -->
+<div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 mb-8">
+<div class="flex flex-col gap-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
+<p class="text-base font-medium text-[#4a5568] dark:text-gray-300">Total Patients Today</p>
+<p class="text-4xl font-bold tracking-tight text-[#1a202c] dark:text-white">12</p>
+</div>
+<div class="flex flex-col gap-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-6 shadow-sm">
+<p class="text-base font-medium text-[#4a5568] dark:text-gray-300">Appointments</p>
+<p class="text-4xl font-bold tracking-tight text-[#1a202c] dark:text-white">8</p>
+</div>
+<div class="flex flex-col gap-2 rounded-xl border border-primary/50 bg-primary/10 dark:bg-primary/20 p-6 shadow-sm">
+<p class="text-base font-medium text-primary dark:text-primary-200">Pending Tasks</p>
+<p class="text-4xl font-bold tracking-tight text-primary dark:text-primary-200">3</p>
+</div>
+</div>
+<!-- Upcoming Appointments Cards -->
+<div class="flex flex-col gap-4">
+<h2 class="text-[#1a202c] dark:text-white text-xl font-bold leading-tight tracking-tight">Upcoming Appointments</h2>
+<div class="overflow-x-auto pb-4 pt-1" style="scrollbar-width: thin; scrollbar-color: #3182ce #edf2f7; overflow-y: visible;">
+<div class="flex gap-4" style="min-width: min-content;">
+<!-- Appointment Card 1 -->
+<div class="flex-none w-[280px] flex flex-col gap-4 rounded-xl border-2 border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-sm hover:shadow-md hover:border-primary transition-all cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="flex-shrink-0 w-12 h-12 rounded-full overflow-hidden bg-gray-200">
+<img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Liam" alt="Liam Johnson" class="w-full h-full object-cover"/>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="text-base font-semibold text-[#1a202c] dark:text-white truncate m-0 mb-1">Liam Johnson</h3>
+<p class="text-sm text-[#4a5568] dark:text-gray-300 truncate m-0">General Checkup</p>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-2 text-sm text-[#4a5568] dark:text-gray-300">
+<span class="material-symbols-outlined text-[18px] text-[#718096]"> schedule </span>
+<span class="font-medium">09:00 AM</span>
+</div>
+<div class="flex items-center gap-2 text-sm text-[#4a5568] dark:text-gray-300">
+<span class="material-symbols-outlined text-[18px] text-[#718096]"> timer </span>
+<span class="font-medium">30 min</span>
+</div>
+</div>
+<div class="flex justify-start pt-2 border-t border-gray-200 dark:border-gray-700">
+<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold" style="background-color: #c6f6d5; color: #2f855a;">Active</span>
+</div>
+</div>
+<!-- Appointment Card 2 -->
+<div class="flex-none w-[280px] flex flex-col gap-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-sm hover:shadow-md hover:border-primary hover:-translate-y-0.5 transition-all cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="flex-shrink-0 w-12 h-12 rounded-full overflow-hidden bg-gray-200">
+<img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Olivia" alt="Olivia Smith" class="w-full h-full object-cover"/>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="text-base font-semibold text-[#1a202c] dark:text-white truncate m-0 mb-1">Olivia Smith</h3>
+<p class="text-sm text-[#4a5568] dark:text-gray-300 truncate m-0">Follow-up</p>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-2 text-sm text-[#4a5568] dark:text-gray-300">
+<span class="material-symbols-outlined text-[18px] text-[#718096]"> schedule </span>
+<span class="font-medium">09:30 AM</span>
+</div>
+<div class="flex items-center gap-2 text-sm text-[#4a5568] dark:text-gray-300">
+<span class="material-symbols-outlined text-[18px] text-[#718096]"> timer </span>
+<span class="font-medium">20 min</span>
+</div>
+</div>
+<div class="flex justify-start pt-2 border-t border-gray-200 dark:border-gray-700">
+<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold" style="background-color: #feebc8; color: #9c4221;">Pending</span>
+</div>
+</div>
+<!-- Appointment Card 3 -->
+<div class="flex-none w-[280px] flex flex-col gap-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-sm hover:shadow-md hover:border-primary hover:-translate-y-0.5 transition-all cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="flex-shrink-0 w-12 h-12 rounded-full overflow-hidden bg-gray-200">
+<img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Noah" alt="Noah Williams" class="w-full h-full object-cover"/>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="text-base font-semibold text-[#1a202c] dark:text-white truncate m-0 mb-1">Noah Williams</h3>
+<p class="text-sm text-[#4a5568] dark:text-gray-300 truncate m-0">Consultation</p>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-2 text-sm text-[#4a5568] dark:text-gray-300">
+<span class="material-symbols-outlined text-[18px] text-[#718096]"> schedule </span>
+<span class="font-medium">10:00 AM</span>
+</div>
+<div class="flex items-center gap-2 text-sm text-[#4a5568] dark:text-gray-300">
+<span class="material-symbols-outlined text-[18px] text-[#718096]"> timer </span>
+<span class="font-medium">45 min</span>
+</div>
+</div>
+<div class="flex justify-start pt-2 border-t border-gray-200 dark:border-gray-700">
+<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold" style="background-color: #c6f6d5; color: #2f855a;">Active</span>
+</div>
+</div>
+<!-- Appointment Card 4 -->
+<div class="flex-none w-[280px] flex flex-col gap-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-sm hover:shadow-md hover:border-primary hover:-translate-y-0.5 transition-all cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="flex-shrink-0 w-12 h-12 rounded-full overflow-hidden bg-gray-200">
+<img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Emma" alt="Emma Brown" class="w-full h-full object-cover"/>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="text-base font-semibold text-[#1a202c] dark:text-white truncate m-0 mb-1">Emma Brown</h3>
+<p class="text-sm text-[#4a5568] dark:text-gray-300 truncate m-0">Lab Review</p>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-2 text-sm text-[#4a5568] dark:text-gray-300">
+<span class="material-symbols-outlined text-[18px] text-[#718096]"> schedule </span>
+<span class="font-medium">10:30 AM</span>
+</div>
+<div class="flex items-center gap-2 text-sm text-[#4a5568] dark:text-gray-300">
+<span class="material-symbols-outlined text-[18px] text-[#718096]"> timer </span>
+<span class="font-medium">15 min</span>
+</div>
+</div>
+<div class="flex justify-start pt-2 border-t border-gray-200 dark:border-gray-700">
+<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold" style="background-color: #fed7d7; color: #9b2c2c;">Cancelled</span>
+</div>
+</div>
+<!-- Appointment Card 5 -->
+<div class="flex-none w-[280px] flex flex-col gap-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-sm hover:shadow-md hover:border-primary hover:-translate-y-0.5 transition-all cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="flex-shrink-0 w-12 h-12 rounded-full overflow-hidden bg-gray-200">
+<img src="https://api.dicebear.com/7.x/avataaars/svg?seed=James" alt="James Jones" class="w-full h-full object-cover"/>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="text-base font-semibold text-[#1a202c] dark:text-white truncate m-0 mb-1">James Jones</h3>
+<p class="text-sm text-[#4a5568] dark:text-gray-300 truncate m-0">Physical Exam</p>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-2 text-sm text-[#4a5568] dark:text-gray-300">
+<span class="material-symbols-outlined text-[18px] text-[#718096]"> schedule </span>
+<span class="font-medium">11:00 AM</span>
+</div>
+<div class="flex items-center gap-2 text-sm text-[#4a5568] dark:text-gray-300">
+<span class="material-symbols-outlined text-[18px] text-[#718096]"> timer </span>
+<span class="font-medium">40 min</span>
+</div>
+</div>
+<div class="flex justify-start pt-2 border-t border-gray-200 dark:border-gray-700">
+<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold" style="background-color: #c6f6d5; color: #2f855a;">Active</span>
+</div>
+</div>
+<!-- Appointment Card 6 -->
+<div class="flex-none w-[280px] flex flex-col gap-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-sm hover:shadow-md hover:border-primary hover:-translate-y-0.5 transition-all cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="flex-shrink-0 w-12 h-12 rounded-full overflow-hidden bg-gray-200">
+<img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Sophia" alt="Sophia Davis" class="w-full h-full object-cover"/>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="text-base font-semibold text-[#1a202c] dark:text-white truncate m-0 mb-1">Sophia Davis</h3>
+<p class="text-sm text-[#4a5568] dark:text-gray-300 truncate m-0">Consultation</p>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-2 text-sm text-[#4a5568] dark:text-gray-300">
+<span class="material-symbols-outlined text-[18px] text-[#718096]"> schedule </span>
+<span class="font-medium">11:30 AM</span>
+</div>
+<div class="flex items-center gap-2 text-sm text-[#4a5568] dark:text-gray-300">
+<span class="material-symbols-outlined text-[18px] text-[#718096]"> timer </span>
+<span class="font-medium">30 min</span>
+</div>
+</div>
+<div class="flex justify-start pt-2 border-t border-gray-200 dark:border-gray-700">
+<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold" style="background-color: #c6f6d5; color: #2f855a;">Active</span>
+</div>
+</div>
+<!-- Appointment Card 7 -->
+<div class="flex-none w-[280px] flex flex-col gap-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-sm hover:shadow-md hover:border-primary hover:-translate-y-0.5 transition-all cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="flex-shrink-0 w-12 h-12 rounded-full overflow-hidden bg-gray-200">
+<img src="https://api.dicebear.com/7.x/avataaars/svg?seed=William" alt="William Miller" class="w-full h-full object-cover"/>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="text-base font-semibold text-[#1a202c] dark:text-white truncate m-0 mb-1">William Miller</h3>
+<p class="text-sm text-[#4a5568] dark:text-gray-300 truncate m-0">Follow-up</p>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-2 text-sm text-[#4a5568] dark:text-gray-300">
+<span class="material-symbols-outlined text-[18px] text-[#718096]"> schedule </span>
+<span class="font-medium">02:00 PM</span>
+</div>
+<div class="flex items-center gap-2 text-sm text-[#4a5568] dark:text-gray-300">
+<span class="material-symbols-outlined text-[18px] text-[#718096]"> timer </span>
+<span class="font-medium">25 min</span>
+</div>
+</div>
+<div class="flex justify-start pt-2 border-t border-gray-200 dark:border-gray-700">
+<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold" style="background-color: #feebc8; color: #9c4221;">Pending</span>
+</div>
+</div>
+<!-- Appointment Card 8 -->
+<div class="flex-none w-[280px] flex flex-col gap-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 p-5 shadow-sm hover:shadow-md hover:border-primary hover:-translate-y-0.5 transition-all cursor-pointer">
+<div class="flex items-center gap-3">
+<div class="flex-shrink-0 w-12 h-12 rounded-full overflow-hidden bg-gray-200">
+<img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Isabella" alt="Isabella Garcia" class="w-full h-full object-cover"/>
+</div>
+<div class="flex-1 min-w-0">
+<h3 class="text-base font-semibold text-[#1a202c] dark:text-white truncate m-0 mb-1">Isabella Garcia</h3>
+<p class="text-sm text-[#4a5568] dark:text-gray-300 truncate m-0">General Checkup</p>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex items-center gap-2 text-sm text-[#4a5568] dark:text-gray-300">
+<span class="material-symbols-outlined text-[18px] text-[#718096]"> schedule </span>
+<span class="font-medium">02:30 PM</span>
+</div>
+<div class="flex items-center gap-2 text-sm text-[#4a5568] dark:text-gray-300">
+<span class="material-symbols-outlined text-[18px] text-[#718096]"> timer </span>
+<span class="font-medium">30 min</span>
+</div>
+</div>
+<div class="flex justify-start pt-2 border-t border-gray-200 dark:border-gray-700">
+<span class="inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold" style="background-color: #c6f6d5; color: #2f855a;">Active</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</div>
+</body></html>

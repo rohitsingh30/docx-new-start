@@ -1,497 +1,607 @@
-# Frontend Instructions - Docx
+# Frontend Instructions
 
-## Overview
+## Tech Stack
 
-Frontend development guidelines for the Docx healthcare platform. This covers React, TypeScript, component development, styling with CSS Modules, and testing.
-
----
-
-## 🛠️ Tech Stack
-
-- **React 19.1.1** - UI library
-- **TypeScript 5.9.2** (strict mode) - Type safety
-- **React Router** - Client-side routing
-- **CSS Modules** - Component styling
-- **Jest + React Testing Library** - Testing
-- **Storybook** - Component development
+- React 19.1.1 + TypeScript 5.9.2 (strict)
+- CSS Modules (all in `styles/` folder)
+- React Router, Jest, Storybook
 
 ---
 
-## ✅ Core Principles
+## ABSOLUTE RULE: Mock Updates are MANDATORY
 
-### 1. **NO HARDCODED VALUES**
-❌ **Bad:**
+**WHENEVER you modify ANY UI component, you MUST update the corresponding HTML mock file.**
+
+### Mock Update Workflow (NEVER SKIP):
+
+1. **After ANY component change** (removal, addition, style, layout):
+   - Locate the HTML mock file in `/apps/[app]/mocks/[PageName].html`
+   - Update the HTML to match the new component structure
+   - Remove/add/modify HTML elements to reflect the change
+   - Maintain Tailwind CSS classes and styling
+
+2. **What counts as "component change" requiring mock update:**
+   - ❌ Removing UI elements (profile section, buttons, cards, navigation items)
+   - ❌ Adding UI elements (new fields, sections, navigation items)
+   - ❌ Changing layout (reordering, resizing, repositioning)
+   - ❌ Modifying visible styles (colors, fonts, spacing)
+   - ❌ Updating text/labels
+   - ✅ Internal logic changes with NO visual impact (state management, API calls)
+
+3. **Mock file locations (HTML FILES):**
+   - Dashboard: `/apps/doctor/mocks/Dashboard.html`
+   - Login: `/apps/doctor/mocks/Login.html`
+   - Other pages: `/apps/doctor/mocks/[PageName].html`
+
+4. **Steps to update HTML mock (REQUIRED):**
+   ```bash
+   # 1. Open the HTML mock file
+   # 2. Locate the section that changed
+   # 3. Update/remove/add HTML elements to match the React component
+   # 4. Preserve Tailwind classes and structure
+   # 5. Test by opening HTML file in browser
+   ```
+
+5. **Example: Removing profile section from sidebar**
+   ```html
+   <!-- BEFORE -->
+   <div class="flex items-center gap-3 px-2">
+     <div class="...profile-image..."></div>
+     <div class="flex flex-col">
+       <h1>Dr. Emily Carter</h1>
+       <p>Cardiologist</p>
+     </div>
+   </div>
+   
+   <!-- AFTER -->
+   <!-- Section removed completely -->
+   ```
+
+6. **Document mock update in CHANGELOG:**
+   - Add entry: "Updated [PageName].html mock to reflect [change description]"
+
+**FAILURE TO UPDATE HTML MOCKS = INCOMPLETE WORK**
+
+HTML mock files are the source of truth. When you change the React app, you MUST update the corresponding HTML mock to match.
+
+---
+
+## CRITICAL: Mock Comparison Process
+
+**When implementing from a mock, ALWAYS follow this checklist:**
+
+1. **Layout Structure Analysis**
+   - [ ] Identify ALL major containers (header, sidebar, main content, footer)
+   - [ ] List ALL visible UI elements in each container
+   - [ ] Note spacing, borders, dividers between sections
+   - [ ] Check for navigation bars (top and/or side)
+   
+2. **Component Inventory**
+   - [ ] List every button, input, icon, image, card, table
+   - [ ] Check each data value (numbers, text, statuses)
+   - [ ] Verify color-coded elements (badges, status indicators)
+   - [ ] Note active/inactive states
+
+3. **Mock vs Implementation Comparison** 
+   - [ ] Open mock in Playwright browser
+   - [ ] Take screenshot of mock
+   - [ ] Open running app in Playwright
+   - [ ] Take screenshot of app
+   - [ ] Compare side-by-side for missing elements
+   - [ ] Check for extra elements not in mock
+
+4. **Missing Elements Check**
+   - [ ] Search bars, filters, dropdowns
+   - [ ] Icons (notification, chat, profile, menu)
+   - [ ] Borders, dividers, separators
+   - [ ] Headers, footers
+   - [ ] Background colors, shadows
+
+**NEVER assume - ALWAYS verify visually with Playwright**
+
+---
+
+## Automated Quality Checks
+
+### Before Completing Any Component:
+
+```bash
+# 1. Check for string literals (should only return imports, types, CSS)
+grep -n '"' src/components/YourComponent.tsx | grep -v "import\|from\|className"
+
+# 2. Check for single-quote strings (enums, imports only)
+grep -n "'" src/components/YourComponent.tsx | grep -v "import\|from\|className"
+
+# 3. TypeScript compilation
+npm run build
+
+# 4. Run linter
+npm run lint
+```
+
+### Violation Examples to Catch:
+
 ```typescript
-<button style={{ background: '#3182ce' }}>Submit</button>
-<h1>Patient Dashboard</h1>
-```
+// ❌ Will be caught by grep check
+const title = "Dashboard Overview";
+return <h1>Welcome</h1>;
+placeholder="Search here"
 
-✅ **Good:**
-```typescript
-import { COLORS } from '@/shared/constants/colors';
-import { STRING_CONSTANTS } from '@/constants/stringConstants';
-
-<button style={{ background: COLORS.PRIMARY_BLUE }}>
-  {STRING_CONSTANTS.BUTTONS.SUBMIT}
-</button>
-<h1>{STRING_CONSTANTS.TITLES.PATIENT_DASHBOARD}</h1>
-```
-
-### 2. **FUNCTIONAL COMPONENTS ONLY**
-- No class components
-- Use React hooks (useState, useEffect, useCallback, useMemo)
-- Custom hooks for reusable logic
-
-### 3. **NO DUPLICATE CODE**
-- Extract repeated patterns to shared components
-- Create custom hooks for repeated logic
-- Use utility functions for common operations
-
-### 4. **STRICT FOLDER STRUCTURE**
-```
-src/
-├── shared/
-│   ├── components/    # Reusable components (Card, Button, Input)
-│   ├── hooks/         # Reusable hooks (useAuth, useApi)
-│   ├── services/      # API clients, auth service
-│   ├── types/         # Shared TypeScript types
-│   └── utils/         # Helper functions
-├── features/
-│   ├── doctor/
-│   │   ├── components/
-│   │   ├── hooks/
-│   │   ├── services/
-│   │   └── types/
-│   ├── patient/
-│   └── admin/
-└── constants/         # All constants (strings, colors, config)
+// ✅ Will pass - only imports/classNames
+import styles from '../styles/Component.module.css';
+className={styles.container}
 ```
 
 ---
 
-## 📁 File Organization Rules
+## Core Rules
 
-### Component Structure
+1. **Enum-first** - NO string literals (`Gender.MALE` not `'Male'`)
+2. **String constants** - All UI text in `stringConstants.ts`
+3. **CSS in styles/** - `/apps/[app]/src/styles/*.module.css`
+4. **Functional components** - Hooks only, no classes
+5. **Type everything** - No `any`, explicit types required
+6. **Mock fidelity** - Implementation must match mock structure EXACTLY
+7. **NO template literal classNames** - FORBIDDEN pattern
+
+---
+
+## ABSOLUTE: NO Template Literal ClassName Pattern
+
+**NEVER use template literals directly in className attributes.**
+
+### ❌ FORBIDDEN Patterns:
+
+```tsx
+// ❌ WRONG - Template literal in className
+<div className={`${styles.item} ${isActive ? styles.active : ''}`}>
+
+// ❌ WRONG - Inline conditional with template literal
+<div className={`${styles.base} ${variant === 'primary' ? styles.primary : styles.secondary}`}>
+
+// ❌ WRONG - Multiple conditions in template literal
+<div className={`${styles.card} ${isDisabled && styles.disabled} ${isSelected && styles.selected}`}>
 ```
-src/shared/components/Card/
-├── Card.tsx              # Component implementation
-├── Card.module.css       # Component styles
-├── Card.test.tsx         # Component tests
-├── Card.stories.tsx      # Storybook stories
-├── Card.types.ts         # Component-specific types
-└── index.ts              # Export
 
+### ✅ CORRECT Patterns:
+
+```tsx
+// ✅ CORRECT - Compute className in variable BEFORE JSX
+const itemClass = isActive 
+  ? `${styles.item} ${styles.active}` 
+  : styles.item;
+
+return <div className={itemClass}>
+
+// ✅ CORRECT - Use helper function
+const getClassName = () => {
+  const classes = [styles.base];
+  if (isActive) classes.push(styles.active);
+  if (isDisabled) classes.push(styles.disabled);
+  return classes.join(' ');
+};
+
+return <div className={getClassName()}>
+
+// ✅ CORRECT - Early computation for multiple conditions
+const cardClass = [
+  styles.card,
+  isDisabled && styles.disabled,
+  isSelected && styles.selected
+].filter(Boolean).join(' ');
+
+return <div className={cardClass}>
 ```
 
-**Every component MUST have:**
-1. `.tsx` file (implementation)
-2. `.module.css` file (styles)
-3. `.test.tsx` file (tests)
-4. `.stories.tsx` file (Storybook)
-5. `index.ts` (clean exports)
+### Enforcement Rule:
 
-### Constants Structure
+**BEFORE writing any JSX with conditional className:**
+1. Declare a variable to compute the className
+2. Use ternary or helper function to build the string
+3. Pass the variable to className prop
+4. NEVER put template literals directly in JSX attributes
+
+**Violation = Incomplete work. Must be fixed immediately.**
+
+---
+
+## ABSOLUTE: Zero String Literals Policy
+
+**EVERY visible text string MUST come from `stringConstants.ts` - NO EXCEPTIONS**
+
+**EVERY className value MUST come from CSS Modules or `componentConstants.ts` - NO EXCEPTIONS**
+
+### CRITICAL: NO String Literal ClassNames
+
+**NEVER use string literal values in className attributes.**
+
+#### ❌ FORBIDDEN:
+
+```tsx
+// ❌ WRONG - String literal in className
+<span className="material-symbols-outlined">icon_name</span>
+
+// ❌ WRONG - Any hardcoded className
+<div className="container">
+<button className="btn-primary">
+
+// ❌ WRONG - Framework/library classes as strings
+<div className="flex items-center">
+
+// ❌ WRONG - Using constants from componentConstants.ts for className
+<span className={COMPONENT_CONSTANTS.CSS_CLASSES.MATERIAL_ICONS}>icon_name</span>
 ```
-src/constants/
-├── stringConstants.ts     # All UI strings
-├── componentConstants.ts  # Component config
-├── navigationConstants.ts # Routes, menu items
-└── formConstants.ts       # Form validation rules
+
+#### ✅ CORRECT - CSS Modules Approach:
+
+```tsx
+// ✅ CORRECT - CSS Module for component styles
+<div className={styles.container}>
+
+// ✅ CORRECT - CSS Module for icon classes
+<span className={styles.materialIcon}>icon_name</span>
+```
+
+#### How to Handle Material Icons:
+
+**1. Add .materialIcon to component's CSS Module file:**
+```css
+/* ComponentName.module.css */
+.materialIcon {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'liga';
+}
+```
+
+**2. Use in component:**
+```tsx
+import styles from '../styles/ComponentName.module.css';
+
+<span className={styles.materialIcon}>icon_name</span>
+```
+
+**3. Apply to ALL Material Icons in the component:**
+- Logo icons
+- Navigation icons  
+- Button icons
+- Input field icons
+- Any Google Material Symbols
+
+**Why CSS Modules, not constants?**
+- CSS Modules keep styles in CSS files where they belong
+- No need for componentConstants.CSS_CLASSES pattern
+- Better separation of concerns
+- Consistent with rest of styling approach
+
+**Enforcement:** Run grep check:
+```bash
+grep -r 'className="' src/components/
+# Should return NOTHING (exit code 1)
+```
+
+### CRITICAL: Complete Multi-Step Fixes Atomically
+
+**When fixing string literal violations, you MUST complete ALL steps before responding:**
+
+1. **Identify ALL violations** in the file/function
+2. **Add ALL required constants** to stringConstants.ts
+3. **Replace ALL violations** in the component code
+4. **Verify with grep** that no violations remain
+5. **Update CHANGELOG** with both changes
+
+**NEVER stop after step 2 to explain what you did. Complete steps 2, 3, 4 atomically.**
+
+#### Example of WRONG Approach (INCOMPLETE):
+
+```
+❌ Step 1: Find violations in Dashboard.tsx getStatusLabel
+❌ Step 2: Add STATUS_LABELS to stringConstants.ts
+❌ STOP and explain to user ← WRONG! You haven't fixed the actual code!
+```
+
+#### Example of CORRECT Approach (ATOMIC):
+
+```
+✅ Step 1: Find violations in Dashboard.tsx getStatusLabel
+✅ Step 2: Add STATUS_LABELS to stringConstants.ts
+✅ Step 3: Replace ALL 'Active'/'Pending' etc with STRING_CONSTANTS.STATUS_LABELS.*
+✅ Step 4: Run grep check to verify zero violations
+✅ Step 5: Update CHANGELOG
+✅ THEN respond to user with completion message
+```
+
+**Why This Matters:**
+- Adding constants without applying them = incomplete fix
+- User sees the violation still exists
+- Wastes time with back-and-forth
+- Builds bad habits
+
+**Rule:** If you add a constant, you MUST immediately use it. No explanations in between.
+
+### What Counts as a String Literal (ALL FORBIDDEN):
+
+```typescript
+// ❌ WRONG - Direct string literals
+<h1>Dashboard</h1>
+<button>Save</button>
+<input placeholder="Enter name" />
+<div aria-label="Close button" />
+<img alt="User avatar" />
+<option>Select option</option>
+```
+
+```typescript
+// ✅ CORRECT - From STRING_CONSTANTS
+<h1>{STRING_CONSTANTS.LABELS.DASHBOARD}</h1>
+<button>{STRING_CONSTANTS.BUTTONS.SAVE}</button>
+<input placeholder={STRING_CONSTANTS.PLACEHOLDERS.ENTER_NAME} />
+<div aria-label={STRING_CONSTANTS.ARIA_LABELS.CLOSE_BUTTON} />
+<img alt={STRING_CONSTANTS.ALT_TEXT.USER_AVATAR} />
+<option>{STRING_CONSTANTS.OPTIONS.SELECT_OPTION}</option>
+```
+
+### String Constant Categories in `stringConstants.ts`:
+
+```typescript
+export const STRING_CONSTANTS = {
+  LABELS: { /* All headings, labels, titles */ },
+  BUTTONS: { /* All button text */ },
+  MESSAGES: { /* Success, error, info messages */ },
+  PLACEHOLDERS: { /* Input placeholders */ },
+  ARIA_LABELS: { /* Accessibility labels */ },
+  ALT_TEXT: { /* Image alt text */ },
+  TOOLTIPS: { /* Tooltip text */ },
+  OPTIONS: { /* Dropdown/select options */ },
+  VALIDATION: { /* Form validation messages */ },
+} as const;
+```
+
+### Pre-Code Checklist (MANDATORY):
+
+Before writing ANY component with text:
+
+1. [ ] Identify EVERY string that will appear in the UI
+2. [ ] Add ALL strings to appropriate category in `stringConstants.ts`
+3. [ ] Import `STRING_CONSTANTS` in component
+4. [ ] Use constants for ALL text (including placeholders, aria-labels, alt text)
+5. [ ] Search code for quotes: `"..."` or `'...'` - if found, move to constants
+6. [ ] Run final check: `grep -n '".*"' ComponentName.tsx` should return NO UI strings
+
+### String Literal Fix Workflow (ATOMIC EXECUTION):
+
+When you find string literal violations, execute ALL steps without interruption:
+
+```typescript
+// Step 1: IDENTIFY - Search for violations
+grep -n '"' src/components/Component.tsx | grep -v "import|from|className"
+
+// Step 2: ADD CONSTANTS - Update stringConstants.ts
+export const STRING_CONSTANTS = {
+  // ... existing
+  NEW_CATEGORY: {
+    CONSTANT_1: 'Value 1',
+    CONSTANT_2: 'Value 2',
+  }
+}
+
+// Step 3: REPLACE - Update component immediately (same turn)
+// Change: return 'Value 1';
+// To:     return STRING_CONSTANTS.NEW_CATEGORY.CONSTANT_1;
+
+// Step 4: VERIFY - Confirm zero violations
+grep -n '"' src/components/Component.tsx | grep -v "import|from|className"
+// Should return nothing or exit code 1
+
+// Step 5: DOCUMENT - Update CHANGELOG
+```
+
+**DO NOT explain between steps 2 and 3. Complete the entire workflow atomically.**
+
+---
+
+## File Structure
+
+```
+apps/doctor/src/
+├── components/          # React components
+├── styles/             # ALL CSS (*.module.css, index.css)
+├── types/
+│   └── enums.ts        # ALL enums (Gender, Status, etc.)
+├── constants/
+│   └── stringConstants.ts  # ALL UI text
+├── utils/              # Helper functions
+├── hooks/              # Custom hooks
+├── contexts/           # React contexts
+└── services/           # API calls
 ```
 
 ---
 
-## 🎨 CSS Modules Guidelines
+## Component Pattern
 
-### 1. **One CSS file per component**
 ```typescript
-// Card.tsx
-import styles from './Card.module.css';
+// components/PatientCard.tsx
+import styles from '../styles/PatientCard.module.css';
+import { STRING_CONSTANTS } from '../constants/stringConstants';
+import { Gender } from '../types/enums';
 
-<div className={styles.card}>
-  <h2 className={styles.title}>Title</h2>
+interface PatientCardProps {
+  name: string;
+  gender: Gender;  // ✅ Enum, not string
+  age: number;
+}
+
+export const PatientCard: React.FC<PatientCardProps> = ({ name, gender, age }) => {
+  return (
+    <div className={styles.card}>
+      <h3>{name}</h3>
+      <p>{STRING_CONSTANTS.LABELS.GENDER}: {gender}</p>
+    </div>
+  );
+};
+```
+
+---
+
+## CSS Modules
+
+**Import:**
+```typescript
+import styles from '../styles/Component.module.css';
+```
+
+**Usage:**
+```typescript
+<div className={styles.container}>
+  <h1 className={styles.title}>Title</h1>
 </div>
 ```
 
-### 2. **Use camelCase for class names**
-```css
-/* Card.module.css */
-.card {
-  padding: 24px;
-  border-radius: 8px;
-}
-
-.cardElevated {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.cardTitle {
-  font-size: 20px;
-  font-weight: 600;
-}
-```
-
-### 3. **Import as `styles` object**
+**Multiple classes:**
 ```typescript
-import styles from './Component.module.css'; // ✅ Good
-import classes from './Component.module.css'; // ❌ Inconsistent
-```
-
-### 4. **Conditional classes**
-```typescript
-<div className={`${styles.card} ${elevated ? styles.cardElevated : ''}`}>
-```
-
-Or use a helper:
-```typescript
-import { combineStyles } from '@/shared/utils/styleUtils';
-
-<div className={combineStyles(styles.card, elevated && styles.cardElevated)}>
+<div className={`${styles.card} ${styles.active}`}>
 ```
 
 ---
 
-## 🔧 Component Development
+## Constants Pattern
 
-### Shared Component Template
 ```typescript
-// src/shared/components/Button/Button.tsx
-import React from 'react';
-import styles from './Button.module.css';
-import { ButtonProps } from './Button.types';
-
-export const Button: React.FC<ButtonProps> = ({
-  children,
-  variant = 'primary',
-  size = 'medium',
-  disabled = false,
-  onClick,
-  type = 'button',
-  ...rest
-}) => {
-  const className = `${styles.button} ${styles[`button${variant}`]} ${styles[`button${size}`]}`;
-  
-  return (
-    <button
-      type={type}
-      className={className}
-      disabled={disabled}
-      onClick={onClick}
-      {...rest}
-    >
-      {children}
-    </button>
-  );
+// constants/stringConstants.ts
+export const STRING_CONSTANTS = {
+  LABELS: {
+    APP_NAME: 'DocX',
+    EMAIL_ADDRESS: 'Email Address',
+    PASSWORD: 'Password',
+  },
+  BUTTONS: {
+    LOGIN: 'Login',
+    SUBMIT: 'Submit',
+  },
+  MESSAGES: {
+    LOADING: 'Loading...',
+    ERROR: 'Something went wrong',
+  },
 };
-```
-
-### TypeScript Props Interface
-```typescript
-// Button.types.ts
-export interface ButtonProps {
-  children: React.ReactNode;
-  variant?: 'primary' | 'secondary' | 'danger' | 'ghost';
-  size?: 'small' | 'medium' | 'large';
-  disabled?: boolean;
-  onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
-  type?: 'button' | 'submit' | 'reset';
-  className?: string;
-}
-```
-
-### Export Pattern
-```typescript
-// index.ts
-export { Button } from './Button';
-export type { ButtonProps } from './Button.types';
 ```
 
 ---
 
-## 🎯 Component Development Workflow
+## Enum Pattern
 
-### Step 1: Design in Storybook First
 ```typescript
-// Button.stories.tsx
-import type { Meta, StoryObj } from '@storybook/react';
-import { Button } from './Button';
+// types/enums.ts
+export enum Gender {
+  MALE = 'Male',
+  FEMALE = 'Female',
+  OTHER = 'Other',
+}
 
-const meta: Meta<typeof Button> = {
-  title: 'Shared/Button',
-  component: Button,
-  tags: ['autodocs'],
-};
+export enum DoctorStatus {
+  ACTIVE = 'Active',
+  INACTIVE = 'Inactive',
+}
 
-export default meta;
-type Story = StoryObj<typeof Button>;
-
-export const Primary: Story = {
-  args: {
-    children: 'Primary Button',
-    variant: 'primary',
-  },
-};
-
-export const Secondary: Story = {
-  args: {
-    children: 'Secondary Button',
-    variant: 'secondary',
-  },
-};
-
-export const Disabled: Story = {
-  args: {
-    children: 'Disabled Button',
-    disabled: true,
-  },
-};
+export enum FormFieldType {
+  TEXT = 'text',
+  EMAIL = 'email',
+  PASSWORD = 'password',
+}
 ```
 
-### Step 2: Write Tests
+---
+
+## Form Handling
+
 ```typescript
-// Button.test.tsx
-import { render, screen, fireEvent } from '@testing-library/react';
-import { Button } from './Button';
-
-describe('Button', () => {
-  it('renders with children', () => {
-    render(<Button>Click me</Button>);
-    expect(screen.getByText('Click me')).toBeInTheDocument();
-  });
-
-  it('calls onClick when clicked', () => {
-    const handleClick = jest.fn();
-    render(<Button onClick={handleClick}>Click</Button>);
-    fireEvent.click(screen.getByText('Click'));
-    expect(handleClick).toHaveBeenCalledTimes(1);
-  });
-
-  it('is disabled when disabled prop is true', () => {
-    render(<Button disabled>Click</Button>);
-    expect(screen.getByText('Click')).toBeDisabled();
-  });
+const [formData, setFormData] = useState<PatientFormData>({
+  name: '',
+  gender: Gender.MALE,  // ✅ Use enum
+  age: 0,
 });
-```
 
-### Step 3: Use in Application
-```typescript
-// DoctorDashboard.tsx
-import { Button } from '@/shared/components/Button';
-
-<Button variant="primary" onClick={handleSave}>
-  Save Changes
-</Button>
-```
-
----
-
-## 🪝 Custom Hooks
-
-### Example: useApi Hook
-```typescript
-// src/shared/hooks/useApi.ts
-import { useState, useCallback } from 'react';
-
-interface UseApiResult<T> {
-  data: T | null;
-  loading: boolean;
-  error: string | null;
-  execute: (...args: any[]) => Promise<void>;
-}
-
-export function useApi<T>(
-  apiFunction: (...args: any[]) => Promise<T>
-): UseApiResult<T> {
-  const [data, setData] = useState<T | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const execute = useCallback(async (...args: any[]) => {
-    try {
-      setLoading(true);
-      setError(null);
-      const result = await apiFunction(...args);
-      setData(result);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-    } finally {
-      setLoading(false);
-    }
-  }, [apiFunction]);
-
-  return { data, loading, error, execute };
-}
-```
-
-### Usage:
-```typescript
-import { useApi } from '@/shared/hooks/useApi';
-import { fetchPatients } from '@/features/doctor/services/doctorService';
-
-const DoctorDashboard = () => {
-  const { data: patients, loading, error, execute } = useApi(fetchPatients);
-
-  useEffect(() => {
-    execute();
-  }, []);
-
-  if (loading) return <LoadingSpinner />;
-  if (error) return <ErrorMessage message={error} />;
-  
-  return <PatientList patients={patients} />;
+const handleChange = (field: keyof PatientFormData, value: any) => {
+  setFormData(prev => ({ ...prev, [field]: value }));
 };
+
+<input
+  type={FormFieldType.TEXT}
+  value={formData.name}
+  onChange={(e) => handleChange('name', e.target.value)}
+/>
 ```
 
 ---
 
-## 📋 Forms
+## Mock-Based Development
 
-### Form Pattern with Validation
+1. Check `/apps/[app]/mocks/` for design
+2. Extract values from mock's tailwind.config
+3. Implement in CSS Modules with exact values
+4. Verify with Playwright (mock vs app)
+
+---
+
+## Common Patterns
+
+**Conditional rendering:**
 ```typescript
-import { useState } from 'react';
-import { Input } from '@/shared/components/Input';
-import { Button } from '@/shared/components/Button';
+{isLoading && <Spinner />}
+{error && <ErrorMessage message={error} />}
+{data && <DataDisplay data={data} />}
+```
 
-interface FormData {
-  name: string;
-  email: string;
-}
+**Lists:**
+```typescript
+{patients.map(patient => (
+  <PatientCard key={patient.id} {...patient} />
+))}
+```
 
-export const PatientForm: React.FC = () => {
-  const [formData, setFormData] = useState<FormData>({ name: '', email: '' });
-  const [errors, setErrors] = useState<Partial<FormData>>({});
-
-  const validate = (): boolean => {
-    const newErrors: Partial<FormData> = {};
-    
-    if (!formData.name) newErrors.name = 'Name is required';
-    if (!formData.email) newErrors.email = 'Email is required';
-    if (formData.email && !formData.email.includes('@')) {
-      newErrors.email = 'Invalid email';
-    }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (validate()) {
-      // Submit form
-    }
-  };
-
-  const handleChange = (field: keyof FormData) => (value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    // Clear error when user starts typing
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }));
-    }
-  };
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <Input
-        label="Name"
-        value={formData.name}
-        onChange={handleChange('name')}
-        error={errors.name}
-      />
-      <Input
-        label="Email"
-        type="email"
-        value={formData.email}
-        onChange={handleChange('email')}
-        error={errors.email}
-      />
-      <Button type="submit">Submit</Button>
-    </form>
-  );
-};
+**Event handlers:**
+```typescript
+const handleSubmit = useCallback((e: FormEvent) => {
+  e.preventDefault();
+  // logic
+}, [dependencies]);
 ```
 
 ---
 
-## 🚫 Common Mistakes to Avoid
+## Testing Requirements
 
-### ❌ DON'T: Mix concerns
-```typescript
-// Bad: Business logic in component
-const DoctorDashboard = () => {
-  const [patients, setPatients] = useState([]);
-  
-  useEffect(() => {
-    fetch('/api/patients')
-      .then(res => res.json())
-      .then(data => setPatients(data));
-  }, []);
-};
-```
-
-### ✅ DO: Separate concerns
-```typescript
-// Good: Business logic in service/hook
-const DoctorDashboard = () => {
-  const { patients, loading } = useDoctorPatients();
-  // Component only handles presentation
-};
-```
-
-### ❌ DON'T: Inline styles with magic numbers
-```typescript
-<div style={{ padding: '24px', margin: '16px' }}>
-```
-
-### ✅ DO: Use CSS Modules with named classes
-```typescript
-<div className={styles.container}>
-```
+- Test files: `Component.test.tsx` next to component
+- Test user interactions, not implementation
+- Mock API calls in tests
+- Aim for 80%+ coverage
 
 ---
 
-## 📦 Import Aliases
+## Key Rules
 
-Use path aliases for cleaner imports:
-```typescript
-// tsconfig.json
-{
-  "compilerOptions": {
-    "baseUrl": "src",
-    "paths": {
-      "@/*": ["*"],
-      "@/shared/*": ["shared/*"],
-      "@/features/*": ["features/*"]
-    }
-  }
-}
-```
+❌ **NEVER:**
+- String literals (`'Male'`, `'Active'`)
+- CSS outside `styles/` folder
+- `any` types
+- Hardcoded text in components
+- Class components
 
-```typescript
-// Usage
-import { Button } from '@/shared/components/Button';
-import { useAuth } from '@/shared/hooks/useAuth';
-import { DoctorDashboard } from '@/features/doctor/components/DoctorDashboard';
-```
-
----
-
-## ✅ Checklist for Every Component
-
-- [ ] Created `.tsx` file with functional component
-- [ ] Created `.module.css` file for styles
-- [ ] Created `.test.tsx` file with tests (80% coverage)
-- [ ] Created `.stories.tsx` file for Storybook
-- [ ] Created `.types.ts` file for TypeScript interfaces
-- [ ] No hardcoded strings (used constants)
-- [ ] No hardcoded colors (used color constants)
-- [ ] No inline styles (used CSS Modules)
-- [ ] Props interface defined
-- [ ] Default props provided where appropriate
-- [ ] Component exported via `index.ts`
-
----
-
-**See also:**
-- [project.instructions.md](./project.instructions.md) - Business context
-- [testing.instructions.md](./testing.instructions.md) - Testing guidelines
-- [uiux.instructions.md](./uiux.instructions.md) - Design guidelines
+✅ **ALWAYS:**
+- Enums (`Gender.MALE`, `DoctorStatus.ACTIVE`)
+- CSS Modules from `styles/`
+- Explicit types
+- String constants
+- Functional components + hooks

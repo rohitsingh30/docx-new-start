@@ -1,0 +1,186 @@
+/* TopNav Component Styles */
+.topNav {
+  display: flex;
+  height: 4rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--color-border, #e2e8f0);
+  background-color: white;
+  padding: 0 1.5rem;
+  z-index: 10;
+}
+
+/* Logo Section */
+.logoSection {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.logoIcon {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--color-text-primary, #1a202c);
+}
+
+.logoIcon .material-symbols-outlined {
+  color: var(--color-primary, #3182ce);
+  font-size: 1.875rem;
+}
+
+.logoText {
+  font-size: 1.25rem;
+  font-weight: 700;
+  line-height: 1.75rem;
+  letter-spacing: -0.015em;
+  color: var(--color-text-primary, #1a202c);
+  margin: 0;
+}
+
+/* Search Section */
+.searchSection {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  padding: 0 2rem;
+}
+
+.searchContainer {
+  display: flex;
+  width: 100%;
+  max-width: 32rem;
+}
+
+.searchWrapper {
+  display: flex;
+  width: 100%;
+  flex: 1;
+  align-items: stretch;
+  border-radius: 0.5rem;
+  height: 2.5rem;
+}
+
+.searchIcon {
+  color: var(--color-text-tertiary, #718096);
+  display: flex;
+  background-color: var(--color-gray-100, #f7fafc);
+  align-items: center;
+  justify-content: center;
+  padding-left: 1rem;
+  border-radius: 0.5rem 0 0 0.5rem;
+}
+
+.searchInput {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  flex: 1;
+  resize: none;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  color: var(--color-text-primary, #1a202c);
+  border: none;
+  background-color: var(--color-gray-100, #f7fafc);
+  height: 100%;
+  padding: 0 1rem 0 0.5rem;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+.searchInput::placeholder {
+  color: var(--color-text-tertiary, #718096);
+}
+
+.searchInput:focus {
+  outline: 2px solid rgba(49, 130, 206, 0.5);
+  outline-offset: 0;
+}
+
+/* Actions Section */
+.actionsSection {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.iconButton {
+  display: flex;
+  height: 2.5rem;
+  width: 2.5rem;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  background-color: var(--color-gray-100, #f7fafc);
+  color: var(--color-text-secondary, #4a5568);
+  border: none;
+  transition: background-color 0.2s ease;
+}
+
+.iconButton:hover {
+  background-color: var(--color-gray-200, #edf2f7);
+}
+
+.iconButton .material-symbols-outlined {
+  font-size: 1.5rem;
+}
+
+/* Material Icon */
+.materialIcon {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 24px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'liga';
+}
+
+.avatar {
+  background-position: center;
+  background-repeat: no-repeat;
+  aspect-ratio: 1 / 1;
+  background-size: cover;
+  border-radius: 9999px;
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .searchSection {
+    padding: 0 1rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .topNav {
+    padding: 0 1rem;
+  }
+
+  .logoSection {
+    gap: 0.5rem;
+  }
+
+  .searchSection {
+    display: none;
+  }
+
+  .actionsSection {
+    gap: 0.5rem;
+  }
+}

@@ -1,289 +1,284 @@
-# Backend Instructions - Docx
+# Backend Instructions
 
-## Overview
+## Tech Stack
 
-Backend development guidelines for Docx healthcare platform API, database, and security.
-
----
-
-## 🛠️ Tech Stack
-
-- **Node.js 18+** - Runtime
-- **Express.js or Fastify** - API framework  
-- **PostgreSQL 15** - Database
-- **Prisma or TypeORM** - ORM
-- **JWT** - Authentication
-- **Zod** - Validation
-- **Jest/Supertest** - Testing
+- Node.js 18+ + TypeScript
+- Express/Fastify + PostgreSQL 15
+- Prisma/TypeORM, JWT, Zod
 
 ---
 
-## 🏗️ API Structure
+## Core Rules
 
-### RESTful Endpoints
+1. **Enum-first** - NO string literals, use enums for roles, statuses
+2. **Type everything** - Strict TypeScript, no `any`
+3. **Validate all input** - Use Zod schemas
+4. **Error handling** - Consistent error responses
+5. **CORS for 3 apps** - doctor/patient/admin origins
 
-**Doctor Endpoints:**
-```
-GET    /api/doctor/dashboard           # Doctor overview stats
-GET    /api/doctor/patients            # List assigned patients
-GET    /api/doctor/patients/:id        # Patient details
-POST   /api/doctor/patients/:id/notes  # Add medical note
-POST   /api/doctor/patients/:id/prescriptions  # Add prescription
-GET    /api/doctor/appointments        # Doctor's appointments
-PUT    /api/doctor/appointments/:id    # Update appointment
-```
+---
 
-**Patient Endpoints:**
-```
-GET    /api/patient/dashboard          # Patient overview
-GET    /api/patient/doctors            # Available doctors
-GET    /api/patient/doctors/:id        # Doctor profile
-POST   /api/patient/appointments       # Book appointment
-GET    /api/patient/appointments       # Patient's appointments
-DELETE /api/patient/appointments/:id   # Cancel appointment
-GET    /api/patient/medical-records    # Patient's records
-POST   /api/patient/ai-chat            # AI chatbot
-```
+## File Structure
 
-**Admin Endpoints:**
 ```
-GET    /api/admin/dashboard            # Hospital stats
-GET    /api/admin/doctors              # All doctors
-POST   /api/admin/doctors              # Create doctor
-PUT    /api/admin/doctors/:id          # Update doctor
-DELETE /api/admin/doctors/:id          # Remove doctor
-GET    /api/admin/analytics            # Reports
+backend/src/
+├── routes/         # API endpoints
+├── controllers/    # Business logic
+├── models/         # Database models (Prisma/TypeORM)
+├── types/
+│   └── enums.ts    # ALL enums (UserRole, Status, etc.)
+├── middleware/     # Auth, validation, error handling
+├── utils/          # Helper functions
+└── services/       # External services
 ```
 
 ---
 
-## 🔒 Authentication
+## Enum Pattern
 
-### JWT Structure
 ```typescript
-interface JWTPayload {
-  userId: string;
-  role: 'admin' | 'doctor' | 'patient';
-  email: string;
-  exp: number;
+// types/enums.ts
+export enum UserRole {
+  DOCTOR = 'DOCTOR',
+  PATIENT = 'PATIENT',
+  ADMIN = 'ADMIN',
+}
+
+export enum AppointmentStatus {
+  SCHEDULED = 'SCHEDULED',
+  COMPLETED = 'COMPLETED',
+  CANCELLED = 'CANCELLED',
+}
+
+export enum DoctorStatus {
+  ACTIVE = 'ACTIVE',
+  INACTIVE = 'INACTIVE',
 }
 ```
 
-### Auth Middleware
+**Usage:**
 ```typescript
-import { Request, Response, NextFunction } from 'express';
-import jwt from 'jsonwebtoken';
+// ❌ NEVER
+if (user.role === 'DOCTOR') {}
 
-export const authenticate = (req: Request, res: Response, next: NextFunction) => {
-  const token = req.headers.authorization?.split(' ')[1];
-  
-  if (!token) {
-    return res.status(401).json({ error: 'No token provided' });
-  }
-  
-  try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JWTPayload;
-    req.user = decoded;
-    next();
-  } catch (error) {
-    return res.status(401).json({ error: 'Invalid token' });
-  }
-};
-
-export const authorize = (...roles: string[]) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    if (!req.user || !roles.includes(req.user.role)) {
-      return res.status(403).json({ error: 'Insufficient permissions' });
-    }
-    next();
-  };
-};
+// ✅ ALWAYS
+if (user.role === UserRole.DOCTOR) {}
 ```
 
 ---
 
-## 🗄️ Database Schema (Prisma)
+## API Endpoints
 
-```prisma
-model Admin {
-  id          String   @id @default(uuid())
-  email       String   @unique
-  name        String
-  password    String
-  hospitalId  String
-  permissions String[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
+**Doctor:**
+- `GET /api/doctor/patients` - List patients
+- `POST /api/doctor/patients/:id/notes` - Add medical note
+- `GET /api/doctor/appointments` - Appointments
 
-model Doctor {
-  id             String   @id @default(uuid())
-  email          String   @unique
-  password       String
-  firstName      String
-  lastName       String
-  specialization String
-  experience     Int
-  department     String
-  phoneNumber    String
-  isActive       Boolean  @default(true)
-  patients       Patient[]
-  appointments   Appointment[]
-  medicalNotes   MedicalNote[]
-  prescriptions  Prescription[]
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-}
+**Patient:**
+- `GET /api/patient/doctors` - Available doctors
+- `POST /api/patient/appointments` - Book appointment
+- `GET /api/patient/medical-records` - Records
 
-model Patient {
-  id              String   @id @default(uuid())
-  email           String   @unique
-  password        String
-  firstName       String
-  lastName        String
-  dateOfBirth     DateTime
-  bloodType       String
-  phoneNumber     String
-  address         String
-  assignedDoctorId String?
-  assignedDoctor  Doctor?  @relation(fields: [assignedDoctorId], references: [id])
-  appointments    Appointment[]
-  medicalNotes    MedicalNote[]
-  prescriptions   Prescription[]
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
-}
-
-model Appointment {
-  id        String   @id @default(uuid())
-  patientId String
-  patient   Patient  @relation(fields: [patientId], references: [id])
-  doctorId  String
-  doctor    Doctor   @relation(fields: [doctorId], references: [id])
-  dateTime  DateTime
-  duration  Int      // minutes
-  status    String   // scheduled, completed, cancelled
-  notes     String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model MedicalNote {
-  id          String   @id @default(uuid())
-  patientId   String
-  patient     Patient  @relation(fields: [patientId], references: [id])
-  doctorId    String
-  doctor      Doctor   @relation(fields: [doctorId], references: [id])
-  date        DateTime @default(now())
-  diagnosis   String
-  symptoms    String
-  notes       String
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-}
-
-model Prescription {
-  id             String   @id @default(uuid())
-  patientId      String
-  patient        Patient  @relation(fields: [patientId], references: [id])
-  doctorId       String
-  doctor         Doctor   @relation(fields: [doctorId], references: [id])
-  medicationName String
-  dosage         String
-  frequency      String
-  duration       String
-  instructions   String
-  prescribedDate DateTime @default(now())
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
-}
-```
+**Admin:**
+- `GET /api/admin/doctors` - All doctors
+- `POST /api/admin/doctors` - Create doctor
+- `GET /api/admin/analytics` - Reports
 
 ---
 
-## ✅ API Best Practices
+## Request Validation (Zod)
 
-### 1. **Use Repository Pattern**
-```typescript
-// patientRepository.ts
-export class PatientRepository {
-  async findById(id: string): Promise<Patient | null> {
-    return prisma.patient.findUnique({ where: { id } });
-  }
-  
-  async findByDoctorId(doctorId: string): Promise<Patient[]> {
-    return prisma.patient.findMany({
-      where: { assignedDoctorId: doctorId }
-    });
-  }
-  
-  async create(data: CreatePatientDTO): Promise<Patient> {
-    return prisma.patient.create({ data });
-  }
-}
-```
-
-### 2. **Use DTOs for Validation**
 ```typescript
 import { z } from 'zod';
+import { Gender, UserRole } from '../types/enums';
 
-export const CreatePrescriptionSchema = z.object({
-  patientId: z.string().uuid(),
-  medicationName: z.string().min(1),
-  dosage: z.string().min(1),
-  frequency: z.string().min(1),
-  duration: z.string().min(1),
-  instructions: z.string().optional(),
+const createDoctorSchema = z.object({
+  email: z.string().email(),
+  name: z.string().min(2),
+  gender: z.nativeEnum(Gender),
+  specialization: z.string(),
+  role: z.literal(UserRole.DOCTOR),
 });
 
-export type CreatePrescriptionDTO = z.infer<typeof CreatePrescriptionSchema>;
+// In controller
+const validated = createDoctorSchema.parse(req.body);
 ```
 
-### 3. **Error Handling**
+---
+
+## Authentication (JWT)
+
 ```typescript
-export class AppError extends Error {
+import jwt from 'jsonwebtoken';
+import { UserRole } from '../types/enums';
+
+interface JWTPayload {
+  userId: string;
+  role: UserRole;
+}
+
+const generateToken = (payload: JWTPayload): string => {
+  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' });
+};
+
+// Middleware
+const authenticate = (req, res, next) => {
+  const token = req.headers.authorization?.split(' ')[1];
+  const decoded = jwt.verify(token, process.env.JWT_SECRET) as JWTPayload;
+  req.user = decoded;
+  next();
+};
+```
+
+---
+
+## CORS (3 Apps)
+
+```typescript
+const allowedOrigins = [
+  'https://doctor.docx.com',
+  'https://patient.docx.com',
+  'https://admin.docx.com',
+  'http://localhost:3000', // Dev
+];
+
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true,
+}));
+```
+
+---
+
+## Error Handling
+
+```typescript
+class AppError extends Error {
   constructor(
     public statusCode: number,
     public message: string,
-    public isOperational = true
   ) {
     super(message);
   }
 }
 
-// Error handler middleware
-export const errorHandler = (err: Error, req: Request, res: Response, next: NextFunction) => {
-  if (err instanceof AppError) {
-    return res.status(err.statusCode).json({
-      status: 'error',
-      message: err.message
-    });
-  }
-  
-  // Log unexpected errors
-  console.error('Unexpected error:', err);
-  
-  return res.status(500).json({
-    status: 'error',
-    message: 'Internal server error'
+// Usage
+if (!user) {
+  throw new AppError(404, 'User not found');
+}
+
+// Global error handler
+app.use((err, req, res, next) => {
+  res.status(err.statusCode || 500).json({
+    success: false,
+    message: err.message,
   });
-};
+});
 ```
 
 ---
 
-## 🔒 Security Best Practices
+## Database Model Example (Prisma)
 
-1. **Hash passwords** with bcrypt
-2. **Validate all inputs** with Zod
-3. **Use parameterized queries** (ORM handles this)
-4. **Rate limiting** on API endpoints
-5. **CORS** configuration
-6. **Helmet.js** for security headers
-7. **Environment variables** for secrets
+```prisma
+enum UserRole {
+  DOCTOR
+  PATIENT
+  ADMIN
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      UserRole
+  gender    Gender
+  createdAt DateTime @default(now())
+}
+
+model Doctor {
+  id              String       @id @default(uuid())
+  userId          String       @unique
+  specialization  String
+  status          DoctorStatus @default(ACTIVE)
+  patients        Patient[]
+}
+```
 
 ---
 
-**See also:**
-- [project.instructions.md](./project.instructions.md) - Business context
-- [frontend.instructions.md](./frontend.instructions.md) - Frontend guidelines
+## API Response Format
+
+```typescript
+// Success
+{
+  success: true,
+  data: { ... }
+}
+
+// Error
+{
+  success: false,
+  message: "Error description"
+}
+
+// List with pagination
+{
+  success: true,
+  data: [...],
+  pagination: {
+    page: 1,
+    limit: 20,
+    total: 150
+  }
+}
+```
+
+---
+
+## Testing
+
+```typescript
+import request from 'supertest';
+import { UserRole } from '../types/enums';
+
+describe('POST /api/doctor/patients/:id/notes', () => {
+  it('should add medical note', async () => {
+    const token = generateToken({ userId: '123', role: UserRole.DOCTOR });
+    
+    const res = await request(app)
+      .post('/api/doctor/patients/456/notes')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ note: 'Test note' });
+    
+    expect(res.status).toBe(201);
+    expect(res.body.success).toBe(true);
+  });
+});
+```
+
+---
+
+## Key Rules
+
+❌ **NEVER:**
+- String literals for roles/statuses
+- `any` types
+- Unvalidated input
+- Plain text passwords
+- Missing error handling
+
+✅ **ALWAYS:**
+- Enums for fixed values
+- Type all functions
+- Validate with Zod
+- Hash passwords (bcrypt)
+- Try-catch blocks
+- JWT for auth
