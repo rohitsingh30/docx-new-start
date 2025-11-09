@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { memo } from 'react';
 import styles from '../styles/PatientForm.module.css';
 import { PatientFormProps } from '../types/Patient.types';
 import { DATA_CONSTANTS } from '../constants/dataConstants';
-import { FORM_CONSTANTS } from '../constants/formConstants';
 import { STRING_CONSTANTS } from '../constants/stringConstants';
+import { VALIDATION_RULES } from '../utils/validationRules';
 
-const PatientForm: React.FC<PatientFormProps> = ({ 
+const PatientForm: React.FC<PatientFormProps> = memo(({ 
   patientData, 
   onSubmit, 
   onCancel, 
@@ -17,21 +17,21 @@ const PatientForm: React.FC<PatientFormProps> = ({
       <div className={styles.formGrid}>
         <input
           type="text"
-          placeholder={FORM_CONSTANTS.PLACEHOLDERS.FIRST_NAME}
+          placeholder={STRING_CONSTANTS.PLACEHOLDERS.FIRST_NAME}
           value={patientData.firstName}
           onChange={(e) => onDataChange('firstName', e.target.value)}
           required
-          minLength={FORM_CONSTANTS.VALIDATION.MIN_NAME_LENGTH}
-          maxLength={FORM_CONSTANTS.VALIDATION.MAX_NAME_LENGTH}
+          minLength={VALIDATION_RULES.NAME.MIN_LENGTH}
+          maxLength={VALIDATION_RULES.NAME.MAX_LENGTH}
         />
         <input
           type="text"
-          placeholder={FORM_CONSTANTS.PLACEHOLDERS.LAST_NAME}
+          placeholder={STRING_CONSTANTS.PLACEHOLDERS.LAST_NAME}
           value={patientData.lastName}
           onChange={(e) => onDataChange('lastName', e.target.value)}
           required
-          minLength={FORM_CONSTANTS.VALIDATION.MIN_NAME_LENGTH}
-          maxLength={FORM_CONSTANTS.VALIDATION.MAX_NAME_LENGTH}
+          minLength={VALIDATION_RULES.NAME.MIN_LENGTH}
+          maxLength={VALIDATION_RULES.NAME.MAX_LENGTH}
         />
         <input
           type="date"
@@ -51,14 +51,14 @@ const PatientForm: React.FC<PatientFormProps> = ({
         </select>
         <input
           type="tel"
-          placeholder={FORM_CONSTANTS.PLACEHOLDERS.PHONE}
+          placeholder={STRING_CONSTANTS.PLACEHOLDERS.PHONE}
           value={patientData.phoneNumber}
           onChange={(e) => onDataChange('phoneNumber', e.target.value)}
           required
         />
         <input
           type="email"
-          placeholder={FORM_CONSTANTS.PLACEHOLDERS.EMAIL}
+          placeholder={STRING_CONSTANTS.PLACEHOLDERS.EMAIL}
           value={patientData.email}
           onChange={(e) => onDataChange('email', e.target.value)}
           required
@@ -75,41 +75,41 @@ const PatientForm: React.FC<PatientFormProps> = ({
         </select>
         <input
           type="text"
-          placeholder={FORM_CONSTANTS.PLACEHOLDERS.ALLERGIES}
+          placeholder={STRING_CONSTANTS.PLACEHOLDERS.ALLERGIES}
           value={patientData.allergies}
           onChange={(e) => onDataChange('allergies', e.target.value)}
         />
         <input
           type="text"
-          placeholder={FORM_CONSTANTS.PLACEHOLDERS.MEDICATIONS}
+          placeholder={STRING_CONSTANTS.PLACEHOLDERS.MEDICATIONS}
           value={patientData.medications}
           onChange={(e) => onDataChange('medications', e.target.value)}
         />
         <input
           type="text"
-          placeholder={FORM_CONSTANTS.PLACEHOLDERS.EMERGENCY_CONTACT_NAME}
+          placeholder={STRING_CONSTANTS.PLACEHOLDERS.EMERGENCY_CONTACT_NAME}
           value={patientData.emergencyContactName}
           onChange={(e) => onDataChange('emergencyContactName', e.target.value)}
           required
         />
         <input
           type="text"
-          placeholder={FORM_CONSTANTS.PLACEHOLDERS.EMERGENCY_CONTACT_RELATIONSHIP}
+          placeholder={STRING_CONSTANTS.PLACEHOLDERS.EMERGENCY_CONTACT_RELATIONSHIP}
           value={patientData.emergencyContactRelationship}
           onChange={(e) => onDataChange('emergencyContactRelationship', e.target.value)}
           required
         />
         <input
           type="tel"
-          placeholder={FORM_CONSTANTS.PLACEHOLDERS.EMERGENCY_CONTACT_PHONE}
+          placeholder={STRING_CONSTANTS.PLACEHOLDERS.EMERGENCY_CONTACT_PHONE}
           value={patientData.emergencyContactPhone}
           onChange={(e) => onDataChange('emergencyContactPhone', e.target.value)}
           required
-          pattern={FORM_CONSTANTS.VALIDATION.PHONE_PATTERN}
+          pattern={VALIDATION_RULES.PHONE.PATTERN}
         />
       </div>
       <textarea
-        placeholder={FORM_CONSTANTS.PLACEHOLDERS.ADDRESS}
+        placeholder={STRING_CONSTANTS.PLACEHOLDERS.ADDRESS}
         value={patientData.address}
         onChange={(e) => onDataChange('address', e.target.value)}
         required
@@ -121,6 +121,8 @@ const PatientForm: React.FC<PatientFormProps> = ({
       </div>
     </form>
   );
-};
+});
+
+PatientForm.displayName = 'PatientForm';
 
 export default PatientForm;

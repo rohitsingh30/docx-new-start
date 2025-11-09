@@ -3,7 +3,7 @@ import styles from '../styles/Dashboard.module.css';
 import { DashboardStats, DashboardProps, StatCardProps, Appointment } from '../types/Dashboard.types';
 import { MOCK_DATA } from '../constants/dataConstants';
 import { STRING_CONSTANTS } from '../constants/stringConstants';
-import { AppointmentStatus } from '../types/enums';
+import { getStatusClassName, getStatusLabel } from '../utils/statusUtils';
 
 const StatCard: React.FC<StatCardProps> = ({ title, value }) => (
   <div className={styles.statCard}>
@@ -12,44 +12,16 @@ const StatCard: React.FC<StatCardProps> = ({ title, value }) => (
   </div>
 );
 
-const getStatusClassName = (status: AppointmentStatus): string => {
-  switch (status) {
-    case AppointmentStatus.SCHEDULED:
-      return styles.statusActive;
-    case AppointmentStatus.PENDING:
-      return styles.statusPending;
-    case AppointmentStatus.CANCELLED:
-      return styles.statusCancelled;
-    case AppointmentStatus.COMPLETED:
-      return styles.statusCompleted;
-    case AppointmentStatus.NO_SHOW:
-      return styles.statusPending;
-    default:
-      return styles.statusActive;
-  }
-};
-
-const getStatusLabel = (status: AppointmentStatus): string => {
-  switch (status) {
-    case AppointmentStatus.SCHEDULED:
-      return STRING_CONSTANTS.STATUS_LABELS.ACTIVE;
-    case AppointmentStatus.PENDING:
-      return STRING_CONSTANTS.STATUS_LABELS.PENDING;
-    case AppointmentStatus.CANCELLED:
-      return STRING_CONSTANTS.STATUS_LABELS.CANCELLED;
-    case AppointmentStatus.COMPLETED:
-      return STRING_CONSTANTS.STATUS_LABELS.COMPLETED;
-    case AppointmentStatus.NO_SHOW:
-      return STRING_CONSTANTS.STATUS_LABELS.PENDING;
-    default:
-      return status;
-  }
-};
-
-const Dashboard: React.FC<DashboardProps> = () => {
+const Dashboard: React.FC<DashboardProps> = ({ onAppointmentClick }) => {
   // Mock data for demonstration - in a real app, this would come from API
   const dashboardStats: DashboardStats = MOCK_DATA.DASHBOARD_STATS;
   const appointments: Appointment[] = MOCK_DATA.APPOINTMENTS;
+
+  const handleAppointmentClick = (appointmentId: string) => {
+    if (onAppointmentClick) {
+      onAppointmentClick(appointmentId);
+    }
+  };
 
   return (
     <div className={styles.dashboard}>
@@ -86,7 +58,18 @@ const Dashboard: React.FC<DashboardProps> = () => {
         <div className={styles.appointmentsCardsContainer}>
           <div className={styles.appointmentsCards}>
             {appointments.map((appointment) => (
-              <div key={appointment.id} className={styles.appointmentCard}>
+              <div 
+                key={appointment.id} 
+                className={styles.appointmentCard}
+                onClick={() => handleAppointmentClick(appointment.id)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    handleAppointmentClick(appointment.id);
+                  }
+                }}
+              >
                 <div className={styles.appointmentCardHeader}>
                   <div className={styles.appointmentAvatar}>
                     {appointment.avatar ? (
@@ -117,7 +100,7 @@ const Dashboard: React.FC<DashboardProps> = () => {
                   </div>
                 </div>
                 <div className={styles.appointmentCardFooter}>
-                  <span className={getStatusClassName(appointment.status)}>
+                  <span className={getStatusClassName(appointment.status, styles)}>
                     {getStatusLabel(appointment.status)}
                   </span>
                 </div>

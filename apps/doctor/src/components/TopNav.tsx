@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { memo } from 'react';
 import styles from '../styles/TopNav.module.css';
 import { STRING_CONSTANTS } from '../constants/stringConstants';
 import { NAVIGATION_CONSTANTS } from '../constants/navigationConstants';
 
-const TopNav: React.FC = () => {
+const TopNav: React.FC = memo(() => {
   return (
     <header className={styles.topNav}>
       {/* Left: Logo */}
@@ -46,6 +46,8 @@ const TopNav: React.FC = () => {
       </div>
     </header>
   );
-};
+});
+
+TopNav.displayName = 'TopNav';
 
 export default TopNav;

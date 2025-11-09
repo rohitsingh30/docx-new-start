@@ -3,8 +3,6 @@ import { AppointmentStatus } from './enums';
 
 export interface DashboardStats {
   totalPatients: number;
-  totalDoctors: number;
-  activeDoctors: number;
   appointmentsToday: number;
 }
 
@@ -36,6 +34,7 @@ export interface StatCard {
 export interface DashboardProps {
   activeSection?: string;
   onSectionChange?: (sectionId: string) => void;
+  onAppointmentClick?: (appointmentId: string) => void;
 }
 
 export interface StatCardProps {
@@ -45,4 +44,4 @@ export interface StatCardProps {
 
 export type DashboardTab = 'overview' | 'analytics' | 'reports';
 export type ChartType = 'line' | 'bar' | 'pie' | 'doughnut';
-export type TabType = 'dashboard' | 'patients' | 'doctors';
+export type TabType = 'dashboard' | 'patients' | 'appointments';

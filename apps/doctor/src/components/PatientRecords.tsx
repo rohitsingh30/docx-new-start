@@ -1,8 +1,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import styles from '../styles/PatientRecords.module.css';
 import { Patient, PatientFormData, PatientRecordsProps } from '../types/Patient.types';
-import { DATA_CONSTANTS, MOCK_DATA } from '../constants/dataConstants';
-import { FORM_CONSTANTS } from '../constants/formConstants';
+import { MOCK_DATA } from '../constants/dataConstants';
 import { STRING_CONSTANTS } from '../constants/stringConstants';
 import { Gender, BloodType } from '../types/enums';
 import PatientCard from './PatientCard';
@@ -114,7 +113,7 @@ const PatientRecords: React.FC<PatientRecordsProps> = () => {
       <div className={styles.searchBar}>
         <input
           type="text"
-          placeholder={FORM_CONSTANTS.PLACEHOLDERS.SEARCH_PATIENTS}
+          placeholder={STRING_CONSTANTS.PLACEHOLDERS.SEARCH_PATIENTS}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           aria-label={STRING_CONSTANTS.ARIA_LABELS.SEARCH_PATIENTS}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { memo } from 'react';
 import styles from '../styles/EmptyState.module.css';
 
 interface EmptyStateProps {
@@ -9,7 +9,7 @@ interface EmptyStateProps {
   icon?: string;
 }
 
-const EmptyState: React.FC<EmptyStateProps> = ({ 
+const EmptyState: React.FC<EmptyStateProps> = memo(({ 
   title, 
   message, 
   actionText, 
@@ -33,6 +33,8 @@ const EmptyState: React.FC<EmptyStateProps> = ({
       )}
     </div>
   );
-};
+});
+
+EmptyState.displayName = 'EmptyState';
 
 export default EmptyState;

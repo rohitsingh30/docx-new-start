@@ -24,14 +24,6 @@ export enum BloodType {
 }
 
 /**
- * Doctor status
- */
-export enum DoctorStatus {
-  ACTIVE = 'Active',
-  INACTIVE = 'Inactive'
-}
-
-/**
  * Appointment status
  */
 export enum AppointmentStatus {
@@ -40,38 +32,6 @@ export enum AppointmentStatus {
   COMPLETED = 'Completed',
   CANCELLED = 'Cancelled',
   NO_SHOW = 'No-Show'
-}
-
-/**
- * Medical specializations
- */
-export enum Specialization {
-  CARDIOLOGY = 'Cardiology',
-  NEUROLOGY = 'Neurology',
-  ORTHOPEDICS = 'Orthopedics',
-  PEDIATRICS = 'Pediatrics',
-  DERMATOLOGY = 'Dermatology',
-  PSYCHIATRY = 'Psychiatry',
-  ONCOLOGY = 'Oncology',
-  EMERGENCY_MEDICINE = 'Emergency Medicine',
-  FAMILY_MEDICINE = 'Family Medicine',
-  INTERNAL_MEDICINE = 'Internal Medicine'
-}
-
-/**
- * Hospital departments
- */
-export enum Department {
-  CARDIOLOGY = 'Cardiology',
-  NEUROLOGY = 'Neurology',
-  ORTHOPEDICS = 'Orthopedics',
-  PEDIATRICS = 'Pediatrics',
-  EMERGENCY = 'Emergency',
-  SURGERY = 'Surgery',
-  RADIOLOGY = 'Radiology',
-  LABORATORY = 'Laboratory',
-  PHARMACY = 'Pharmacy',
-  ADMINISTRATION = 'Administration'
 }
 
 /**
@@ -129,10 +89,7 @@ export enum FormFieldType {
 export const EnumHelpers = {
   getGenderValues: (): string[] => Object.values(Gender),
   getBloodTypeValues: (): string[] => Object.values(BloodType),
-  getDoctorStatusValues: (): string[] => Object.values(DoctorStatus),
   getAppointmentStatusValues: (): string[] => Object.values(AppointmentStatus),
-  getSpecializationValues: (): string[] => Object.values(Specialization),
-  getDepartmentValues: (): string[] => Object.values(Department),
   getSortDirectionValues: (): string[] => Object.values(SortDirection),
   getUserRoleValues: (): string[] => Object.values(UserRole),
   getEntityStatusValues: (): string[] => Object.values(EntityStatus),

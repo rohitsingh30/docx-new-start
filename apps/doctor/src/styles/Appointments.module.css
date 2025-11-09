@@ -1,0 +1,441 @@
+/* Appointments Component Styles */
+
+.appointmentsContainer {
+  padding: 2rem;
+  background-color: var(--background-light);
+  min-height: 100vh;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1.5rem;
+}
+
+.headerContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pageTitle {
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.pageSubtitle {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.newButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.newButton:hover {
+  background-color: var(--primary-dark);
+}
+
+/* Filter Tabs */
+.filterTabs {
+  display: flex;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 1.5rem;
+}
+
+.filterTab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filterTab:hover {
+  color: var(--text-primary);
+  border-bottom-color: var(--border-color-hover);
+}
+
+.filterTabActive {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+}
+
+.tabCount {
+  padding: 0.125rem 0.5rem;
+  background-color: var(--background-secondary);
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.filterTabActive .tabCount {
+  background-color: var(--primary-light);
+  color: var(--primary);
+}
+
+/* Controls */
+.controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.filterControls {
+  display: flex;
+  gap: 1rem;
+}
+
+.filterGroup {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.controlIcon {
+  color: var(--text-secondary);
+  font-size: 1.25rem;
+}
+
+.select {
+  padding: 0.5rem 0.75rem;
+  background-color: white;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-light);
+}
+
+.viewControls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.viewButton {
+  padding: 0.5rem;
+  background-color: white;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.viewButton:hover {
+  background-color: var(--background-secondary);
+}
+
+.viewButtonActive {
+  background-color: var(--primary-light);
+  border-color: var(--primary-light);
+}
+
+.viewButtonActive .materialIcon {
+  color: var(--primary);
+}
+
+/* Appointments List */
+.appointmentsList {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.appointmentCard {
+  background-color: white;
+  border: 1px solid var(--border-color);
+  border-radius: 0.75rem;
+  padding: 1.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.2s;
+}
+
+.appointmentCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.appointmentCardCancelled {
+  opacity: 0.6;
+}
+
+.appointmentContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.patientInfo {
+  display: flex;
+  gap: 1rem;
+  flex: 1;
+}
+
+.avatar {
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  background-color: var(--background-secondary);
+  background-size: cover;
+  background-position: center;
+  flex-shrink: 0;
+}
+
+.patientDetails {
+  flex: 1;
+}
+
+.patientHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.patientName {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.statusBadge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.statusScheduled {
+  background-color: #d1fae5;
+  color: #065f46;
+}
+
+.statusPending {
+  background-color: #fef3c7;
+  color: #92400e;
+}
+
+.statusCancelled {
+  background-color: #fee2e2;
+  color: #991b1b;
+}
+
+.statusCompleted {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.statusNoShow {
+  background-color: #f3f4f6;
+  color: #374151;
+}
+
+.appointmentInfo {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.infoItem {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.infoIcon {
+  font-size: 1rem;
+}
+
+.appointmentActions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.appointmentActions .viewButton {
+  padding: 0.5rem 1rem;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.appointmentActions .viewButton:hover {
+  background-color: var(--primary-dark);
+}
+
+.moreButton {
+  padding: 0.5rem;
+  background-color: var(--background-secondary);
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.moreButton:hover {
+  background-color: var(--border-color);
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.paginationInfo {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.paginationHighlight {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.paginationControls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.paginationButton {
+  padding: 0.5rem 1rem;
+  background-color: white;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.paginationButton:hover:not(:disabled) {
+  background-color: var(--background-secondary);
+}
+
+.paginationButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.paginationButtonActive {
+  background-color: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+/* Material Icons */
+.materialIcon {
+  font-family: 'Material Symbols Outlined';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 1.5rem;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  display: inline-block;
+  white-space: nowrap;
+  word-wrap: normal;
+  direction: ltr;
+  -webkit-font-feature-settings: 'liga';
+  font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+}
+
+.buttonIcon {
+  font-size: 1.25rem;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .appointmentsContainer {
+    padding: 1rem;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .filterTabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .controls {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .filterControls {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .filterGroup {
+    width: 100%;
+  }
+
+  .select {
+    flex: 1;
+  }
+
+  .appointmentContent {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .appointmentActions {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .pagination {
+    flex-direction: column;
+    gap: 1rem;
+  }
+}

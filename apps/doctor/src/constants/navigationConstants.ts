@@ -2,15 +2,6 @@ import { NavigationItem, UserInfo } from '../types/LeftPane.types';
 
 // Navigation constants for left pane
 export const NAVIGATION_CONSTANTS = {
-  APP_TITLE: 'DocX',
-  APP_SUBTITLE: '',
-  
-  SECTION_TITLES: {
-    MAIN: '',
-    MANAGEMENT: '',
-    SETTINGS: '',
-  },
-
   MAIN_NAVIGATION: [
     {
       id: 'dashboard',
@@ -30,21 +21,7 @@ export const NAVIGATION_CONSTANTS = {
       icon: 'calendar_month',
       path: '/appointments',
     },
-    {
-      id: 'medical-records',
-      label: 'Medical Records',
-      icon: 'folder_shared',
-      path: '/medical-records',
-    },
-    {
-      id: 'settings',
-      label: 'Settings',
-      icon: 'settings',
-      path: '/settings',
-    },
   ] as NavigationItem[],
-
-  MANAGEMENT_NAVIGATION: [] as NavigationItem[],
 
   USER_INFO: {
     name: 'Dr. Emily Carter',

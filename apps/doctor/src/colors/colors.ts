@@ -79,30 +79,3 @@ export const COLORS = {
   DOCTOR_ACTIVE: '#27ae60',
   DOCTOR_INACTIVE: '#95a5a6',
 } as const;
-
-// Color utility functions
-export const getColorWithOpacity = (color: string, opacity: number): string => {
-  // Convert hex to rgba
-  const hex = color.replace('#', '');
-  const r = parseInt(hex.substr(0, 2), 16);
-  const g = parseInt(hex.substr(2, 2), 16);
-  const b = parseInt(hex.substr(4, 2), 16);
-  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
-};
-
-export const lightenColor = (color: string, amount: number): string => {
-  // Simple color lightening function
-  const hex = color.replace('#', '');
-  const num = parseInt(hex, 16);
-  const r = (num >> 16) + amount;
-  const g = ((num >> 8) & 0x00FF) + amount;
-  const b = (num & 0x0000FF) + amount;
-  
-  return '#' + (0x1000000 + (r < 255 ? r < 1 ? 0 : r : 255) * 0x10000 +
-    (g < 255 ? g < 1 ? 0 : g : 255) * 0x100 +
-    (b < 255 ? b < 1 ? 0 : b : 255)).toString(16).slice(1);
-};
-
-export const darkenColor = (color: string, amount: number): string => {
-  return lightenColor(color, -amount);
-};

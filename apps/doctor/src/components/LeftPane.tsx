@@ -34,7 +34,7 @@ const LeftPane: React.FC<LeftPaneProps> = ({
   onSectionChange 
 }) => {
   const navigationItems = NAVIGATION_CONSTANTS.MAIN_NAVIGATION;
-  const { logout, user } = useAuth();
+  const { logout } = useAuth();
 
   return (
     <aside className={styles.leftPane}>

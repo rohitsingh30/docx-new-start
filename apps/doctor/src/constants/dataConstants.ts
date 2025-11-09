@@ -2,10 +2,7 @@
 import { 
   Gender, 
   BloodType, 
-  AppointmentStatus, 
-  Specialization, 
-  Department, 
-  DoctorStatus,
+  AppointmentStatus,
   EnumHelpers 
 } from '../types/enums';
 
@@ -13,9 +10,6 @@ export const DATA_CONSTANTS = {
   GENDER_OPTIONS: EnumHelpers.getGenderValues(),
   BLOOD_TYPES: EnumHelpers.getBloodTypeValues(),
   APPOINTMENT_STATUSES: EnumHelpers.getAppointmentStatusValues(),
-  SPECIALIZATIONS: EnumHelpers.getSpecializationValues(),
-  DEPARTMENTS: EnumHelpers.getDepartmentValues(),
-  DOCTOR_STATUSES: EnumHelpers.getDoctorStatusValues(),
 } as const;
 
 // Mock data for demonstration
@@ -62,54 +56,8 @@ export const MOCK_DATA = {
       updatedAt: '2024-01-20T11:30:00Z'
     }
   ],
-  DOCTORS: [
-    {
-      id: '1',
-      firstName: 'Dr. Sarah',
-      lastName: 'Johnson',
-      specialization: Specialization.CARDIOLOGY,
-      licenseNumber: 'MD12345',
-      phoneNumber: '(555) 234-5678',
-      email: 'sarah.johnson@hospital.com',
-      department: Department.CARDIOLOGY,
-      experience: 8,
-      education: ['MD from Harvard Medical School', 'Residency at Johns Hopkins'],
-      availableHours: {
-        start: '09:00',
-        end: '17:00'
-      },
-      consultationFee: 250,
-      isActive: true,
-      status: DoctorStatus.ACTIVE,
-      createdAt: '2024-01-10T10:00:00Z',
-      updatedAt: '2024-01-10T10:00:00Z'
-    },
-    {
-      id: '2',
-      firstName: 'Dr. Michael',
-      lastName: 'Chen',
-      specialization: Specialization.NEUROLOGY,
-      licenseNumber: 'MD67890',
-      phoneNumber: '(555) 345-6789',
-      email: 'michael.chen@hospital.com',
-      department: Department.NEUROLOGY,
-      experience: 12,
-      education: ['MD from Stanford Medical School', 'Fellowship in Neurosurgery'],
-      availableHours: {
-        start: '08:00',
-        end: '18:00'
-      },
-      consultationFee: 300,
-      isActive: true,
-      status: DoctorStatus.ACTIVE,
-      createdAt: '2024-01-12T14:00:00Z',
-      updatedAt: '2024-01-12T14:00:00Z'
-    }
-  ],
   DASHBOARD_STATS: {
     totalPatients: 12,
-    totalDoctors: 12,
-    activeDoctors: 10,
     appointmentsToday: 8,
   },
 
@@ -187,6 +135,65 @@ export const MOCK_DATA = {
       avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Isabella',
     },
   ],
+
+  // Detailed appointment data
+  APPOINTMENT_DETAILS: {
+    patient: {
+      id: '1',
+      name: 'Liam Johnson',
+      patientId: '#PT-2024-001',
+      age: 34,
+      gender: Gender.MALE,
+      contact: '+1 (555) 123-4567',
+      email: 'liam.johnson@email.com',
+      bloodType: BloodType.O_POSITIVE,
+      avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Liam',
+    },
+    appointment: {
+      id: '1',
+      type: 'General Checkup',
+      status: AppointmentStatus.SCHEDULED,
+      date: 'November 9, 2025',
+      time: '09:00 AM',
+      duration: '30 minutes',
+      room: 'Room 201',
+    },
+    chiefComplaint: {
+      description: 'Patient reports feeling fatigued and experiencing occasional chest discomfort during physical activity.',
+      symptoms: ['Fatigue', 'Chest Discomfort', 'Shortness of Breath'],
+      duration: 'Symptoms started approximately 2 weeks ago',
+    },
+    medicalHistory: {
+      previousConditions: 'Hypertension (controlled with medication)',
+      currentMedications: 'Lisinopril 10mg daily, Aspirin 81mg daily',
+      allergies: 'Penicillin',
+    },
+    vitals: {
+      heartRate: '72 bpm',
+      bloodPressure: '140/90',
+      temperature: '98.6°F',
+      weight: '185 lbs',
+    },
+    notes: '',
+    reminder: 'Follow up appointment recommended in 2 weeks to review test results.',
+    previousAppointments: [
+      {
+        id: 'prev-1',
+        type: 'Annual Physical',
+        date: 'Oct 15, 2025',
+      },
+      {
+        id: 'prev-2',
+        type: 'Follow-up Visit',
+        date: 'Sep 3, 2025',
+      },
+      {
+        id: 'prev-3',
+        type: 'Initial Consultation',
+        date: 'Aug 12, 2025',
+      },
+    ],
+  },
   
   // Mock user accounts for authentication
   USERS: [
