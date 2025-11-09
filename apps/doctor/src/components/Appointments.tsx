@@ -15,7 +15,8 @@ const Appointments: React.FC<AppointmentsProps> = ({
   const [activeTab, setActiveTab] = useState<AppointmentFilterTab>('all');
   const [filterType, setFilterType] = useState<string>('all');
   const [sortBy, setSortBy] = useState<string>('time');
-  const [viewMode, setViewMode] = useState<'list' | 'grid'>('list');
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const itemsPerPage = 5;
 
   // Get appointments from mock data
   const appointments: AppointmentListItem[] = MOCK_DATA.APPOINTMENTS.map(apt => ({
@@ -35,24 +36,23 @@ const Appointments: React.FC<AppointmentsProps> = ({
     }
   }, [onNewAppointment]);
 
-  const handleMoreOptions = useCallback((appointmentId: string, e?: React.MouseEvent) => {
-    // Add your more options logic here
-  }, []);
-
   const handleTabChange = useCallback((tab: AppointmentFilterTab) => {
     setActiveTab(tab);
+    setCurrentPage(1);
   }, []);
 
   const handleFilterChange = useCallback((filterValue: string) => {
     setFilterType(filterValue);
+    setCurrentPage(1);
   }, []);
 
   const handleSortChange = useCallback((sortValue: string) => {
     setSortBy(sortValue);
+    setCurrentPage(1);
   }, []);
 
-  const handleViewModeChange = useCallback((mode: 'list' | 'grid') => {
-    setViewMode(mode);
+  const handlePageChange = useCallback((page: number) => {
+    setCurrentPage(page);
   }, []);
 
   const counts = useMemo(() => {
@@ -116,19 +116,23 @@ const Appointments: React.FC<AppointmentsProps> = ({
     return filtered;
   }, [appointments, activeTab, filterType, sortBy]);
 
+  // Pagination calculations
+  const totalPages = Math.ceil(filteredAppointments.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const paginatedAppointments = filteredAppointments.slice(startIndex, endIndex);
+
   return (
-    <div className={styles.container}>
+    <main className={styles.main}>
       {/* Header */}
       <div className={styles.header}>
         <div className={styles.headerContent}>
           <h1 className={styles.pageTitle}>{STRING_CONSTANTS.LABELS.APPOINTMENTS}</h1>
-          <p className={styles.pageSubtitle}>Manage and track all your appointments</p>
         </div>
         <button 
           className={styles.newButton} 
           onClick={handleNewAppointment}
           type="button"
-          style={{ cursor: 'pointer', zIndex: 10 }}
         >
           <span className={`${styles.materialIcon} ${styles.buttonIcon}`}>add</span>
           <span>{STRING_CONSTANTS.BUTTONS.NEW_APPOINTMENT}</span>
@@ -136,47 +140,55 @@ const Appointments: React.FC<AppointmentsProps> = ({
       </div>
 
       {/* Filter Tabs */}
-      <div className={styles.filterTabs}>
-        <button
-          className={`${styles.filterTab} ${activeTab === 'all' ? styles.filterTabActive : ''}`}
-          onClick={() => handleTabChange('all')}
-        >
-          All Appointments
-          <span className={styles.tabCount}>{counts.all}</span>
-        </button>
-        <button
-          className={`${styles.filterTab} ${activeTab === 'today' ? styles.filterTabActive : ''}`}
-          onClick={() => handleTabChange('today')}
-        >
-          Today
-          <span className={styles.tabCount}>{counts.today}</span>
-        </button>
-        <button
-          className={`${styles.filterTab} ${activeTab === 'upcoming' ? styles.filterTabActive : ''}`}
-          onClick={() => handleTabChange('upcoming')}
-        >
-          Upcoming
-          <span className={styles.tabCount}>{counts.upcoming}</span>
-        </button>
-        <button
-          className={`${styles.filterTab} ${activeTab === 'completed' ? styles.filterTabActive : ''}`}
-          onClick={() => handleTabChange('completed')}
-        >
-          Completed
-          <span className={styles.tabCount}>{counts.completed}</span>
-        </button>
-        <button
-          className={`${styles.filterTab} ${activeTab === 'cancelled' ? styles.filterTabActive : ''}`}
-          onClick={() => handleTabChange('cancelled')}
-        >
-          Cancelled
-          <span className={styles.tabCount}>{counts.cancelled}</span>
-        </button>
-      </div>
-
-      {/* Filter and Sort Controls */}
-      <div className={styles.controls}>
-        <div className={styles.filterControls}>
+      <div className={styles.tabContainer}>
+        <div className={styles.tabsWrapper}>
+          <button
+            className={`${styles.tab} ${activeTab === 'all' ? styles.tabActive : ''}`}
+            onClick={() => handleTabChange('all')}
+            type="button"
+          >
+            <span className={`${styles.materialIcon} ${styles.tabIcon}`}>list_alt</span>
+            All Appointments
+            <span className={styles.tabCount}>{counts.all}</span>
+          </button>
+          <button
+            className={`${styles.tab} ${activeTab === 'today' ? styles.tabActive : ''}`}
+            onClick={() => handleTabChange('today')}
+            type="button"
+          >
+            <span className={`${styles.materialIcon} ${styles.tabIcon}`}>today</span>
+            Today
+            <span className={styles.tabCount}>{counts.today}</span>
+          </button>
+          <button
+            className={`${styles.tab} ${activeTab === 'upcoming' ? styles.tabActive : ''}`}
+            onClick={() => handleTabChange('upcoming')}
+            type="button"
+          >
+            <span className={`${styles.materialIcon} ${styles.tabIcon}`}>event</span>
+            Upcoming
+            <span className={styles.tabCount}>{counts.upcoming}</span>
+          </button>
+          <button
+            className={`${styles.tab} ${activeTab === 'completed' ? styles.tabActive : ''}`}
+            onClick={() => handleTabChange('completed')}
+            type="button"
+          >
+            <span className={`${styles.materialIcon} ${styles.tabIcon}`}>check_circle</span>
+            Completed
+            <span className={styles.tabCount}>{counts.completed}</span>
+          </button>
+          <button
+            className={`${styles.tab} ${activeTab === 'cancelled' ? styles.tabActive : ''}`}
+            onClick={() => handleTabChange('cancelled')}
+            type="button"
+          >
+            <span className={`${styles.materialIcon} ${styles.tabIcon}`}>cancel</span>
+            Cancelled
+            <span className={styles.tabCount}>{counts.cancelled}</span>
+          </button>
+        </div>
+        <div className={styles.tabControls}>
           <div className={styles.filterGroup}>
             <span className={`${styles.materialIcon} ${styles.controlIcon}`}>filter_list</span>
             <select
@@ -206,35 +218,16 @@ const Appointments: React.FC<AppointmentsProps> = ({
             </select>
           </div>
         </div>
-        <div className={styles.viewControls}>
-          <button
-            className={`${styles.viewButton} ${viewMode === 'list' ? styles.viewButtonActive : ''}`}
-            onClick={() => handleViewModeChange('list')}
-          >
-            <span className={styles.materialIcon}>view_list</span>
-          </button>
-          <button
-            className={`${styles.viewButton} ${viewMode === 'grid' ? styles.viewButtonActive : ''}`}
-            onClick={() => handleViewModeChange('grid')}
-          >
-            <span className={styles.materialIcon}>view_module</span>
-          </button>
-        </div>
       </div>
 
       {/* Appointments List */}
       <div className={styles.appointmentsList}>
         {filteredAppointments.length === 0 ? (
-          <div style={{ 
-            textAlign: 'center', 
-            padding: '3rem', 
-            color: '#718096',
-            fontSize: '1.125rem' 
-          }}>
+          <div className={styles.emptyState}>
             No appointments found matching the current filters.
           </div>
         ) : (
-          filteredAppointments.map((appointment) => (
+          paginatedAppointments.map((appointment) => (
           <div
             key={appointment.id}
             className={`${styles.appointmentCard} ${
@@ -247,35 +240,16 @@ const Appointments: React.FC<AppointmentsProps> = ({
                   className={styles.avatar}
                   style={{ backgroundImage: `url(${appointment.avatar})` }}
                 />
-                <div className={styles.patientDetails}>
-                  <div className={styles.patientHeader}>
-                    <h3 className={styles.patientName}>{appointment.patientName}</h3>
-                    <span className={`${styles.statusBadge} ${getStatusClassName(appointment.status, styles)}`}>
-                      {getStatusLabel(appointment.status)}
-                    </span>
-                  </div>
-                  <div className={styles.appointmentInfo}>
-                    <span className={styles.infoItem}>
-                      <span className={`${styles.materialIcon} ${styles.infoIcon}`}>schedule</span>
-                      {appointment.time}
-                    </span>
-                    <span className={styles.infoItem}>
-                      <span className={`${styles.materialIcon} ${styles.infoIcon}`}>category</span>
-                      {appointment.type}
-                    </span>
-                    <span className={styles.infoItem}>
-                      <span className={`${styles.materialIcon} ${styles.infoIcon}`}>timer</span>
-                      {appointment.duration}
-                    </span>
-                    {appointment.room && (
-                      <span className={styles.infoItem}>
-                        <span className={`${styles.materialIcon} ${styles.infoIcon}`}>meeting_room</span>
-                        {appointment.room}
-                      </span>
-                    )}
-                  </div>
-                </div>
+                <h3 className={styles.patientName}>{appointment.patientName}</h3>
               </div>
+              <div className={styles.appointmentInfo}>
+                <span className={styles.infoTag}>{appointment.date}</span>
+                <span className={styles.infoTag}>{appointment.time}</span>
+                <span className={styles.infoTag}>{appointment.type}</span>
+              </div>
+              <span className={`${styles.statusBadge} ${getStatusClassName(appointment.status, styles)}`}>
+                {getStatusLabel(appointment.status)}
+              </span>
               <div className={styles.appointmentActions}>
                 <button
                   className={styles.viewButton}
@@ -285,15 +259,6 @@ const Appointments: React.FC<AppointmentsProps> = ({
                 >
                   View Details
                 </button>
-                <button 
-                  className={styles.moreButton}
-                  onClick={(e) => handleMoreOptions(appointment.id, e)}
-                  type="button"
-                  aria-label="More options"
-                  style={{ cursor: 'pointer', pointerEvents: 'auto' }}
-                >
-                  <span className={styles.materialIcon}>more_vert</span>
-                </button>
               </div>
             </div>
           </div>
@@ -301,24 +266,40 @@ const Appointments: React.FC<AppointmentsProps> = ({
       </div>
 
       {/* Pagination */}
-      <div className={styles.pagination}>
-        <div className={styles.paginationInfo}>
-          Showing <span className={styles.paginationHighlight}>1-{Math.min(8, filteredAppointments.length)}</span> of{' '}
-          <span className={styles.paginationHighlight}>{filteredAppointments.length}</span> appointments
+      {filteredAppointments.length > itemsPerPage && (
+        <div className={styles.pagination}>
+          <div className={styles.paginationInfo}>
+            Showing <span className={styles.paginationHighlight}>{startIndex + 1}-{Math.min(endIndex, filteredAppointments.length)}</span> of{' '}
+            <span className={styles.paginationHighlight}>{filteredAppointments.length}</span> appointments
+          </div>
+          <div className={styles.paginationControls}>
+            <button 
+              className={styles.paginationButton} 
+              disabled={currentPage === 1}
+              onClick={() => handlePageChange(currentPage - 1)}
+            >
+              <span className={styles.materialIcon}>chevron_left</span>
+            </button>
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+              <button
+                key={page}
+                className={`${styles.paginationButton} ${currentPage === page ? styles.paginationButtonActive : ''}`}
+                onClick={() => handlePageChange(page)}
+              >
+                {page}
+              </button>
+            ))}
+            <button 
+              className={styles.paginationButton}
+              disabled={currentPage === totalPages}
+              onClick={() => handlePageChange(currentPage + 1)}
+            >
+              <span className={styles.materialIcon}>chevron_right</span>
+            </button>
+          </div>
         </div>
-        <div className={styles.paginationControls}>
-          <button className={styles.paginationButton} disabled>
-            <span className={styles.materialIcon}>chevron_left</span>
-          </button>
-          <button className={`${styles.paginationButton} ${styles.paginationButtonActive}`}>1</button>
-          <button className={styles.paginationButton}>2</button>
-          <button className={styles.paginationButton}>3</button>
-          <button className={styles.paginationButton}>
-            <span className={styles.materialIcon}>chevron_right</span>
-          </button>
-        </div>
-      </div>
-    </div>
+      )}
+    </main>
   );
 };
 

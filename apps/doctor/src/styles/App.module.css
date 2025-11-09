@@ -42,3 +42,73 @@
     flex-direction: row;
   }
 }
+
+/* Modal Styles */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background-color: white;
+  padding: 32px;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+  max-width: 450px;
+  text-align: center;
+}
+
+.modalContent h2 {
+  margin: 0 0 12px 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.modalContent p {
+  margin: 0 0 24px 0;
+  font-size: 16px;
+  color: #64748b;
+}
+
+.modalActions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.primaryButton, .secondaryButton {
+  padding: 10px 24px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  border: none;
+}
+
+.primaryButton {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.primaryButton:hover {
+  background-color: #2563eb;
+}
+
+.secondaryButton {
+  background-color: #f1f5f9;
+  color: #0f172a;
+}
+
+.secondaryButton:hover {
+  background-color: #e2e8f0;
+}

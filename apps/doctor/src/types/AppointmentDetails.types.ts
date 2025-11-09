@@ -64,11 +64,14 @@ export interface AppointmentDetailsProps {
   onBack?: () => void;
   onEdit?: () => void;
   onCancel?: () => void;
+  onStart?: () => void;
   onComplete?: () => void;
   onReschedule?: () => void;
   onViewRecords?: () => void;
   onCreatePrescription?: () => void;
   onOrderLabTests?: () => void;
-  onUpdateVitals?: () => void;
+  onUpdateVitals?: (vitals: Vitals) => void;
   onSaveNotes?: (notes: string) => void;
+  onAddNotes?: () => void;
+  onViewPreviousAppointment?: (appointmentId: string) => void;
 }

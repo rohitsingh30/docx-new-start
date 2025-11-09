@@ -44,4 +44,4 @@ export interface StatCardProps {
 
 export type DashboardTab = 'overview' | 'analytics' | 'reports';
 export type ChartType = 'line' | 'bar' | 'pie' | 'doughnut';
-export type TabType = 'dashboard' | 'patients' | 'appointments';
+export type TabType = 'dashboard' | 'patients' | 'appointments' | 'invoices' | 'notifications' | 'settings';

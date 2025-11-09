@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback } from 'react';
 import styles from '../styles/PatientRecords.module.css';
 import { Patient, PatientFormData, PatientRecordsProps } from '../types/Patient.types';
 import { MOCK_DATA } from '../constants/dataConstants';
@@ -8,9 +8,8 @@ import PatientCard from './PatientCard';
 import PatientForm from './PatientForm';
 import EmptyState from './EmptyState';
 
-const PatientRecords: React.FC<PatientRecordsProps> = () => {
+const PatientRecords: React.FC<PatientRecordsProps> = ({ onPatientClick }) => {
   const [patientsList, setPatientsList] = useState<Patient[]>(MOCK_DATA.PATIENTS);
-  const [searchQuery, setSearchQuery] = useState<string>('');
   const [isAddFormVisible, setIsAddFormVisible] = useState<boolean>(false);
   const [newPatientData, setNewPatientData] = useState<PatientFormData>({
     firstName: '',
@@ -27,18 +26,6 @@ const PatientRecords: React.FC<PatientRecordsProps> = () => {
     emergencyContactRelationship: '',
     emergencyContactPhone: ''
   });
-
-  const filteredPatientsList = useMemo(() => {
-    if (!searchQuery) return patientsList;
-    const query = searchQuery.toLowerCase();
-    return patientsList.filter(patient => 
-      patient.firstName.toLowerCase().includes(query) ||
-      patient.lastName.toLowerCase().includes(query) ||
-      patient.email.toLowerCase().includes(query) ||
-      patient.phoneNumber.includes(query) ||
-      patient.bloodType.toLowerCase().includes(query)
-    );
-  }, [patientsList, searchQuery]);
 
   const updatePatientData = useCallback((field: keyof PatientFormData, value: string) => {
     setNewPatientData(prev => ({ ...prev, [field]: value }));
@@ -110,16 +97,6 @@ const PatientRecords: React.FC<PatientRecordsProps> = () => {
         </button>
       </div>
 
-      <div className={styles.searchBar}>
-        <input
-          type="text"
-          placeholder={STRING_CONSTANTS.PLACEHOLDERS.SEARCH_PATIENTS}
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          aria-label={STRING_CONSTANTS.ARIA_LABELS.SEARCH_PATIENTS}
-        />
-      </div>
-
       {isAddFormVisible && (
         <PatientForm
           patientData={newPatientData}
@@ -130,30 +107,21 @@ const PatientRecords: React.FC<PatientRecordsProps> = () => {
       )}
 
       <div className={styles.patientsList}>
-        {filteredPatientsList.length === 0 ? (
-          searchQuery ? (
-            <EmptyState
-              icon={STRING_CONSTANTS.ICONS.SEARCH}
-              title={STRING_CONSTANTS.EMPTY_STATE.NO_PATIENTS_FOUND_TITLE}
-              message={STRING_CONSTANTS.EMPTY_STATE.NO_PATIENTS_FOUND_MESSAGE}
-              actionText={STRING_CONSTANTS.BUTTONS.ADD_PATIENT}
-              onAction={toggleAddForm}
-            />
-          ) : (
-            <EmptyState
-              icon={STRING_CONSTANTS.ICONS.PATIENTS}
-              title={STRING_CONSTANTS.EMPTY_STATE.NO_PATIENTS_YET_TITLE}
-              message={STRING_CONSTANTS.EMPTY_STATE.NO_PATIENTS_YET_MESSAGE}
-              actionText={STRING_CONSTANTS.BUTTONS.ADD_PATIENT}
-              onAction={toggleAddForm}
-            />
-          )
+        {patientsList.length === 0 ? (
+          <EmptyState
+            icon={STRING_CONSTANTS.ICONS.PATIENTS}
+            title={STRING_CONSTANTS.EMPTY_STATE.NO_PATIENTS_YET_TITLE}
+            message={STRING_CONSTANTS.EMPTY_STATE.NO_PATIENTS_YET_MESSAGE}
+            actionText={STRING_CONSTANTS.BUTTONS.ADD_PATIENT}
+            onAction={toggleAddForm}
+          />
         ) : (
-          filteredPatientsList.map((patient) => (
+          patientsList.map((patient) => (
             <PatientCard
               key={patient.id}
               patient={patient}
               onDelete={handleDeletePatient}
+              onViewDetails={onPatientClick}
             />
           ))
         )}

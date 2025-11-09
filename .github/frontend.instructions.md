@@ -417,7 +417,10 @@ grep -n '"' src/components/Component.tsx | grep -v "import|from|className"
 ```
 apps/doctor/src/
 ├── components/          # React components
-├── styles/             # ALL CSS (*.module.css, index.css)
+├── modals/             # Modal components
+├── styles/
+│   ├── modals/         # Modal CSS modules
+│   └── *.module.css    # Component CSS modules
 ├── types/
 │   └── enums.ts        # ALL enums (Gender, Status, etc.)
 ├── constants/
@@ -427,6 +430,45 @@ apps/doctor/src/
 ├── contexts/           # React contexts
 └── services/           # API calls
 ```
+
+### Modal Organization
+
+All modals live in `/modals` folder with corresponding styles in `/styles/modals`:
+
+**Base Modal Component:**
+```typescript
+// modals/Modal.tsx - Reusable modal wrapper
+interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  title: string;
+  children: React.ReactNode;
+}
+```
+
+**Specialized Modals:**
+```
+modals/
+├── Modal.tsx           # Base modal with overlay & close
+├── NotesModal.tsx      # Add appointment notes
+└── RescheduleModal.tsx # Reschedule appointment
+
+styles/modals/
+├── Modal.module.css
+├── NotesModal.module.css
+└── RescheduleModal.module.css
+```
+
+**State Management:**
+- Modal state lives in parent component (e.g., `App.tsx`)
+- Modal save handlers passed as props
+- Use `window.confirm` for destructive actions
+
+**Inline Editing:**
+- Patient vitals use inline editing (no modal)
+- Toggle edit mode with local component state
+- Show/hide input fields based on `isEditing` state
+- Save/Cancel buttons appear inline during editing
 
 ---
 

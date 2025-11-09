@@ -45,11 +45,14 @@ export interface PatientSearchFilters {
 }
 
 // Component Props
-export interface PatientRecordsProps {}
+export interface PatientRecordsProps {
+  onPatientClick?: (patientId: string) => void;
+}
 
 export interface PatientCardProps {
   patient: Patient;
   onDelete: (id: string) => void;
+  onViewDetails?: (id: string) => void;
 }
 
 export interface PatientFormProps {

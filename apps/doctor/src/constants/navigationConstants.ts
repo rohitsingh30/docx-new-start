@@ -21,6 +21,18 @@ export const NAVIGATION_CONSTANTS = {
       icon: 'calendar_month',
       path: '/appointments',
     },
+    {
+      id: 'invoices',
+      label: 'Invoices',
+      icon: 'receipt_long',
+      path: '/invoices',
+    },
+    {
+      id: 'settings',
+      label: 'Settings',
+      icon: 'settings',
+      path: '/settings',
+    },
   ] as NavigationItem[],
 
   USER_INFO: {

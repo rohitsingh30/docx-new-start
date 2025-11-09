@@ -1,94 +1,61 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styles from '../styles/PatientCard.module.css';
 import { PatientCardProps } from '../types/Patient.types';
-import { STRING_CONSTANTS } from '../constants/stringConstants';
 
-const PatientCard: React.FC<PatientCardProps> = ({ patient, onDelete }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+const PatientCard: React.FC<PatientCardProps> = ({ patient, onViewDetails }) => {
+  // Calculate age from date of birth
+  const calculateAge = (dob: string): number => {
+    const birthDate = new Date(dob);
+    const today = new Date();
+    let age = today.getFullYear() - birthDate.getFullYear();
+    const monthDiff = today.getMonth() - birthDate.getMonth();
+    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+    }
+    return age;
+  };
 
-  const handleDeleteClick = () => {
-    if (window.confirm(STRING_CONSTANTS.MESSAGES.CONFIRM_DELETE)) {
-      onDelete(patient.id);
+  const handleViewDetails = () => {
+    if (onViewDetails) {
+      onViewDetails(patient.id);
     }
   };
 
-  const toggleExpansion = () => {
-    setIsExpanded(!isExpanded);
-  };
-
   return (
-    <div className={`${styles.patientCard} ${isExpanded ? styles.expanded : ''}`}>
-      <div className={styles.patientCardHeader} onClick={toggleExpansion}>
-        <div className={styles.headerLeft}>
-          <h3>{patient.firstName} {patient.lastName}</h3>
-          <span className={styles.patientId}>ID: {patient.id}</span>
+    <div className={styles.patientCard}>
+      <div className={styles.patientContent}>
+        <div className={styles.patientInfo}>
+          <div className={styles.avatar}>
+            <span className="material-symbols-outlined">person</span>
+          </div>
+          <div className={styles.patientDetails}>
+            <h3 className={styles.patientName}>{patient.firstName} {patient.lastName}</h3>
+          </div>
         </div>
-        <div className={styles.headerRight}>
-          <span className={`${styles.expandIcon} ${isExpanded ? styles.expanded : ''}`}>
-            ▾
+
+        <div className={styles.patientTags}>
+          <span className={styles.infoTag}>
+            <span className="material-symbols-outlined">cake</span>
+            {calculateAge(patient.dateOfBirth)} years
           </span>
-          <button 
-            className={styles.deleteButton}
-            onClick={(e) => {
-              e.stopPropagation();
-              handleDeleteClick();
-            }}
-            aria-label={`Delete patient ${patient.firstName} ${patient.lastName}`}
-          >
-            {STRING_CONSTANTS.BUTTONS.DELETE}
+          <span className={styles.infoTag}>
+            <span className="material-symbols-outlined">
+              {patient.gender === 'Male' ? 'male' : patient.gender === 'Female' ? 'female' : 'transgender'}
+            </span>
+            {patient.gender}
+          </span>
+          <span className={styles.infoTag}>
+            <span className="material-symbols-outlined">call</span>
+            {patient.phoneNumber}
+          </span>
+        </div>
+
+        <div className={styles.patientActions}>
+          <button className={styles.viewButton} onClick={handleViewDetails}>
+            View Details
           </button>
         </div>
       </div>
-      {isExpanded && (
-        <div className={styles.patientCardBody}>
-          <div className={styles.infoGrid}>
-            <div className={styles.infoItem}>
-              <strong>Date of Birth</strong>
-              <span>{patient.dateOfBirth}</span>
-            </div>
-            <div className={styles.infoItem}>
-              <strong>Gender</strong>
-              <span>{patient.gender}</span>
-            </div>
-            <div className={styles.infoItem}>
-              <strong>Phone</strong>
-              <span>{patient.phoneNumber}</span>
-            </div>
-            <div className={styles.infoItem}>
-              <strong>Email</strong>
-              <span>{patient.email}</span>
-            </div>
-            <div className={styles.infoItem}>
-              <strong>Blood Type</strong>
-              <span className={styles.bloodType}>{patient.bloodType}</span>
-            </div>
-            <div className={styles.infoItem}>
-              <strong>Address</strong>
-              <span>{patient.address}</span>
-            </div>
-            {patient.allergies.length > 0 && (
-              <div className={styles.infoItem}>
-                <strong>Allergies</strong>
-                <span className={styles.allergies}>{patient.allergies.join(', ')}</span>
-              </div>
-            )}
-            {patient.medications.length > 0 && (
-              <div className={styles.infoItem}>
-                <strong>Medications</strong>
-                <span className={styles.medications}>{patient.medications.join(', ')}</span>
-              </div>
-            )}
-            <div className={styles.infoItem}>
-              <strong>Emergency Contact</strong>
-              <span>
-                {patient.emergencyContact.name} ({patient.emergencyContact.relationship})
-                <br />
-                {patient.emergencyContact.phoneNumber}
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

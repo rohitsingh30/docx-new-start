@@ -6,21 +6,52 @@
 
 /* CSS Variables - Match mock design colors exactly */
 :root {
-  /* Login Page Colors from /mocks/Login.html */
+  /* Primary Colors from /mocks/Login.html */
   --color-primary: #2A64F5;
-  --color-white: #FFFFFF;
-  --color-background: #FFFFFF;
+  --color-primary-rgb: 42, 100, 245;
+  --color-primary-hover: rgba(42, 100, 245, 0.9);
+  --color-primary-light: rgba(42, 100, 245, 0.1);
+  --color-primary-focus: rgba(42, 100, 245, 0.5);
+  
+  /* Text Colors from /mocks/Dashboard.html */
+  --color-text-primary: #1a202c;
+  --color-text-secondary: #4a5568;
+  --color-text-tertiary: #718096;
+  
+  /* Background Colors */
+  --color-background: #f7fafc;
+  --color-white: #ffffff;
+  
+  /* Border Colors */
+  --color-border: #e2e8f0;
+  --color-gray-100: #f7fafc;
+  --color-gray-200: #e2e8f0;
+  
+  /* Shadow Colors */
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-focus: 0 0 0 3px rgba(42, 100, 245, 0.5);
+  
+  /* Status Colors (from mocks) */
+  --color-success-bg: #c6f6d5;
+  --color-success-text: #2f855a;
+  --color-warning-bg: #feebc8;
+  --color-warning-text: #c05621;
+  --color-error-bg: #fed7d7;
+  --color-error-text: #c53030;
+  --color-info-bg: #bee3f8;
+  --color-info-text: #2c5282;
+  
+  /* Login Page Colors from /mocks/Login.html */
   --color-form-bg: #F2F4F7;
   --color-heading: #101828;
   --color-body: #667085;
-  --color-border: #D0D5DD;
   --color-border-hover: #98A2B3;
   --color-error: #D92D20;
 }
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
   -webkit-font-smoothing: antialiased;

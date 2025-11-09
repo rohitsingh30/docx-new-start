@@ -84,6 +84,14 @@ export enum FormFieldType {
 }
 
 /**
+ * Appointment details tab options
+ */
+export enum AppointmentTab {
+  OVERVIEW = 'overview',
+  MEDICAL_HISTORY = 'medical_history'
+}
+
+/**
  * Helper functions to get enum values as arrays
  */
 export const EnumHelpers = {

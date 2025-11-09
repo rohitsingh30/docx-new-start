@@ -93,11 +93,11 @@
 }
 
 .searchInput::placeholder {
-  color: var(--color-text-tertiary, #718096);
+  color: var(--color-text-tertiary);
 }
 
 .searchInput:focus {
-  outline: 2px solid rgba(49, 130, 206, 0.5);
+  outline: 2px solid var(--color-primary-focus);
   outline-offset: 0;
 }
 

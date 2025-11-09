@@ -1,0 +1,361 @@
+.container {
+  height: 100vh;
+  overflow-y: auto;
+  background-color: #f8fafc;
+  padding: 24px;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  color: #3b82f6;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 16px;
+  border-radius: 6px;
+  transition: background-color 0.2s;
+}
+
+.backButton:hover {
+  background-color: #eff6ff;
+}
+
+.pageTitle {
+  font-size: 24px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0;
+}
+
+.headerActions {
+  display: flex;
+  gap: 12px;
+}
+
+.actionBtn, .newBtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.actionBtn:hover, .newBtn:hover {
+  background-color: #2563eb;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.statCard {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.statCard .material-icons {
+  font-size: 32px;
+  color: #3b82f6;
+}
+
+.statValue {
+  font-size: 24px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.statLabel {
+  font-size: 12px;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.content {
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 24px;
+}
+
+.filters {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.searchBox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  padding: 8px 12px;
+  flex: 1;
+  min-width: 250px;
+}
+
+.searchBox .material-icons {
+  color: #64748b;
+  font-size: 20px;
+}
+
+.searchBox input {
+  border: none;
+  background: none;
+  outline: none;
+  flex: 1;
+  font-size: 14px;
+  color: #0f172a;
+}
+
+.filterSelect {
+  padding: 8px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  background-color: white;
+  color: #0f172a;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table thead {
+  background-color: #f8fafc;
+}
+
+.table th {
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+  color: #0f172a;
+  border-bottom: 2px solid #e2e8f0;
+  font-size: 14px;
+}
+
+.table td {
+  padding: 12px;
+  border-bottom: 1px solid #e2e8f0;
+  color: #0f172a;
+  font-size: 14px;
+}
+
+.table tbody tr:hover {
+  background-color: #f8fafc;
+}
+
+.invoiceId {
+  font-weight: 600;
+  color: #3b82f6;
+}
+
+.amount {
+  font-weight: 600;
+}
+
+.statusPaid, .statusPending, .statusOverdue {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.statusPaid {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.statusPending {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.statusOverdue {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.viewBtn {
+  background-color: #3b82f6;
+  color: white;
+  border: none;
+  padding: 6px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.viewBtn:hover {
+  background-color: #2563eb;
+}
+
+/* Invoice Detail View */
+.invoice {
+  max-width: 900px;
+  margin: 0 auto;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 48px;
+}
+
+.invoiceHeader {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 40px;
+  padding-bottom: 24px;
+  border-bottom: 2px solid #e2e8f0;
+}
+
+.clinicName {
+  font-size: 24px;
+  font-weight: 700;
+  color: #3b82f6;
+  margin: 0 0 8px 0;
+}
+
+.invoiceHeader p {
+  font-size: 14px;
+  color: #64748b;
+  margin: 4px 0;
+}
+
+.invoiceInfo {
+  text-align: right;
+}
+
+.invoiceInfo h2 {
+  font-size: 32px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 16px 0;
+}
+
+.invoiceInfo p {
+  font-size: 14px;
+  color: #0f172a;
+  margin: 4px 0;
+}
+
+.billTo {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 32px;
+  margin-bottom: 32px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.billTo h3 {
+  font-size: 14px;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+  margin: 0 0 12px 0;
+  letter-spacing: 0.5px;
+}
+
+.billTo p {
+  font-size: 14px;
+  color: #0f172a;
+  margin: 4px 0;
+}
+
+.patientName {
+  font-size: 16px;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.totals {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin: 32px 0;
+  padding-top: 24px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  width: 300px;
+  padding: 8px 0;
+  font-size: 14px;
+  color: #0f172a;
+}
+
+.totalRowFinal {
+  display: flex;
+  justify-content: space-between;
+  width: 300px;
+  padding: 12px 0;
+  border-top: 2px solid #e2e8f0;
+  margin-top: 8px;
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.footer {
+  text-align: center;
+  padding-top: 24px;
+  border-top: 2px solid #e2e8f0;
+}
+
+.footer p {
+  font-size: 12px;
+  color: #64748b;
+  margin: 4px 0;
+}
+
+@media print {
+  .container {
+    background-color: white;
+    padding: 0;
+  }
+  
+  .header {
+    display: none;
+  }
+  
+  .invoice {
+    box-shadow: none;
+    padding: 20px;
+  }
+}
