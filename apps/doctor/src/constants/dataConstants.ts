@@ -111,7 +111,7 @@ export const MOCK_DATA = {
       date: 'November 9, 2025',
       time: '09:00 AM',
       type: 'General Checkup',
-      status: 'Scheduled',
+      status: AppointmentStatus.SCHEDULED,
       duration: '30 minutes',
       avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Liam',
     },
@@ -123,7 +123,7 @@ export const MOCK_DATA = {
       date: 'November 9, 2025',
       time: '10:00 AM',
       type: 'Follow-up Visit',
-      status: 'Scheduled',
+      status: AppointmentStatus.SCHEDULED,
       duration: '20 minutes',
       avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Emma',
     },
@@ -135,7 +135,7 @@ export const MOCK_DATA = {
       date: 'November 9, 2025',
       time: '11:30 AM',
       type: 'Consultation',
-      status: 'Scheduled',
+      status: AppointmentStatus.SCHEDULED,
       duration: '45 minutes',
       avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Noah',
     },
@@ -147,7 +147,7 @@ export const MOCK_DATA = {
       date: 'November 9, 2025',
       time: '02:00 PM',
       type: 'Lab Results Review',
-      status: 'Completed',
+      status: AppointmentStatus.COMPLETED,
       duration: '15 minutes',
       avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Olivia',
     },
@@ -159,7 +159,7 @@ export const MOCK_DATA = {
       date: 'November 10, 2025',
       time: '09:30 AM',
       type: 'Physical Examination',
-      status: 'Scheduled',
+      status: AppointmentStatus.SCHEDULED,
       duration: '40 minutes',
       avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=James',
     },
@@ -171,7 +171,7 @@ export const MOCK_DATA = {
       date: 'November 10, 2025',
       time: '11:00 AM',
       type: 'Follow-up Visit',
-      status: 'Scheduled',
+      status: AppointmentStatus.SCHEDULED,
       duration: '25 minutes',
       avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Sophia',
     },
@@ -193,7 +193,7 @@ export const MOCK_DATA = {
     appointment: {
       id: '1',
       type: 'General Checkup',
-      status: 'Scheduled',
+      status: AppointmentStatus.SCHEDULED,
       date: 'November 9, 2025',
       time: '09:00 AM',
       duration: '30 minutes',
@@ -214,7 +214,22 @@ export const MOCK_DATA = {
       bloodPressure: '140/90',
       temperature: '98.6°F',
       weight: '185 lbs',
+      respiratoryRate: '16 /min',
+      oxygenSaturation: '98%',
     },
+    diagnosis: 'Patient is in good health. Blood pressure slightly elevated but within acceptable range.',
+    medications: [
+      {
+        name: 'Lisinopril',
+        dosage: '10mg',
+        frequency: 'Once daily',
+        timing: 'Morning',
+        duration: '90 days',
+      },
+    ],
+    labTests: ['Complete Blood Count', 'Lipid Panel', 'Hemoglobin A1C'],
+    doctorNotes: 'Patient reports good adherence to current medication regimen. Advised to continue with regular exercise and balanced diet. Monitor blood pressure at home weekly.',
+    followUpDate: 'January 15, 2026',
     notes: '',
     reminder: 'Follow up appointment recommended in 2 weeks to review test results.',
     previousAppointments: [
@@ -267,7 +282,43 @@ export const MOCK_DATA = {
       name: 'Dr. Demo',
       role: 'doctor',
     }
-  ]
+  ],
+
+  // Invoice data
+  INVOICES: [
+    { id: 'INV-001', patient: 'Liam Johnson', date: 'Nov 9, 2025', amount: 350, status: 'Paid' },
+    { id: 'INV-002', patient: 'Emma Wilson', date: 'Nov 9, 2025', amount: 200, status: 'Pending' },
+    { id: 'INV-003', patient: 'Noah Brown', date: 'Nov 8, 2025', amount: 450, status: 'Pending' },
+    { id: 'INV-004', patient: 'Olivia Davis', date: 'Nov 2, 2025', amount: 150, status: 'Overdue' },
+  ],
+
+  INVOICE_STATS: {
+    totalRevenue: 8750,
+    pending: 1250,
+    invoicesThisMonth: 12,
+    paidInvoices: 8,
+  },
+
+  INVOICE_DETAIL: {
+    id: 'INV-001',
+    date: 'November 9, 2025',
+    dueDate: 'November 16, 2025',
+    patient: 'Liam Johnson',
+    patientId: '#PT-2024-001',
+    appointmentDate: 'November 9, 2025',
+    appointmentType: 'General Checkup',
+    items: [
+      { description: 'General Consultation', qty: 1, price: 150, total: 150 },
+      { description: 'Blood Pressure Check', qty: 1, price: 50, total: 50 },
+      { description: 'Complete Blood Count (CBC)', qty: 1, price: 100, total: 100 },
+      { description: 'Lipid Panel', qty: 1, price: 75, total: 75 },
+    ],
+    subtotal: 375,
+    discount: 25,
+    tax: 0,
+    total: 350,
+    status: 'Paid',
+  },
 };
 
 // Application-level configuration  

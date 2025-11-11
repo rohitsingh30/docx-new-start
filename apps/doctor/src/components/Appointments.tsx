@@ -1,9 +1,9 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import styles from '../styles/Appointments.module.css';
-import { AppointmentsProps, AppointmentListItem, AppointmentFilterTab } from '../types/Appointments.types';
+import { AppointmentsProps, AppointmentListItem } from '../types/Appointments.types';
 import { MOCK_DATA } from '../constants/dataConstants';
 import { STRING_CONSTANTS } from '../constants/stringConstants';
-import { AppointmentStatus } from '../types/enums';
+import { AppointmentStatus, AppointmentFilterTab, AppointmentSortType } from '../types/enums';
 import { getStatusClassName, getStatusLabel } from '../utils/statusUtils';
 
 const Appointments: React.FC<AppointmentsProps> = ({
@@ -12,9 +12,9 @@ const Appointments: React.FC<AppointmentsProps> = ({
   onEditAppointment,
   onCancelAppointment,
 }) => {
-  const [activeTab, setActiveTab] = useState<AppointmentFilterTab>('all');
+  const [activeTab, setActiveTab] = useState<AppointmentFilterTab>(AppointmentFilterTab.ALL);
   const [filterType, setFilterType] = useState<string>('all');
-  const [sortBy, setSortBy] = useState<string>('time');
+  const [sortBy, setSortBy] = useState<AppointmentSortType>(AppointmentSortType.TIME);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 5;
 
@@ -46,7 +46,7 @@ const Appointments: React.FC<AppointmentsProps> = ({
     setCurrentPage(1);
   }, []);
 
-  const handleSortChange = useCallback((sortValue: string) => {
+  const handleSortChange = useCallback((sortValue: AppointmentSortType) => {
     setSortBy(sortValue);
     setCurrentPage(1);
   }, []);
@@ -71,17 +71,17 @@ const Appointments: React.FC<AppointmentsProps> = ({
 
     // Filter by tab
     switch (activeTab) {
-      case 'today':
+      case AppointmentFilterTab.TODAY:
         // For demo, showing all as "today"
         filtered = appointments;
         break;
-      case 'upcoming':
+      case AppointmentFilterTab.UPCOMING:
         filtered = appointments.filter(a => a.status === AppointmentStatus.SCHEDULED);
         break;
-      case 'completed':
+      case AppointmentFilterTab.COMPLETED:
         filtered = appointments.filter(a => a.status === AppointmentStatus.COMPLETED);
         break;
-      case 'cancelled':
+      case AppointmentFilterTab.CANCELLED:
         filtered = appointments.filter(a => a.status === AppointmentStatus.CANCELLED);
         break;
       default:
@@ -98,16 +98,16 @@ const Appointments: React.FC<AppointmentsProps> = ({
 
     // Sort
     switch (sortBy) {
-      case 'patientName':
+      case AppointmentSortType.PATIENT_NAME:
         filtered.sort((a, b) => a.patientName.localeCompare(b.patientName));
         break;
-      case 'status':
+      case AppointmentSortType.STATUS:
         filtered.sort((a, b) => a.status.localeCompare(b.status));
         break;
-      case 'type':
+      case AppointmentSortType.TYPE:
         filtered.sort((a, b) => a.type.localeCompare(b.type));
         break;
-      case 'time':
+      case AppointmentSortType.TIME:
       default:
         // Already sorted by time in mock data
         break;
@@ -143,8 +143,8 @@ const Appointments: React.FC<AppointmentsProps> = ({
       <div className={styles.tabContainer}>
         <div className={styles.tabsWrapper}>
           <button
-            className={`${styles.tab} ${activeTab === 'all' ? styles.tabActive : ''}`}
-            onClick={() => handleTabChange('all')}
+            className={activeTab === AppointmentFilterTab.ALL ? `${styles.tab} ${styles.tabActive}` : styles.tab}
+            onClick={() => handleTabChange(AppointmentFilterTab.ALL)}
             type="button"
           >
             <span className={`${styles.materialIcon} ${styles.tabIcon}`}>list_alt</span>
@@ -152,8 +152,8 @@ const Appointments: React.FC<AppointmentsProps> = ({
             <span className={styles.tabCount}>{counts.all}</span>
           </button>
           <button
-            className={`${styles.tab} ${activeTab === 'today' ? styles.tabActive : ''}`}
-            onClick={() => handleTabChange('today')}
+            className={activeTab === AppointmentFilterTab.TODAY ? `${styles.tab} ${styles.tabActive}` : styles.tab}
+            onClick={() => handleTabChange(AppointmentFilterTab.TODAY)}
             type="button"
           >
             <span className={`${styles.materialIcon} ${styles.tabIcon}`}>today</span>
@@ -161,8 +161,8 @@ const Appointments: React.FC<AppointmentsProps> = ({
             <span className={styles.tabCount}>{counts.today}</span>
           </button>
           <button
-            className={`${styles.tab} ${activeTab === 'upcoming' ? styles.tabActive : ''}`}
-            onClick={() => handleTabChange('upcoming')}
+            className={activeTab === AppointmentFilterTab.UPCOMING ? `${styles.tab} ${styles.tabActive}` : styles.tab}
+            onClick={() => handleTabChange(AppointmentFilterTab.UPCOMING)}
             type="button"
           >
             <span className={`${styles.materialIcon} ${styles.tabIcon}`}>event</span>
@@ -170,8 +170,8 @@ const Appointments: React.FC<AppointmentsProps> = ({
             <span className={styles.tabCount}>{counts.upcoming}</span>
           </button>
           <button
-            className={`${styles.tab} ${activeTab === 'completed' ? styles.tabActive : ''}`}
-            onClick={() => handleTabChange('completed')}
+            className={activeTab === AppointmentFilterTab.COMPLETED ? `${styles.tab} ${styles.tabActive}` : styles.tab}
+            onClick={() => handleTabChange(AppointmentFilterTab.COMPLETED)}
             type="button"
           >
             <span className={`${styles.materialIcon} ${styles.tabIcon}`}>check_circle</span>
@@ -179,8 +179,8 @@ const Appointments: React.FC<AppointmentsProps> = ({
             <span className={styles.tabCount}>{counts.completed}</span>
           </button>
           <button
-            className={`${styles.tab} ${activeTab === 'cancelled' ? styles.tabActive : ''}`}
-            onClick={() => handleTabChange('cancelled')}
+            className={activeTab === AppointmentFilterTab.CANCELLED ? `${styles.tab} ${styles.tabActive}` : styles.tab}
+            onClick={() => handleTabChange(AppointmentFilterTab.CANCELLED)}
             type="button"
           >
             <span className={`${styles.materialIcon} ${styles.tabIcon}`}>cancel</span>
@@ -196,12 +196,12 @@ const Appointments: React.FC<AppointmentsProps> = ({
               value={filterType}
               onChange={(e) => handleFilterChange(e.target.value)}
             >
-              <option value="all">All Types</option>
-              <option value="general">General Checkup</option>
-              <option value="followup">Follow-up</option>
-              <option value="consultation">Consultation</option>
-              <option value="physical">Physical Exam</option>
-              <option value="lab">Lab Review</option>
+              <option value="all">{STRING_CONSTANTS.OPTIONS.ALL_TYPES}</option>
+              <option value="general">{STRING_CONSTANTS.OPTIONS.GENERAL_CHECKUP}</option>
+              <option value="followup">{STRING_CONSTANTS.OPTIONS.FOLLOW_UP}</option>
+              <option value="consultation">{STRING_CONSTANTS.OPTIONS.CONSULTATION}</option>
+              <option value="physical">{STRING_CONSTANTS.OPTIONS.PHYSICAL_EXAM}</option>
+              <option value="lab">{STRING_CONSTANTS.OPTIONS.LAB_REVIEW}</option>
             </select>
           </div>
           <div className={styles.filterGroup}>
@@ -209,12 +209,12 @@ const Appointments: React.FC<AppointmentsProps> = ({
             <select
               className={styles.select}
               value={sortBy}
-              onChange={(e) => handleSortChange(e.target.value)}
+              onChange={(e) => handleSortChange(e.target.value as AppointmentSortType)}
             >
-              <option value="time">Sort by Time</option>
-              <option value="patientName">Sort by Patient Name</option>
-              <option value="status">Sort by Status</option>
-              <option value="type">Sort by Type</option>
+              <option value={AppointmentSortType.TIME}>{STRING_CONSTANTS.OPTIONS.SORT_BY_TIME}</option>
+              <option value={AppointmentSortType.PATIENT_NAME}>{STRING_CONSTANTS.OPTIONS.SORT_BY_PATIENT_NAME}</option>
+              <option value={AppointmentSortType.STATUS}>{STRING_CONSTANTS.OPTIONS.SORT_BY_STATUS}</option>
+              <option value={AppointmentSortType.TYPE}>{STRING_CONSTANTS.OPTIONS.SORT_BY_TYPE}</option>
             </select>
           </div>
         </div>
@@ -227,12 +227,16 @@ const Appointments: React.FC<AppointmentsProps> = ({
             No appointments found matching the current filters.
           </div>
         ) : (
-          paginatedAppointments.map((appointment) => (
+          paginatedAppointments.map((appointment) => {
+            const cardClassName = appointment.status === AppointmentStatus.CANCELLED 
+              ? `${styles.appointmentCard} ${styles.appointmentCardCancelled}` 
+              : styles.appointmentCard;
+            const badgeClassName = `${styles.statusBadge} ${getStatusClassName(appointment.status, styles)}`;
+            
+            return (
           <div
             key={appointment.id}
-            className={`${styles.appointmentCard} ${
-              appointment.status === AppointmentStatus.CANCELLED ? styles.appointmentCardCancelled : ''
-            }`}
+            className={cardClassName}
           >
             <div className={styles.appointmentContent}>
               <div className={styles.patientInfo}>
@@ -247,7 +251,7 @@ const Appointments: React.FC<AppointmentsProps> = ({
                 <span className={styles.infoTag}>{appointment.time}</span>
                 <span className={styles.infoTag}>{appointment.type}</span>
               </div>
-              <span className={`${styles.statusBadge} ${getStatusClassName(appointment.status, styles)}`}>
+              <span className={badgeClassName}>
                 {getStatusLabel(appointment.status)}
               </span>
               <div className={styles.appointmentActions}>
@@ -262,7 +266,9 @@ const Appointments: React.FC<AppointmentsProps> = ({
               </div>
             </div>
           </div>
-        )))}
+            );
+          })
+        )}
       </div>
 
       {/* Pagination */}
@@ -280,15 +286,20 @@ const Appointments: React.FC<AppointmentsProps> = ({
             >
               <span className={styles.materialIcon}>chevron_left</span>
             </button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+              const pageButtonClassName = currentPage === page 
+                ? `${styles.paginationButton} ${styles.paginationButtonActive}` 
+                : styles.paginationButton;
+              return (
               <button
                 key={page}
-                className={`${styles.paginationButton} ${currentPage === page ? styles.paginationButtonActive : ''}`}
+                className={pageButtonClassName}
                 onClick={() => handlePageChange(page)}
               >
                 {page}
               </button>
-            ))}
+              );
+            })}
             <button 
               className={styles.paginationButton}
               disabled={currentPage === totalPages}

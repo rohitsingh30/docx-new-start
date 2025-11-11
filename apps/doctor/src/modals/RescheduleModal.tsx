@@ -2,14 +2,7 @@ import React, { useState } from 'react';
 import Modal from './Modal';
 import styles from '../styles/modals/RescheduleModal.module.css';
 import { STRING_CONSTANTS } from '../constants/stringConstants';
-
-interface RescheduleModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onConfirm: (newDate: string, newTime: string) => void;
-  currentDate?: string;
-  currentTime?: string;
-}
+import { RescheduleModalProps } from '../types/RescheduleModal.types';
 
 const RescheduleModal: React.FC<RescheduleModalProps> = ({ 
   isOpen, 

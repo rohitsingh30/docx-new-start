@@ -1,6 +1,6 @@
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useCallback } from 'react';
 import { AuthStatus } from '../types/enums';
-import { AuthContextState, LoginCredentials, User } from '../types/Auth.types';
+import { AuthContextState, LoginCredentials, User, AuthProviderProps } from '../types/Auth.types';
 import { ERROR_MESSAGES } from '../constants/stringConstants';
 import { MOCK_DATA } from '../constants/dataConstants';
 
@@ -24,10 +24,6 @@ const AuthContext = createContext<AuthContextState | undefined>(undefined);
  * </AuthProvider>
  * ```
  */
-interface AuthProviderProps {
-  children: ReactNode;
-}
-
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [status, setStatus] = useState<AuthStatus>(AuthStatus.UNAUTHENTICATED);

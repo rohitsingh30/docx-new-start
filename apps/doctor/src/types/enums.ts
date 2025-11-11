@@ -92,6 +92,77 @@ export enum AppointmentTab {
 }
 
 /**
+ * Appointment filter tabs
+ */
+export enum AppointmentFilterTab {
+  ALL = 'all',
+  TODAY = 'today',
+  UPCOMING = 'upcoming',
+  COMPLETED = 'completed',
+  CANCELLED = 'cancelled'
+}
+
+/**
+ * Appointment sort types
+ */
+export enum AppointmentSortType {
+  TIME = 'time',
+  PATIENT_NAME = 'patientName',
+  STATUS = 'status',
+  TYPE = 'type'
+}
+
+/**
+ * Navigation sections for the left pane
+ */
+export enum NavigationSection {
+  MAIN = 'main',
+  MANAGEMENT = 'management',
+  SETTINGS = 'settings'
+}
+
+/**
+ * Patient sort fields
+ */
+export enum PatientSortField {
+  FIRST_NAME = 'firstName',
+  LAST_NAME = 'lastName',
+  DATE_OF_BIRTH = 'dateOfBirth',
+  CREATED_AT = 'createdAt'
+}
+
+/**
+ * Dashboard tabs
+ */
+export enum DashboardTab {
+  OVERVIEW = 'overview',
+  ANALYTICS = 'analytics',
+  REPORTS = 'reports'
+}
+
+/**
+ * Chart types for data visualization
+ */
+export enum ChartType {
+  LINE = 'line',
+  BAR = 'bar',
+  PIE = 'pie',
+  DOUGHNUT = 'doughnut'
+}
+
+/**
+ * Main application tab types
+ */
+export enum TabType {
+  DASHBOARD = 'dashboard',
+  PATIENTS = 'patients',
+  APPOINTMENTS = 'appointments',
+  INVOICES = 'invoices',
+  NOTIFICATIONS = 'notifications',
+  SETTINGS = 'settings'
+}
+
+/**
  * Helper functions to get enum values as arrays
  */
 export const EnumHelpers = {

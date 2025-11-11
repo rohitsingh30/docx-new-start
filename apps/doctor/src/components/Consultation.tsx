@@ -174,28 +174,28 @@ const Consultation: React.FC<ConsultationProps> = ({
       {/* Tab Navigation */}
       <div className={styles.tabContainer}>
         <button
-          className={`${styles.tab} ${activeTab === 'medical-history' ? styles.tabActive : ''}`}
+          className={activeTab === 'medical-history' ? `${styles.tab} ${styles.tabActive}` : styles.tab}
           onClick={() => setActiveTab('medical-history')}
         >
           <span className={`${styles.materialIcon} ${styles.tabIcon}`}>medical_information</span>
           Medical History
         </button>
         <button
-          className={`${styles.tab} ${activeTab === 'symptoms' ? styles.tabActive : ''}`}
+          className={activeTab === 'symptoms' ? `${styles.tab} ${styles.tabActive}` : styles.tab}
           onClick={() => setActiveTab('symptoms')}
         >
           <span className={`${styles.materialIcon} ${styles.tabIcon}`}>symptoms</span>
           {STRING_CONSTANTS.LABELS.TAB_SYMPTOMS_DIAGNOSIS}
         </button>
         <button
-          className={`${styles.tab} ${activeTab === 'treatment' ? styles.tabActive : ''}`}
+          className={activeTab === 'treatment' ? `${styles.tab} ${styles.tabActive}` : styles.tab}
           onClick={() => setActiveTab('treatment')}
         >
           <span className={`${styles.materialIcon} ${styles.tabIcon}`}>medication</span>
           {STRING_CONSTANTS.LABELS.TAB_TREATMENT_PLAN}
         </button>
         <button
-          className={`${styles.tab} ${activeTab === 'followup' ? styles.tabActive : ''}`}
+          className={activeTab === 'followup' ? `${styles.tab} ${styles.tabActive}` : styles.tab}
           onClick={() => setActiveTab('followup')}
         >
           <span className={`${styles.materialIcon} ${styles.tabIcon}`}>event</span>
@@ -358,7 +358,7 @@ const Consultation: React.FC<ConsultationProps> = ({
                       className={styles.input}
                       value={vitals.heartRate}
                       onChange={(e) => handleVitalChange('heartRate', e.target.value)}
-                      placeholder="e.g., 72 bpm"
+                      placeholder={STRING_CONSTANTS.PLACEHOLDERS.HEART_RATE}
                     />
                   </div>
                   <div className={styles.vitalInput}>
@@ -371,7 +371,7 @@ const Consultation: React.FC<ConsultationProps> = ({
                       className={styles.input}
                       value={vitals.bloodPressure}
                       onChange={(e) => handleVitalChange('bloodPressure', e.target.value)}
-                      placeholder="e.g., 120/80 mmHg"
+                      placeholder={STRING_CONSTANTS.PLACEHOLDERS.BLOOD_PRESSURE}
                     />
                   </div>
                   <div className={styles.vitalInput}>
@@ -384,7 +384,7 @@ const Consultation: React.FC<ConsultationProps> = ({
                       className={styles.input}
                       value={vitals.temperature}
                       onChange={(e) => handleVitalChange('temperature', e.target.value)}
-                      placeholder="e.g., 98.6°F"
+                      placeholder={STRING_CONSTANTS.PLACEHOLDERS.TEMPERATURE}
                     />
                   </div>
                   <div className={styles.vitalInput}>
@@ -397,7 +397,7 @@ const Consultation: React.FC<ConsultationProps> = ({
                       className={styles.input}
                       value={vitals.weight}
                       onChange={(e) => handleVitalChange('weight', e.target.value)}
-                      placeholder="e.g., 70 kg"
+                      placeholder={STRING_CONSTANTS.PLACEHOLDERS.WEIGHT}
                     />
                   </div>
                   <div className={styles.vitalInput}>
@@ -410,7 +410,7 @@ const Consultation: React.FC<ConsultationProps> = ({
                       className={styles.input}
                       value={vitals.respiratoryRate}
                       onChange={(e) => handleVitalChange('respiratoryRate', e.target.value)}
-                      placeholder="e.g., 16 /min"
+                      placeholder={STRING_CONSTANTS.PLACEHOLDERS.RESPIRATORY_RATE}
                     />
                   </div>
                   <div className={styles.vitalInput}>
@@ -423,7 +423,7 @@ const Consultation: React.FC<ConsultationProps> = ({
                       className={styles.input}
                       value={vitals.oxygenSaturation}
                       onChange={(e) => handleVitalChange('oxygenSaturation', e.target.value)}
-                      placeholder="e.g., 98%"
+                      placeholder={STRING_CONSTANTS.PLACEHOLDERS.OXYGEN_SATURATION}
                     />
                   </div>
                 </div>
@@ -572,7 +572,7 @@ const Consultation: React.FC<ConsultationProps> = ({
                 className={styles.textarea}
                 value={chiefComplaint}
                 onChange={(e) => setChiefComplaint(e.target.value)}
-                placeholder="What brings the patient in today?"
+                placeholder={STRING_CONSTANTS.PLACEHOLDERS.CHIEF_COMPLAINT_TEXT}
                 rows={3}
               />
             </div>
@@ -586,7 +586,7 @@ const Consultation: React.FC<ConsultationProps> = ({
               className={styles.textarea}
               value={diagnosis}
               onChange={(e) => setDiagnosis(e.target.value)}
-              placeholder="Clinical diagnosis..."
+              placeholder={STRING_CONSTANTS.PLACEHOLDERS.CLINICAL_DIAGNOSIS}
               rows={5}
             />
           </div>
@@ -630,7 +630,7 @@ const Consultation: React.FC<ConsultationProps> = ({
                       className={styles.input}
                       value={currentMedication.name}
                       onChange={(e) => updateMedicationField('name', e.target.value)}
-                      placeholder="e.g., Paracetamol"
+                      placeholder={STRING_CONSTANTS.PLACEHOLDERS.MEDICATION_NAME}
                     />
                   </div>
                   <div className={styles.medFormField}>
@@ -640,7 +640,7 @@ const Consultation: React.FC<ConsultationProps> = ({
                       className={styles.input}
                       value={currentMedication.dosage}
                       onChange={(e) => updateMedicationField('dosage', e.target.value)}
-                      placeholder="e.g., 500mg"
+                      placeholder={STRING_CONSTANTS.PLACEHOLDERS.MEDICATION_DOSAGE}
                     />
                   </div>
                   <div className={styles.medFormField}>
@@ -650,7 +650,7 @@ const Consultation: React.FC<ConsultationProps> = ({
                       className={styles.input}
                       value={currentMedication.frequency}
                       onChange={(e) => updateMedicationField('frequency', e.target.value)}
-                      placeholder="e.g., Twice daily"
+                      placeholder={STRING_CONSTANTS.PLACEHOLDERS.MEDICATION_FREQUENCY}
                     />
                   </div>
                   <div className={styles.medFormField}>
@@ -660,7 +660,7 @@ const Consultation: React.FC<ConsultationProps> = ({
                       className={styles.input}
                       value={currentMedication.timing}
                       onChange={(e) => updateMedicationField('timing', e.target.value)}
-                      placeholder="e.g., After meals"
+                      placeholder={STRING_CONSTANTS.PLACEHOLDERS.MEDICATION_INSTRUCTIONS}
                     />
                   </div>
                   <div className={styles.medFormField}>
@@ -670,7 +670,7 @@ const Consultation: React.FC<ConsultationProps> = ({
                       className={styles.input}
                       value={currentMedication.duration}
                       onChange={(e) => updateMedicationField('duration', e.target.value)}
-                      placeholder="e.g., 5 days"
+                      placeholder={STRING_CONSTANTS.PLACEHOLDERS.MEDICATION_DURATION}
                     />
                   </div>
                 </div>
@@ -855,7 +855,7 @@ const Consultation: React.FC<ConsultationProps> = ({
             </div>
             <textarea
               className={styles.textarea}
-              placeholder="Enter general advice for the patient..."
+              placeholder={STRING_CONSTANTS.PLACEHOLDERS.GENERAL_ADVICE}
               rows={5}
             />
           </div>
@@ -888,7 +888,7 @@ const Consultation: React.FC<ConsultationProps> = ({
               className={styles.textarea}
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Additional notes, observations, or recommendations..."
+              placeholder={STRING_CONSTANTS.PLACEHOLDERS.ADDITIONAL_NOTES}
               rows={10}
             />
           </div>

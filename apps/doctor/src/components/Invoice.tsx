@@ -1,48 +1,18 @@
 import React, { useState } from 'react';
 import styles from '../styles/Invoice.module.css';
-
-interface InvoiceProps {
-  invoiceId?: string;
-  onBack?: () => void;
-}
+import { MOCK_DATA } from '../constants/dataConstants';
+import { STRING_CONSTANTS } from '../constants/stringConstants';
+import { InvoiceProps } from '../types/Invoice.types';
 
 const Invoice: React.FC<InvoiceProps> = ({ invoiceId, onBack }) => {
   const [viewMode, setViewMode] = useState<'list' | 'detail'>(invoiceId ? 'detail' : 'list');
   const [selectedId, setSelectedId] = useState(invoiceId);
 
-  const mockInvoices = [
-    { id: 'INV-001', patient: 'Liam Johnson', date: 'Nov 9, 2025', amount: 350, status: 'Paid' },
-    { id: 'INV-002', patient: 'Emma Wilson', date: 'Nov 9, 2025', amount: 200, status: 'Pending' },
-    { id: 'INV-003', patient: 'Noah Brown', date: 'Nov 8, 2025', amount: 450, status: 'Pending' },
-    { id: 'INV-004', patient: 'Olivia Davis', date: 'Nov 2, 2025', amount: 150, status: 'Overdue' },
-  ];
-
-  const stats = {
-    totalRevenue: 8750,
-    pending: 1250,
-    invoicesThisMonth: 12,
-    paidInvoices: 8,
-  };
-
+  const mockInvoices = MOCK_DATA.INVOICES;
+  const stats = MOCK_DATA.INVOICE_STATS;
   const invoiceDetail = {
-    id: selectedId || 'INV-001',
-    date: 'November 9, 2025',
-    dueDate: 'November 16, 2025',
-    patient: 'Liam Johnson',
-    patientId: '#PT-2024-001',
-    appointmentDate: 'November 9, 2025',
-    appointmentType: 'General Checkup',
-    items: [
-      { description: 'General Consultation', qty: 1, price: 150, total: 150 },
-      { description: 'Blood Pressure Check', qty: 1, price: 50, total: 50 },
-      { description: 'Complete Blood Count (CBC)', qty: 1, price: 100, total: 100 },
-      { description: 'Lipid Panel', qty: 1, price: 75, total: 75 },
-    ],
-    subtotal: 375,
-    discount: 25,
-    tax: 0,
-    total: 350,
-    status: 'Paid',
+    ...MOCK_DATA.INVOICE_DETAIL,
+    id: selectedId || MOCK_DATA.INVOICE_DETAIL.id,
   };
 
   const handleViewInvoice = (id: string) => {
@@ -68,21 +38,21 @@ const Invoice: React.FC<InvoiceProps> = ({ invoiceId, onBack }) => {
       <div className={styles.container}>
         <div className={styles.header}>
           <button className={styles.backButton} onClick={onBack || handleBackToList}>
-            <span className="material-icons">arrow_back</span>
-            Back
+            <span className={styles.materialIcon}>arrow_back</span>
+            {STRING_CONSTANTS.BUTTONS.BACK}
           </button>
           <div className={styles.headerActions}>
             <button className={styles.actionBtn}>
-              <span className="material-icons">email</span>
-              Send Email
+              <span className={styles.materialIcon}>email</span>
+              {STRING_CONSTANTS.BUTTONS.SEND_EMAIL}
             </button>
             <button className={styles.actionBtn} onClick={() => window.print()}>
-              <span className="material-icons">print</span>
-              Print
+              <span className={styles.materialIcon}>print</span>
+              {STRING_CONSTANTS.BUTTONS.PRINT}
             </button>
             <button className={styles.actionBtn}>
-              <span className="material-icons">download</span>
-              Export PDF
+              <span className={styles.materialIcon}>download</span>
+              {STRING_CONSTANTS.BUTTONS.EXPORT_PDF}
             </button>
           </div>
         </div>
@@ -90,39 +60,39 @@ const Invoice: React.FC<InvoiceProps> = ({ invoiceId, onBack }) => {
         <div className={styles.invoice}>
           <div className={styles.invoiceHeader}>
             <div>
-              <h1 className={styles.clinicName}>DocX Medical Center</h1>
-              <p>123 Healthcare Ave, Medical District</p>
-              <p>Phone: (555) 123-4567</p>
+              <h1 className={styles.clinicName}>{STRING_CONSTANTS.LABELS.CLINIC_NAME}</h1>
+              <p>{STRING_CONSTANTS.LABELS.CLINIC_ADDRESS}</p>
+              <p>{STRING_CONSTANTS.LABELS.CLINIC_PHONE}</p>
             </div>
             <div className={styles.invoiceInfo}>
-              <h2>INVOICE</h2>
-              <p><strong>Invoice #:</strong> {invoiceDetail.id}</p>
-              <p><strong>Date:</strong> {invoiceDetail.date}</p>
-              <p><strong>Due Date:</strong> {invoiceDetail.dueDate}</p>
+              <h2>{STRING_CONSTANTS.LABELS.INVOICE_HEADER}</h2>
+              <p><strong>{STRING_CONSTANTS.LABELS.INVOICE_NUMBER}</strong> {invoiceDetail.id}</p>
+              <p><strong>{STRING_CONSTANTS.LABELS.DATE}</strong> {invoiceDetail.date}</p>
+              <p><strong>{STRING_CONSTANTS.LABELS.DUE_DATE}</strong> {invoiceDetail.dueDate}</p>
               <span className={getStatusClass(invoiceDetail.status)}>{invoiceDetail.status}</span>
             </div>
           </div>
 
           <div className={styles.billTo}>
             <div>
-              <h3>Bill To:</h3>
+              <h3>{STRING_CONSTANTS.LABELS.BILL_TO_HEADER}</h3>
               <p className={styles.patientName}>{invoiceDetail.patient}</p>
               <p>{invoiceDetail.patientId}</p>
             </div>
             <div>
-              <h3>Appointment:</h3>
-              <p><strong>Date:</strong> {invoiceDetail.appointmentDate}</p>
-              <p><strong>Type:</strong> {invoiceDetail.appointmentType}</p>
+              <h3>{STRING_CONSTANTS.LABELS.APPOINTMENT_HEADER}</h3>
+              <p><strong>{STRING_CONSTANTS.LABELS.DATE}</strong> {invoiceDetail.appointmentDate}</p>
+              <p><strong>{STRING_CONSTANTS.LABELS.APPOINTMENT_TYPE}</strong> {invoiceDetail.appointmentType}</p>
             </div>
           </div>
 
           <table className={styles.table}>
             <thead>
               <tr>
-                <th>Description</th>
-                <th>Qty</th>
-                <th>Unit Price</th>
-                <th>Total</th>
+                <th>{STRING_CONSTANTS.LABELS.DESCRIPTION_HEADER}</th>
+                <th>{STRING_CONSTANTS.LABELS.QTY_HEADER}</th>
+                <th>{STRING_CONSTANTS.LABELS.UNIT_PRICE_HEADER}</th>
+                <th>{STRING_CONSTANTS.LABELS.TOTAL_HEADER}</th>
               </tr>
             </thead>
             <tbody>
@@ -139,30 +109,30 @@ const Invoice: React.FC<InvoiceProps> = ({ invoiceId, onBack }) => {
 
           <div className={styles.totals}>
             <div className={styles.totalRow}>
-              <span>Subtotal:</span>
+              <span>{STRING_CONSTANTS.LABELS.SUBTOTAL}</span>
               <span>${invoiceDetail.subtotal.toFixed(2)}</span>
             </div>
             {invoiceDetail.discount > 0 && (
               <div className={styles.totalRow}>
-                <span>Discount:</span>
+                <span>{STRING_CONSTANTS.LABELS.DISCOUNT}</span>
                 <span>-${invoiceDetail.discount.toFixed(2)}</span>
               </div>
             )}
             {invoiceDetail.tax > 0 && (
               <div className={styles.totalRow}>
-                <span>Tax:</span>
+                <span>{STRING_CONSTANTS.LABELS.TAX}</span>
                 <span>${invoiceDetail.tax.toFixed(2)}</span>
               </div>
             )}
             <div className={styles.totalRowFinal}>
-              <span>Total:</span>
+              <span>{STRING_CONSTANTS.LABELS.TOTAL_FINAL}</span>
               <span>${invoiceDetail.total.toFixed(2)}</span>
             </div>
           </div>
 
           <div className={styles.footer}>
-            <p>Thank you for choosing DocX Medical Center</p>
-            <p>For questions, contact billing@docx.com</p>
+            <p>{STRING_CONSTANTS.LABELS.THANK_YOU_MESSAGE}</p>
+            <p>{STRING_CONSTANTS.LABELS.BILLING_CONTACT}</p>
           </div>
         </div>
       </div>
@@ -174,44 +144,44 @@ const Invoice: React.FC<InvoiceProps> = ({ invoiceId, onBack }) => {
       <div className={styles.header}>
         {onBack && (
           <button className={styles.backButton} onClick={onBack}>
-            <span className="material-icons">arrow_back</span>
-            Back
+            <span className={styles.materialIcon}>arrow_back</span>
+            {STRING_CONSTANTS.BUTTONS.BACK}
           </button>
         )}
-        <h1 className={styles.pageTitle}>Invoices</h1>
+        <h1 className={styles.pageTitle}>{STRING_CONSTANTS.LABELS.INVOICES}</h1>
         <button className={styles.newBtn}>
-          <span className="material-icons">add</span>
-          New Invoice
+          <span className={styles.materialIcon}>add</span>
+          {STRING_CONSTANTS.BUTTONS.NEW_INVOICE}
         </button>
       </div>
 
       <div className={styles.statsGrid}>
         <div className={styles.statCard}>
-          <span className="material-icons">attach_money</span>
+          <span className={styles.materialIcon}>attach_money</span>
           <div>
             <div className={styles.statValue}>${stats.totalRevenue.toLocaleString()}</div>
-            <div className={styles.statLabel}>Total Revenue</div>
+            <div className={styles.statLabel}>{STRING_CONSTANTS.LABELS.TOTAL_REVENUE}</div>
           </div>
         </div>
         <div className={styles.statCard}>
-          <span className="material-icons">pending</span>
+          <span className={styles.materialIcon}>pending</span>
           <div>
             <div className={styles.statValue}>${stats.pending.toLocaleString()}</div>
-            <div className={styles.statLabel}>Pending Payments</div>
+            <div className={styles.statLabel}>{STRING_CONSTANTS.LABELS.PENDING_PAYMENTS}</div>
           </div>
         </div>
         <div className={styles.statCard}>
-          <span className="material-icons">description</span>
+          <span className={styles.materialIcon}>description</span>
           <div>
             <div className={styles.statValue}>{stats.invoicesThisMonth}</div>
-            <div className={styles.statLabel}>Invoices This Month</div>
+            <div className={styles.statLabel}>{STRING_CONSTANTS.LABELS.INVOICES_THIS_MONTH}</div>
           </div>
         </div>
         <div className={styles.statCard}>
-          <span className="material-icons">check_circle</span>
+          <span className={styles.materialIcon}>check_circle</span>
           <div>
             <div className={styles.statValue}>{stats.paidInvoices}</div>
-            <div className={styles.statLabel}>Paid Invoices</div>
+            <div className={styles.statLabel}>{STRING_CONSTANTS.LABELS.PAID_INVOICES}</div>
           </div>
         </div>
       </div>
@@ -219,31 +189,31 @@ const Invoice: React.FC<InvoiceProps> = ({ invoiceId, onBack }) => {
       <div className={styles.content}>
         <div className={styles.filters}>
           <div className={styles.searchBox}>
-            <span className="material-icons">search</span>
-            <input type="text" placeholder="Search invoices..." />
+            <span className={styles.materialIcon}>search</span>
+            <input type="text" placeholder={STRING_CONSTANTS.PLACEHOLDERS.SEARCH_INVOICES} />
           </div>
           <select className={styles.filterSelect}>
-            <option>All Status</option>
-            <option>Paid</option>
-            <option>Pending</option>
-            <option>Overdue</option>
+            <option>{STRING_CONSTANTS.OPTIONS.ALL_STATUS}</option>
+            <option>{STRING_CONSTANTS.OPTIONS.PAID}</option>
+            <option>{STRING_CONSTANTS.OPTIONS.PENDING}</option>
+            <option>{STRING_CONSTANTS.OPTIONS.OVERDUE}</option>
           </select>
           <select className={styles.filterSelect}>
-            <option>All Time</option>
-            <option>This Month</option>
-            <option>Last Month</option>
+            <option>{STRING_CONSTANTS.OPTIONS.ALL_TIME}</option>
+            <option>{STRING_CONSTANTS.OPTIONS.THIS_MONTH}</option>
+            <option>{STRING_CONSTANTS.OPTIONS.LAST_MONTH}</option>
           </select>
         </div>
 
         <table className={styles.table}>
           <thead>
             <tr>
-              <th>Invoice ID</th>
-              <th>Patient</th>
-              <th>Date</th>
-              <th>Amount</th>
-              <th>Status</th>
-              <th>Actions</th>
+              <th>{STRING_CONSTANTS.LABELS.INVOICE_ID_HEADER}</th>
+              <th>{STRING_CONSTANTS.LABELS.PATIENT_HEADER}</th>
+              <th>{STRING_CONSTANTS.LABELS.DATE}</th>
+              <th>{STRING_CONSTANTS.LABELS.AMOUNT_HEADER}</th>
+              <th>{STRING_CONSTANTS.LABELS.STATUS_HEADER}</th>
+              <th>{STRING_CONSTANTS.LABELS.ACTIONS_HEADER}</th>
             </tr>
           </thead>
           <tbody>
@@ -261,7 +231,7 @@ const Invoice: React.FC<InvoiceProps> = ({ invoiceId, onBack }) => {
                     className={styles.viewBtn}
                     onClick={() => handleViewInvoice(inv.id)}
                   >
-                    View
+                    {STRING_CONSTANTS.BUTTONS.VIEW}
                   </button>
                 </td>
               </tr>

@@ -1,14 +1,11 @@
 import React, { useState } from 'react';
 import styles from '../styles/Settings.module.css';
+import { SettingsProps } from '../types/Settings.types';
 
 enum SettingsTab {
   PROFILE = 'profile',
   ACCOUNT = 'account',
   PREFERENCES = 'preferences',
-}
-
-interface SettingsProps {
-  onShowInvoices?: () => void;
 }
 
 const Settings: React.FC<SettingsProps> = ({ onShowInvoices }) => {
@@ -23,13 +20,13 @@ const Settings: React.FC<SettingsProps> = ({ onShowInvoices }) => {
         <h1 className={styles.pageTitle}>Settings</h1>
         <div className={styles.themeSelector}>
           <button className={styles.themeButton}>
-            <span className="material-symbols-outlined">light_mode</span>
+            <span className={styles.materialSymbolsIcon}>light_mode</span>
           </button>
           <button className={styles.themeButton}>
-            <span className="material-symbols-outlined">dark_mode</span>
+            <span className={styles.materialSymbolsIcon}>dark_mode</span>
           </button>
           <button className={`${styles.themeButton} ${styles.active}`}>
-            <span className="material-symbols-outlined">brightness_auto</span>
+            <span className={styles.materialSymbolsIcon}>brightness_auto</span>
           </button>
         </div>
       </div>
@@ -37,24 +34,24 @@ const Settings: React.FC<SettingsProps> = ({ onShowInvoices }) => {
       {/* Tabs */}
       <div className={styles.tabsContainer}>
         <button
-          className={`${styles.tab} ${activeTab === SettingsTab.PROFILE ? styles.activeTab : ''}`}
+          className={activeTab === SettingsTab.PROFILE ? `${styles.tab} ${styles.activeTab}` : styles.tab}
           onClick={() => setActiveTab(SettingsTab.PROFILE)}
         >
-          <span className="material-symbols-outlined">person</span>
+          <span className={styles.materialSymbolsIcon}>person</span>
           Profile
         </button>
         <button
-          className={`${styles.tab} ${activeTab === SettingsTab.ACCOUNT ? styles.activeTab : ''}`}
+          className={activeTab === SettingsTab.ACCOUNT ? `${styles.tab} ${styles.activeTab}` : styles.tab}
           onClick={() => setActiveTab(SettingsTab.ACCOUNT)}
         >
-          <span className="material-symbols-outlined">lock</span>
+          <span className={styles.materialSymbolsIcon}>lock</span>
           Account & Security
         </button>
         <button
-          className={`${styles.tab} ${activeTab === SettingsTab.PREFERENCES ? styles.activeTab : ''}`}
+          className={activeTab === SettingsTab.PREFERENCES ? `${styles.tab} ${styles.activeTab}` : styles.tab}
           onClick={() => setActiveTab(SettingsTab.PREFERENCES)}
         >
-          <span className="material-symbols-outlined">tune</span>
+          <span className={styles.materialSymbolsIcon}>tune</span>
           Preferences
         </button>
       </div>
@@ -66,14 +63,14 @@ const Settings: React.FC<SettingsProps> = ({ onShowInvoices }) => {
               {/* Profile Information Card */}
               <div className={styles.settingCard}>
                 <div className={styles.settingCardHeader}>
-                  <span className="material-symbols-outlined">person</span>
+                  <span className={styles.materialSymbolsIcon}>person</span>
                   <h3>Profile Information</h3>
                   {!isEditingProfile && (
                     <button 
                       className={styles.editButton}
                       onClick={() => setIsEditingProfile(true)}
                     >
-                      <span className="material-symbols-outlined">edit</span>
+                      <span className={styles.materialSymbolsIcon}>edit</span>
                       Edit
                     </button>
                   )}
@@ -84,15 +81,15 @@ const Settings: React.FC<SettingsProps> = ({ onShowInvoices }) => {
                       {/* Profile Photo Section */}
                       <div className={styles.profilePhotoSection}>
                         <div className={styles.profilePhotoLarge}>
-                          <span className="material-symbols-outlined">person</span>
+                          <span className={styles.materialSymbolsIcon}>person</span>
                         </div>
                         <div className={styles.profilePhotoActions}>
                           <button className={styles.primaryButton}>
-                            <span className="material-symbols-outlined">upload</span>
+                            <span className={styles.materialSymbolsIcon}>upload</span>
                             Change Photo
                           </button>
                           <button className={styles.secondaryButton}>
-                            <span className="material-symbols-outlined">delete</span>
+                            <span className={styles.materialSymbolsIcon}>delete</span>
                             Remove
                           </button>
                         </div>
@@ -123,7 +120,7 @@ const Settings: React.FC<SettingsProps> = ({ onShowInvoices }) => {
                           className={styles.primaryButton}
                           onClick={() => setIsEditingProfile(false)}
                         >
-                          <span className="material-symbols-outlined">save</span>
+                          <span className={styles.materialSymbolsIcon}>save</span>
                           Save Changes
                         </button>
                         <button 
@@ -139,7 +136,7 @@ const Settings: React.FC<SettingsProps> = ({ onShowInvoices }) => {
                       {/* Profile Photo in Grid */}
                       <div className={`${styles.infoRow} ${styles.photoRow}`}>
                         <div className={styles.profilePhotoMedium}>
-                          <span className="material-symbols-outlined">person</span>
+                          <span className={styles.materialSymbolsIcon}>person</span>
                         </div>
                       </div>
 
@@ -167,7 +164,7 @@ const Settings: React.FC<SettingsProps> = ({ onShowInvoices }) => {
               {/* Professional Details */}
               <div className={styles.settingCard}>
                 <div className={styles.settingCardHeader}>
-                  <span className="material-symbols-outlined">badge</span>
+                  <span className={styles.materialSymbolsIcon}>badge</span>
                   <h3>Professional Details</h3>
                 </div>
                 <div className={styles.settingCardContent}>
@@ -198,7 +195,7 @@ const Settings: React.FC<SettingsProps> = ({ onShowInvoices }) => {
               {/* Working Hours */}
               <div className={styles.settingCard}>
                 <div className={styles.settingCardHeader}>
-                  <span className="material-symbols-outlined">schedule</span>
+                  <span className={styles.materialSymbolsIcon}>schedule</span>
                   <h3>Working Hours</h3>
                 </div>
                 <div className={styles.settingCardContent}>
@@ -225,21 +222,21 @@ const Settings: React.FC<SettingsProps> = ({ onShowInvoices }) => {
               {/* Security Settings */}
               <div className={styles.settingCard}>
                 <div className={styles.settingCardHeader}>
-                  <span className="material-symbols-outlined">security</span>
+                  <span className={styles.materialSymbolsIcon}>security</span>
                   <h3>Security Settings</h3>
                 </div>
                 <div className={styles.settingCardContent}>
                   {/* Change Password Section */}
                   <div className={styles.securitySection}>
                     <div className={styles.sectionHeader}>
-                      <span className="material-symbols-outlined">password</span>
+                      <span className={styles.materialSymbolsIcon}>password</span>
                       <h4>Change Password</h4>
                       {!isChangingPassword && (
                         <button 
                           className={styles.editButtonSmall}
                           onClick={() => setIsChangingPassword(true)}
                         >
-                          <span className="material-symbols-outlined">edit</span>
+                          <span className={styles.materialSymbolsIcon}>edit</span>
                           Change
                         </button>
                       )}
@@ -265,7 +262,7 @@ const Settings: React.FC<SettingsProps> = ({ onShowInvoices }) => {
                             className={styles.primaryButton}
                             onClick={() => setIsChangingPassword(false)}
                           >
-                            <span className="material-symbols-outlined">save</span>
+                            <span className={styles.materialSymbolsIcon}>save</span>
                             Update Password
                           </button>
                           <button 
@@ -285,7 +282,7 @@ const Settings: React.FC<SettingsProps> = ({ onShowInvoices }) => {
                   <div className={styles.securitySection}>
                     <div className={styles.toggleSettingCompact}>
                       <div className={styles.toggleHeader}>
-                        <span className="material-symbols-outlined">shield</span>
+                        <span className={styles.materialSymbolsIcon}>shield</span>
                         <div className={styles.toggleTextContent}>
                           <h4>Two-Factor Authentication</h4>
                           <p>Require a verification code in addition to your password</p>
@@ -303,14 +300,14 @@ const Settings: React.FC<SettingsProps> = ({ onShowInvoices }) => {
               {/* Session Management */}
               <div className={styles.settingCard}>
                 <div className={styles.settingCardHeader}>
-                  <span className="material-symbols-outlined">devices</span>
+                  <span className={styles.materialSymbolsIcon}>devices</span>
                   <h3>Active Sessions</h3>
                 </div>
                 <div className={styles.settingCardContent}>
                   <div className={styles.sessionList}>
                     <div className={styles.sessionItem}>
                       <div className={styles.sessionInfo}>
-                        <span className="material-symbols-outlined">computer</span>
+                        <span className={styles.materialSymbolsIcon}>computer</span>
                         <div>
                           <h4>MacBook Pro</h4>
                           <p>San Francisco, CA • Last active: Now</p>
@@ -320,7 +317,7 @@ const Settings: React.FC<SettingsProps> = ({ onShowInvoices }) => {
                     </div>
                     <div className={styles.sessionItem}>
                       <div className={styles.sessionInfo}>
-                        <span className="material-symbols-outlined">phone_iphone</span>
+                        <span className={styles.materialSymbolsIcon}>phone_iphone</span>
                         <div>
                           <h4>iPhone 13</h4>
                           <p>San Francisco, CA • Last active: 2 hours ago</p>
@@ -340,7 +337,7 @@ const Settings: React.FC<SettingsProps> = ({ onShowInvoices }) => {
               {/* Notifications Section */}
               <div className={styles.settingCard}>
                 <div className={styles.settingCardHeader}>
-                  <span className="material-symbols-outlined">notifications_active</span>
+                  <span className={styles.materialSymbolsIcon}>notifications_active</span>
                   <h3>Notifications</h3>
                 </div>
                 <div className={styles.settingCardContent}>
@@ -386,7 +383,7 @@ const Settings: React.FC<SettingsProps> = ({ onShowInvoices }) => {
               {/* Language & Time Section */}
               <div className={styles.settingCard}>
                 <div className={styles.settingCardHeader}>
-                  <span className="material-symbols-outlined">language</span>
+                  <span className={styles.materialSymbolsIcon}>language</span>
                   <h3>Language & Time</h3>
                 </div>
                 <div className={styles.settingCardContent}>
@@ -430,7 +427,7 @@ const Settings: React.FC<SettingsProps> = ({ onShowInvoices }) => {
             {/* Save Button at Bottom */}
             <div className={styles.preferenceActions}>
               <button className={styles.primaryButton}>
-                <span className="material-symbols-outlined">save</span>
+                <span className={styles.materialSymbolsIcon}>save</span>
                 Save Preferences
               </button>
             </div>

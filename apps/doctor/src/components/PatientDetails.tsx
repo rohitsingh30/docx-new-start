@@ -69,18 +69,18 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({ patientId, onBack }) =>
       <div className={styles.header}>
         <div className={styles.headerLeft}>
           <button className={styles.backButton} onClick={handleBackClick}>
-            <span className="material-symbols-outlined">arrow_back</span>
+            <span className={styles.materialSymbolsIcon}>arrow_back</span>
             Back
           </button>
           <h1 className={styles.pageTitle}>Patient Details</h1>
         </div>
         <div className={styles.headerActions}>
           <button className={styles.actionButton}>
-            <span className="material-symbols-outlined">calendar_today</span>
+            <span className={styles.materialSymbolsIcon}>calendar_today</span>
             Schedule Appointment
           </button>
           <button className={styles.editButton} onClick={handleEditClick}>
-            <span className="material-symbols-outlined">edit</span>
+            <span className={styles.materialSymbolsIcon}>edit</span>
             Edit Patient
           </button>
         </div>
@@ -89,17 +89,17 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({ patientId, onBack }) =>
       {/* Tabs */}
       <div className={styles.tabsContainer}>
         <button
-          className={`${styles.tab} ${activeTab === PatientTab.OVERVIEW ? styles.activeTab : ''}`}
+          className={activeTab === PatientTab.OVERVIEW ? `${styles.tab} ${styles.activeTab}` : styles.tab}
           onClick={() => setActiveTab(PatientTab.OVERVIEW)}
         >
-          <span className="material-symbols-outlined">overview</span>
+          <span className={styles.materialSymbolsIcon}>overview</span>
           Overview
         </button>
         <button
-          className={`${styles.tab} ${activeTab === PatientTab.MEDICAL_HISTORY ? styles.activeTab : ''}`}
+          className={activeTab === PatientTab.MEDICAL_HISTORY ? `${styles.tab} ${styles.activeTab}` : styles.tab}
           onClick={() => setActiveTab(PatientTab.MEDICAL_HISTORY)}
         >
-          <span className="material-symbols-outlined">medical_information</span>
+          <span className={styles.materialSymbolsIcon}>medical_information</span>
           Medical History
         </button>
       </div>
@@ -113,33 +113,33 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({ patientId, onBack }) =>
           {/* Personal Information Card */}
           <div className={styles.overviewCard}>
             <div className={styles.overviewCardHeader}>
-              <span className="material-symbols-outlined">person</span>
+              <span className={styles.materialSymbolsIcon}>person</span>
               <h3>Personal Information</h3>
             </div>
             <div className={styles.personalInfoContent}>
               <div className={styles.profilePhotoSection}>
                 <div className={styles.profilePhoto}>
-                  <span className="material-symbols-outlined">person</span>
+                  <span className={styles.materialSymbolsIcon}>person</span>
                 </div>
               </div>
               <div className={styles.personalInfoGrid}>
                 <div className={styles.infoRow}>
                   <span className={styles.infoLabel}>
-                    <span className="material-symbols-outlined">badge</span>
+                    <span className={styles.materialSymbolsIcon}>badge</span>
                     Full Name
                   </span>
                   <span className={styles.infoValue}>{patient.firstName} {patient.lastName}</span>
                 </div>
               <div className={styles.infoRow}>
                 <span className={styles.infoLabel}>
-                  <span className="material-symbols-outlined">cake</span>
+                  <span className={styles.materialSymbolsIcon}>cake</span>
                   Date of Birth
                 </span>
                 <span className={styles.infoValue}>{formatDate(patient.dateOfBirth)} ({calculateAge(patient.dateOfBirth)} years)</span>
               </div>
               <div className={styles.infoRow}>
                 <span className={styles.infoLabel}>
-                  <span className="material-symbols-outlined">
+                  <span className={styles.materialSymbolsIcon}>
                     {patient.gender === 'Male' ? 'male' : patient.gender === 'Female' ? 'female' : 'transgender'}
                   </span>
                   Gender
@@ -148,7 +148,7 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({ patientId, onBack }) =>
               </div>
               <div className={styles.infoRow}>
                 <span className={styles.infoLabel}>
-                  <span className="material-symbols-outlined">water_drop</span>
+                  <span className={styles.materialSymbolsIcon}>water_drop</span>
                   Blood Type
                 </span>
                 <span className={`${styles.infoValue} ${styles.bloodTypeBadge}`}>{patient.bloodType}</span>
@@ -160,27 +160,27 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({ patientId, onBack }) =>
           {/* Contact Information Card */}
           <div className={styles.overviewCard}>
             <div className={styles.overviewCardHeader}>
-              <span className="material-symbols-outlined">contact_phone</span>
+              <span className={styles.materialSymbolsIcon}>contact_phone</span>
               <h3>Contact Information</h3>
             </div>
             <div className={`${styles.overviewCardContent} ${styles.threeColumnContent}`}>
               <div className={styles.infoRow}>
                 <span className={styles.infoLabel}>
-                  <span className="material-symbols-outlined">call</span>
+                  <span className={styles.materialSymbolsIcon}>call</span>
                   Phone Number
                 </span>
                 <span className={styles.infoValue}>{patient.phoneNumber}</span>
               </div>
               <div className={styles.infoRow}>
                 <span className={styles.infoLabel}>
-                  <span className="material-symbols-outlined">email</span>
+                  <span className={styles.materialSymbolsIcon}>email</span>
                   Email Address
                 </span>
                 <span className={styles.infoValue}>{patient.email}</span>
               </div>
               <div className={styles.infoRow}>
                 <span className={styles.infoLabel}>
-                  <span className="material-symbols-outlined">home</span>
+                  <span className={styles.materialSymbolsIcon}>home</span>
                   Address
                 </span>
                 <span className={styles.infoValue}>{patient.address}</span>
@@ -191,27 +191,27 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({ patientId, onBack }) =>
           {/* Emergency Contact Card */}
           <div className={styles.overviewCard}>
             <div className={styles.overviewCardHeader}>
-              <span className="material-symbols-outlined">emergency</span>
+              <span className={styles.materialSymbolsIcon}>emergency</span>
               <h3>Emergency Contact</h3>
             </div>
             <div className={`${styles.overviewCardContent} ${styles.threeColumnContent}`}>
               <div className={styles.infoRow}>
                 <span className={styles.infoLabel}>
-                  <span className="material-symbols-outlined">person</span>
+                  <span className={styles.materialSymbolsIcon}>person</span>
                   Name
                 </span>
                 <span className={styles.infoValue}>{patient.emergencyContact.name}</span>
               </div>
               <div className={styles.infoRow}>
                 <span className={styles.infoLabel}>
-                  <span className="material-symbols-outlined">family_restroom</span>
+                  <span className={styles.materialSymbolsIcon}>family_restroom</span>
                   Relationship
                 </span>
                 <span className={styles.infoValue}>{patient.emergencyContact.relationship}</span>
               </div>
               <div className={styles.infoRow}>
                 <span className={styles.infoLabel}>
-                  <span className="material-symbols-outlined">call</span>
+                  <span className={styles.materialSymbolsIcon}>call</span>
                   Phone Number
                 </span>
                 <span className={styles.infoValue}>{patient.emergencyContact.phoneNumber}</span>
@@ -229,7 +229,7 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({ patientId, onBack }) =>
               {/* Allergies */}
               <div className={styles.historyCard}>
                 <div className={styles.historyCardHeader}>
-                  <span className="material-symbols-outlined">warning</span>
+                  <span className={styles.materialSymbolsIcon}>warning</span>
                   <h3>Known Allergies</h3>
                 </div>
                 <div className={styles.historyCardContent}>
@@ -246,7 +246,7 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({ patientId, onBack }) =>
               {/* Family History */}
               <div className={styles.historyCard}>
                 <div className={styles.historyCardHeader}>
-                  <span className="material-symbols-outlined">family_restroom</span>
+                  <span className={styles.materialSymbolsIcon}>family_restroom</span>
                   <h3>Family History</h3>
                 </div>
                 <div className={styles.historyCardContent}>
@@ -258,7 +258,7 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({ patientId, onBack }) =>
               {/* Surgical History */}
               <div className={styles.historyCard}>
                 <div className={styles.historyCardHeader}>
-                  <span className="material-symbols-outlined">surgical</span>
+                  <span className={styles.materialSymbolsIcon}>surgical</span>
                   <h3>Past Surgeries</h3>
                 </div>
                 <div className={styles.historyCardContent}>
@@ -269,7 +269,7 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({ patientId, onBack }) =>
               {/* Social History */}
               <div className={styles.historyCard}>
                 <div className={styles.historyCardHeader}>
-                  <span className="material-symbols-outlined">groups</span>
+                  <span className={styles.materialSymbolsIcon}>groups</span>
                   <h3>Lifestyle & Habits</h3>
                 </div>
                 <div className={styles.historyCardContent}>
@@ -282,7 +282,7 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({ patientId, onBack }) =>
               {/* Previous Conditions */}
               <div className={styles.historyCard}>
                 <div className={styles.historyCardHeader}>
-                  <span className="material-symbols-outlined">medical_information</span>
+                  <span className={styles.materialSymbolsIcon}>medical_information</span>
                   <h3>Previous Conditions</h3>
                 </div>
                 <div className={styles.historyCardContent}>
@@ -300,10 +300,10 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({ patientId, onBack }) =>
                 onClick={() => toggleSection('currentMedications')}
               >
                 <div className={styles.cardHeaderLeft}>
-                  <span className="material-symbols-outlined">medication</span>
+                  <span className={styles.materialSymbolsIcon}>medication</span>
                   <h2>Current Medications</h2>
                 </div>
-                <span className="material-symbols-outlined">
+                <span className={styles.materialSymbolsIcon}>
                   {collapsedSections.currentMedications ? 'expand_more' : 'expand_less'}
                 </span>
               </button>
@@ -340,10 +340,10 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({ patientId, onBack }) =>
                 onClick={() => toggleSection('previousAppointments')}
               >
                 <div className={styles.cardHeaderLeft}>
-                  <span className="material-symbols-outlined">event_note</span>
+                  <span className={styles.materialSymbolsIcon}>event_note</span>
                   <h2>Previous Appointments</h2>
                 </div>
-                <span className="material-symbols-outlined">
+                <span className={styles.materialSymbolsIcon}>
                   {collapsedSections.previousAppointments ? 'expand_more' : 'expand_less'}
                 </span>
               </button>
@@ -353,21 +353,21 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({ patientId, onBack }) =>
                     <div className={styles.appointmentItem}>
                       <span className={styles.appointmentText}>Nov 1, 2024 - Routine Checkup</span>
                       <button className={styles.viewButton}>
-                        <span className="material-symbols-outlined">visibility</span>
+                        <span className={styles.materialSymbolsIcon}>visibility</span>
                         View
                       </button>
                     </div>
                     <div className={styles.appointmentItem}>
                       <span className={styles.appointmentText}>Oct 15, 2024 - Follow-up</span>
                       <button className={styles.viewButton}>
-                        <span className="material-symbols-outlined">visibility</span>
+                        <span className={styles.materialSymbolsIcon}>visibility</span>
                         View
                       </button>
                     </div>
                     <div className={styles.appointmentItem}>
                       <span className={styles.appointmentText}>Sep 20, 2024 - Blood Test Review</span>
                       <button className={styles.viewButton}>
-                        <span className="material-symbols-outlined">visibility</span>
+                        <span className={styles.materialSymbolsIcon}>visibility</span>
                         View
                       </button>
                     </div>

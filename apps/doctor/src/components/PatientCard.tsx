@@ -26,7 +26,7 @@ const PatientCard: React.FC<PatientCardProps> = ({ patient, onViewDetails }) => 
       <div className={styles.patientContent}>
         <div className={styles.patientInfo}>
           <div className={styles.avatar}>
-            <span className="material-symbols-outlined">person</span>
+            <span className={styles.materialSymbolsIcon}>person</span>
           </div>
           <div className={styles.patientDetails}>
             <h3 className={styles.patientName}>{patient.firstName} {patient.lastName}</h3>
@@ -35,17 +35,17 @@ const PatientCard: React.FC<PatientCardProps> = ({ patient, onViewDetails }) => 
 
         <div className={styles.patientTags}>
           <span className={styles.infoTag}>
-            <span className="material-symbols-outlined">cake</span>
+            <span className={styles.materialSymbolsIcon}>cake</span>
             {calculateAge(patient.dateOfBirth)} years
           </span>
           <span className={styles.infoTag}>
-            <span className="material-symbols-outlined">
+            <span className={styles.materialSymbolsIcon}>
               {patient.gender === 'Male' ? 'male' : patient.gender === 'Female' ? 'female' : 'transgender'}
             </span>
             {patient.gender}
           </span>
           <span className={styles.infoTag}>
-            <span className="material-symbols-outlined">call</span>
+            <span className={styles.materialSymbolsIcon}>call</span>
             {patient.phoneNumber}
           </span>
         </div>

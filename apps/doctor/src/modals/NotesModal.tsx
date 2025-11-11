@@ -2,13 +2,7 @@ import React, { useState } from 'react';
 import Modal from './Modal';
 import styles from '../styles/modals/NotesModal.module.css';
 import { STRING_CONSTANTS } from '../constants/stringConstants';
-
-interface NotesModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSave: (notes: string) => void;
-  currentNotes?: string;
-}
+import { NotesModalProps } from '../types/NotesModal.types';
 
 const NotesModal: React.FC<NotesModalProps> = ({ isOpen, onClose, onSave, currentNotes }) => {
   const [notes, setNotes] = useState(currentNotes || '');

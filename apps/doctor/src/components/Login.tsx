@@ -159,7 +159,7 @@ const Login: React.FC = () => {
                   type={FormFieldType.EMAIL}
                   value={email}
                   onChange={handleEmailChange}
-                  className={`${styles.input} ${errors.email ? styles.inputError : ''}`}
+                  className={errors.email ? `${styles.input} ${styles.inputError}` : styles.input}
                   placeholder={STRING_CONSTANTS.PLACEHOLDERS.ENTER_EMAIL}
                   autoComplete="email"
                   aria-invalid={!!errors.email}
@@ -184,7 +184,7 @@ const Login: React.FC = () => {
                     type={showPassword ? FormFieldType.TEXT : FormFieldType.PASSWORD}
                     value={password}
                     onChange={handlePasswordChange}
-                    className={`${styles.passwordInput} ${errors.password ? styles.inputError : ''}`}
+                    className={errors.password ? `${styles.passwordInput} ${styles.inputError}` : styles.passwordInput}
                     placeholder={STRING_CONSTANTS.PLACEHOLDERS.ENTER_PASSWORD}
                     autoComplete="current-password"
                     aria-invalid={!!errors.password}

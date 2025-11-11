@@ -11,6 +11,8 @@ export interface AppointmentListItem {
   duration: string;
   room?: string;
   avatar: string;
+  patientAge?: number;
+  patientGender?: string;
 }
 
 export interface AppointmentsProps {
@@ -20,6 +22,7 @@ export interface AppointmentsProps {
   onCancelAppointment?: (appointmentId: string) => void;
 }
 
-export type AppointmentFilterTab = 'all' | 'today' | 'upcoming' | 'completed' | 'cancelled';
-export type AppointmentSortType = 'time' | 'patientName' | 'status' | 'type';
-export type AppointmentViewMode = 'list' | 'grid';
+export enum AppointmentViewMode {
+  LIST = 'list',
+  GRID = 'grid'
+}

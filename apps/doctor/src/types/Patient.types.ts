@@ -1,5 +1,5 @@
 // Patient-related types and interfaces
-import { Gender, BloodType, SortDirection } from './enums';
+import { Gender, BloodType } from './enums';
 
 export interface Patient {
   id: string;
@@ -61,5 +61,3 @@ export interface PatientFormProps {
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   onCancel: () => void;
 }
-
-export type PatientSortField = 'firstName' | 'lastName' | 'dateOfBirth' | 'createdAt';

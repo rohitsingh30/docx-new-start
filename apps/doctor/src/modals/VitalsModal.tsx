@@ -2,20 +2,7 @@ import React, { useState } from 'react';
 import Modal from './Modal';
 import styles from '../styles/modals/VitalsModal.module.css';
 import { STRING_CONSTANTS } from '../constants/stringConstants';
-
-interface VitalsModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  onSave: (vitals: VitalsData) => void;
-  currentVitals?: VitalsData;
-}
-
-export interface VitalsData {
-  heartRate: string;
-  bloodPressure: string;
-  temperature: string;
-  weight: string;
-}
+import { VitalsModalProps, VitalsData } from '../types/VitalsModal.types';
 
 const VitalsModal: React.FC<VitalsModalProps> = ({ isOpen, onClose, onSave, currentVitals }) => {
   const [vitals, setVitals] = useState<VitalsData>(

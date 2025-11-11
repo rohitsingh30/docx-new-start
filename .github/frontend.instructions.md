@@ -101,6 +101,154 @@ HTML mock files are the source of truth. When you change the React app, you MUST
 
 ---
 
+## ABSOLUTE RULE: NO String Literals - Use Enums and Constants
+
+**NEVER use hardcoded string literals in your code. ALL fixed values must be defined in enums or constants.**
+
+### String Types and Where to Define Them:
+
+1. **Fixed/Enumerable Values → Define in `/apps/[app]/src/types/enums.ts`**
+   ```typescript
+   // ✅ CORRECT - Define enum
+   export enum Gender {
+     MALE = 'Male',
+     FEMALE = 'Female',
+     OTHER = 'Other'
+   }
+   
+   export enum AppointmentStatus {
+     SCHEDULED = 'Scheduled',
+     PENDING = 'Pending',
+     COMPLETED = 'Completed',
+     CANCELLED = 'Cancelled'
+   }
+   
+   // Then use in code:
+   const gender = Gender.MALE;
+   if (status === AppointmentStatus.COMPLETED) { ... }
+   ```
+
+2. **UI Text/Labels → Define in `/apps/[app]/src/constants/stringConstants.ts`**
+   ```typescript
+   // ✅ CORRECT - Define constant
+   export const STRING_CONSTANTS = {
+     BUTTONS: {
+       SAVE: 'Save',
+       CANCEL: 'Cancel',
+       SUBMIT: 'Submit'
+     },
+     LABELS: {
+       EMAIL: 'Email Address',
+       PASSWORD: 'Password'
+     }
+   };
+   
+   // Then use in code:
+   <button>{STRING_CONSTANTS.BUTTONS.SAVE}</button>
+   <label>{STRING_CONSTANTS.LABELS.EMAIL}</label>
+   ```
+
+### Forbidden Patterns:
+
+```typescript
+// ❌ WRONG - Hardcoded string literals
+const gender = 'Male';
+if (status === 'completed') { ... }
+<button>Save</button>
+<h1>Dashboard</h1>
+placeholder="Enter email"
+
+// ❌ WRONG - Magic strings (even for internal logic)
+if (activeTab === 'today') { ... }
+const filterType = 'all';
+type Tab = 'all' | 'today' | 'upcoming';  // NO! Use enum instead
+
+// ❌ WRONG - Union types with string literals
+type AppointmentTab = 'all' | 'today' | 'upcoming';  // Should be enum
+return <div>{user.role === 'doctor' ? 'Dr.' : 'Mr.'}</div>
+
+// ❌ WRONG - Inline text
+<span>View Details</span>
+```
+
+### Correct Patterns:
+
+```typescript
+// ✅ CORRECT - Use enums for fixed values
+const gender = Gender.MALE;
+if (status === AppointmentStatus.COMPLETED) { ... }
+
+// ✅ CORRECT - Use enums for tabs/filters/internal state values
+enum AppointmentTab {
+  ALL = 'all',
+  TODAY = 'today',
+  UPCOMING = 'upcoming'
+}
+if (activeTab === AppointmentTab.TODAY) { ... }
+const [activeTab, setActiveTab] = useState(AppointmentTab.ALL);
+
+// ✅ CORRECT - Use constants for UI text
+<button>{STRING_CONSTANTS.BUTTONS.SAVE}</button>
+<h1>{STRING_CONSTANTS.LABELS.DASHBOARD}</h1>
+<input placeholder={STRING_CONSTANTS.PLACEHOLDERS.ENTER_EMAIL} />
+
+// ✅ CORRECT - Use enums in conditionals
+return <div>{user.role === UserRole.DOCTOR ? 'Dr.' : 'Mr.'}</div>
+```
+
+### Automated Check:
+
+Before completing any component, run this check to catch violations:
+
+```bash
+# Check for string literals (should only return imports, types, CSS)
+grep -n '"' src/components/YourComponent.tsx | grep -v "import\|from\|className"
+
+# Check for single quotes (enums, imports only)
+grep -n "'" src/components/YourComponent.tsx | grep -v "import\|from\|className"
+```
+
+**ANY string literal found = VIOLATION**
+
+### Critical Rule for Type Definitions:
+
+**❌ NEVER use union types with string literals:**
+```typescript
+// ❌ WRONG
+type AppointmentTab = 'all' | 'today' | 'upcoming';
+type FilterType = 'time' | 'name' | 'status';
+```
+
+**✅ ALWAYS use enums instead:**
+```typescript
+// ✅ CORRECT
+enum AppointmentTab {
+  ALL = 'all',
+  TODAY = 'today',
+  UPCOMING = 'upcoming'
+}
+enum FilterType {
+  TIME = 'time',
+  NAME = 'name',
+  STATUS = 'status'
+}
+```
+
+### Exceptions (ONLY these are allowed):
+
+- Import/export statements: `import React from 'react'`
+- CSS className bindings: `className={styles.button}`
+- TypeScript type keywords: `type: 'string'`, `as const`
+- HTML attributes: `type="button"`, `role="button"`, `autoComplete="email"`
+- File paths in imports
+- Enum values themselves (inside enums.ts)
+- Constant values themselves (inside stringConstants.ts)
+- Comments (but avoid string examples in comments)
+
+**Everything else MUST use enums or constants!**
+
+---
+
 ## Automated Quality Checks
 
 ### Before Completing Any Component:
@@ -136,13 +284,16 @@ className={styles.container}
 
 ## Core Rules
 
-1. **Enum-first** - NO string literals (`Gender.MALE` not `'Male'`)
-2. **String constants** - All UI text in `stringConstants.ts`
-3. **CSS in styles/** - `/apps/[app]/src/styles/*.module.css`
-4. **Functional components** - Hooks only, no classes
-5. **Type everything** - No `any`, explicit types required
-6. **Mock fidelity** - Implementation must match mock structure EXACTLY
-7. **NO template literal classNames** - FORBIDDEN pattern
+1. **NO STRING LITERALS** - Define ALL strings in enums (for fixed values) or stringConstants.ts (for UI text). See "ABSOLUTE RULE: NO String Literals" section above.
+2. **Enum-first** - NO hardcoded values (`Gender.MALE` not `'Male'`, `AppointmentStatus.COMPLETED` not `'completed'`)
+3. **String constants** - All UI text in `stringConstants.ts` (buttons, labels, placeholders, messages)
+4. **CSS in styles/** - `/apps/[app]/src/styles/*.module.css` - NO color files outside this directory
+5. **Functional components** - Hooks only, no classes
+6. **Type everything** - No `any`, explicit types required
+7. **Mock fidelity** - Implementation must match mock structure EXACTLY
+8. **NO template literal classNames** - FORBIDDEN pattern (compute in variable first)
+9. **NO INLINE MOCK DATA** - NEVER define mock data inside components. ALL data must come from `dataConstants.ts`
+10. **NO INLINE INTERFACES** - NEVER define component prop interfaces inside component files. ALL types must be defined in `/types/*.types.ts` files
 
 ---
 
@@ -205,6 +356,174 @@ return <div className={cardClass}>
 
 ---
 
+## ABSOLUTE: NO Inline Mock Data
+
+**Components MUST NEVER contain inline mock data objects.**
+
+### ❌ FORBIDDEN Pattern:
+
+```tsx
+// ❌ WRONG - Mock data defined inside component
+const MyComponent = () => {
+  const report = {
+    patientName: 'John Doe',
+    age: 34,
+    vitals: { heartRate: '68 bpm' }
+  };
+  
+  return <div>{report.patientName}</div>;
+};
+```
+
+### ✅ CORRECT Pattern:
+
+```tsx
+// ✅ CORRECT - Import from dataConstants.ts
+import { MOCK_DATA } from '../constants/dataConstants';
+
+const MyComponent = ({ appointmentId }) => {
+  // Get data from centralized constants
+  const appointment = MOCK_DATA.APPOINTMENT_DETAILS[appointmentId];
+  
+  return <div>{appointment.patient.name}</div>;
+};
+```
+
+### Rationale:
+
+1. **Single Source of Truth** - All mock data centralized in `dataConstants.ts`
+2. **Reusability** - Same data across components
+3. **Maintainability** - Update once, reflected everywhere
+4. **Type Safety** - Shared interfaces ensure consistency
+5. **No Duplication** - Prevents divergent mock data versions
+
+### Where Mock Data Belongs:
+
+- **✅ Only in:** `/apps/[app]/src/constants/dataConstants.ts`
+- **❌ Never in:** Component files, hooks, utilities, contexts
+
+### Migration Steps:
+
+1. Identify inline mock data object in component
+2. Move to `MOCK_DATA` object in `dataConstants.ts`
+3. Import and reference from constants
+4. Verify types match interfaces in `types/` folder
+
+**Inline mock data = Violation. Must be refactored immediately.**
+
+---
+
+## ABSOLUTE: NO Inline Component Interfaces
+
+**Components MUST NEVER define their prop interfaces inline.**
+
+### ❌ FORBIDDEN Pattern:
+
+```tsx
+// ❌ WRONG - Interface defined inside component file
+import React from 'react';
+
+interface MyComponentProps {
+  appointmentId: string;
+  onBack: () => void;
+}
+
+const MyComponent: React.FC<MyComponentProps> = ({ appointmentId, onBack }) => {
+  return <div>...</div>;
+};
+```
+
+### ✅ CORRECT Pattern:
+
+```tsx
+// ✅ In /apps/[app]/src/types/MyComponent.types.ts
+export interface MyComponentProps {
+  appointmentId: string;
+  onBack: () => void;
+}
+
+// ✅ In component file
+import React from 'react';
+import { MyComponentProps } from '../types/MyComponent.types';
+
+const MyComponent: React.FC<MyComponentProps> = ({ appointmentId, onBack }) => {
+  return <div>...</div>;
+};
+```
+
+### Rationale:
+
+1. **Single Source of Truth** - Types centralized in `/types` folder
+2. **Reusability** - Props interfaces can be imported elsewhere
+3. **Consistency** - All types follow same pattern
+4. **Discoverability** - Easy to find all type definitions
+5. **Maintainability** - Update types in one location
+6. **Testing** - Test files can import types directly
+
+### Type File Structure:
+
+```
+/apps/[app]/src/types/
+  ├── ComponentName.types.ts     # Component-specific types and props
+  ├── enums.ts                   # All enum definitions
+  ├── Common.types.ts            # Shared/common types
+  └── ...
+```
+
+### Naming Convention:
+
+- **File name:** `ComponentName.types.ts` (matches component name)
+- **Props interface:** `ComponentNameProps`
+- **State interface:** `ComponentNameState` (if needed)
+- **Local types:** `ComponentNameData`, `ComponentNameConfig`, etc.
+
+### Migration Steps:
+
+1. Create `/apps/[app]/src/types/ComponentName.types.ts` file
+2. Move `interface ComponentNameProps` from component to types file
+3. Export the interface: `export interface ComponentNameProps { ... }`
+4. Import in component: `import { ComponentNameProps } from '../types/ComponentName.types'`
+5. Remove inline interface definition from component file
+
+### Critical Rules:
+
+- **❌ NO inline interfaces for props**
+- **❌ NO inline type aliases for props**
+- **❌ NO inline interfaces for local data structures** (define in types file)
+- **❌ NO re-exporting types/enums** - Import directly from source file
+
+### Re-Export Ban:
+
+```typescript
+// ❌ WRONG - Re-exporting enums/types
+// In Dashboard.types.ts
+import { DashboardTab } from './enums';
+export type { DashboardTab }; // NO!
+
+// ✅ CORRECT - Import directly from source
+// In component file
+import { DashboardTab } from '../types/enums';
+import { DashboardProps } from '../types/Dashboard.types';
+```
+
+**Rationale:** Re-exports create indirection, make imports unclear, and hide the true source of types. Always import from the original definition file.
+
+**Inline component interfaces = Violation. Must be refactored immediately.**
+
+### Enforcement Checks:
+
+```bash
+# Check for inline interfaces outside /types folder
+grep -rn '^interface ' src/ | grep -v 'types/'
+# Should return NOTHING (exit code 1)
+
+# Check for re-export statements
+grep -rn 'export type {' src/types/
+# Should return NOTHING (exit code 1)
+```
+
+---
+
 ## ABSOLUTE: Zero String Literals Policy
 
 **EVERY visible text string MUST come from `stringConstants.ts` - NO EXCEPTIONS**
@@ -244,11 +563,18 @@ return <div className={cardClass}>
 
 #### How to Handle Material Icons:
 
-**1. Add .materialIcon to component's CSS Module file:**
+**CRITICAL: Font Family Must Be 'Material Symbols Outlined'**
+
+The project uses Google Material Symbols Outlined font loaded in `index.html`:
+```html
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet" />
+```
+
+**1. Add .materialIcon/.materialSymbolsIcon to component's CSS Module file:**
 ```css
 /* ComponentName.module.css */
 .materialIcon {
-  font-family: 'Material Symbols Outlined';
+  font-family: 'Material Symbols Outlined';  /* MUST be this exact font name */
   font-weight: normal;
   font-style: normal;
   font-size: 24px;
@@ -262,18 +588,31 @@ return <div className={cardClass}>
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   -moz-osx-font-smoothing: grayscale;
-  font-feature-settings: 'liga';
+  font-feature-settings: 'liga';  /* CRITICAL: Enables icon ligatures */
 }
+```
+
+**❌ WRONG Font Families:**
+```css
+font-family: 'Material Icons';  /* NO - Different font, won't work */
+font-family: 'material-symbols-outlined';  /* NO - Wrong case */
 ```
 
 **2. Use in component:**
 ```tsx
 import styles from '../styles/ComponentName.module.css';
 
-<span className={styles.materialIcon}>icon_name</span>
+<span className={styles.materialIcon}>arrow_back</span>
+<span className={styles.materialIcon}>print</span>
+<span className={styles.materialIcon}>download</span>
 ```
 
-**3. Apply to ALL Material Icons in the component:**
+**3. Icon names become symbols via ligatures:**
+- Text like `arrow_back` is converted to ← icon by the font
+- Text like `print` is converted to 🖨️ icon by the font
+- This is called "ligature" rendering (`font-feature-settings: 'liga'`)
+
+**4. Apply to ALL Material Icons in the component:**
 - Logo icons
 - Navigation icons  
 - Button icons

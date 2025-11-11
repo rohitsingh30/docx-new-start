@@ -20,5 +20,3 @@ export interface UserInfo {
   initials: string;
   avatar?: string;
 }
-
-export type NavigationSection = 'main' | 'management' | 'settings';

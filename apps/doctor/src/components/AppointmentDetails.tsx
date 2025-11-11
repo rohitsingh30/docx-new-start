@@ -188,7 +188,7 @@ const AppointmentDetails: React.FC<AppointmentDetailsProps> = ({
                     className={styles.vitalEditInput}
                     value={vitalsData.heartRate}
                     onChange={(e) => handleVitalChange('heartRate', e.target.value)}
-                    placeholder="e.g., 72 bpm"
+                    placeholder={STRING_CONSTANTS.PLACEHOLDERS.HEART_RATE}
                   />
                 </div>
                 <div className={styles.vitalEditItem}>
@@ -201,7 +201,7 @@ const AppointmentDetails: React.FC<AppointmentDetailsProps> = ({
                     className={styles.vitalEditInput}
                     value={vitalsData.bloodPressure}
                     onChange={(e) => handleVitalChange('bloodPressure', e.target.value)}
-                    placeholder="e.g., 120/80 mmHg"
+                    placeholder={STRING_CONSTANTS.PLACEHOLDERS.BLOOD_PRESSURE}
                   />
                 </div>
                 <div className={styles.vitalEditItem}>
@@ -214,7 +214,7 @@ const AppointmentDetails: React.FC<AppointmentDetailsProps> = ({
                     className={styles.vitalEditInput}
                     value={vitalsData.temperature}
                     onChange={(e) => handleVitalChange('temperature', e.target.value)}
-                    placeholder="e.g., 98.6°F"
+                    placeholder={STRING_CONSTANTS.PLACEHOLDERS.TEMPERATURE}
                   />
                 </div>
                 <div className={styles.vitalEditItem}>
@@ -227,7 +227,7 @@ const AppointmentDetails: React.FC<AppointmentDetailsProps> = ({
                     className={styles.vitalEditInput}
                     value={vitalsData.weight}
                     onChange={(e) => handleVitalChange('weight', e.target.value)}
-                    placeholder="e.g., 70 kg"
+                    placeholder={STRING_CONSTANTS.PLACEHOLDERS.WEIGHT}
                   />
                 </div>
               </div>
@@ -493,14 +493,14 @@ const AppointmentDetails: React.FC<AppointmentDetailsProps> = ({
       {/* Tabs Navigation */}
       <div className={styles.tabsContainer}>
         <button
-          className={`${styles.tab} ${activeTab === AppointmentTab.OVERVIEW ? styles.tabActive : ''}`}
+          className={activeTab === AppointmentTab.OVERVIEW ? `${styles.tab} ${styles.tabActive}` : styles.tab}
           onClick={() => setActiveTab(AppointmentTab.OVERVIEW)}
         >
           <span className={`${styles.materialIcon} ${styles.tabIcon}`}>dashboard</span>
           Overview
         </button>
         <button
-          className={`${styles.tab} ${activeTab === AppointmentTab.MEDICAL_HISTORY ? styles.tabActive : ''}`}
+          className={activeTab === AppointmentTab.MEDICAL_HISTORY ? `${styles.tab} ${styles.tabActive}` : styles.tab}
           onClick={() => setActiveTab(AppointmentTab.MEDICAL_HISTORY)}
         >
           <span className={`${styles.materialIcon} ${styles.tabIcon}`}>medical_information</span>

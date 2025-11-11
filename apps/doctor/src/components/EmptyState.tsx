@@ -1,13 +1,6 @@
 import React, { memo } from 'react';
 import styles from '../styles/EmptyState.module.css';
-
-interface EmptyStateProps {
-  title: string;
-  message: string;
-  actionText?: string;
-  onAction?: () => void;
-  icon?: string;
-}
+import { EmptyStateProps } from '../types/EmptyState.types';
 
 const EmptyState: React.FC<EmptyStateProps> = memo(({ 
   title, 

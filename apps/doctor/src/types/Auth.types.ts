@@ -38,3 +38,10 @@ export interface AuthError {
   message: string;
   field?: string;
 }
+
+/**
+ * AuthProvider component props
+ */
+export interface AuthProviderProps {
+  children: React.ReactNode;
+}
