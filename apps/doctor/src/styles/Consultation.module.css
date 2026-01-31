@@ -1,21 +1,22 @@
 /* Consultation Session Styles */
 
 .container {
-  min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: var(--color-background, #f7fafc);
+  gap: 1.5rem;
+  flex: 1;
+  min-width: 0;
 }
 
 /* Header */
 .header {
-  background: white;
-  border-bottom: 1px solid var(--color-border, #e2e8f0);
-  padding: 1.5rem 2rem;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  z-index: 10;
+  align-items: flex-start;
+  padding: 0;
+  background: transparent;
+  border-bottom: none;
+  z-index: 1;
 }
 
 .headerLeft {
@@ -68,6 +69,7 @@
 .headerActions {
   display: flex;
   gap: 0.75rem;
+  flex-wrap: wrap;
 }
 
 .completeButton {
@@ -98,16 +100,32 @@
 }
 
 /* Tab Navigation */
-.tabContainer {
+.tabsContainer {
   display: flex;
   gap: 0.5rem;
   padding: 0 2rem;
   background: white;
   border-bottom: 1px solid var(--color-border, #e2e8f0);
-  position: sticky;
-  top: 0;
-  z-index: 9;
+  z-index: 100;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+  margin: 0 -2rem 1.5rem -2rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  flex-shrink: 0;
+}
+
+.tabsContainer::-webkit-scrollbar {
+  height: 4px;
+}
+
+.tabsContainer::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tabsContainer::-webkit-scrollbar-thumb {
+  background: var(--color-border, #e2e8f0);
+  border-radius: 2px;
 }
 
 .tab {
@@ -125,16 +143,17 @@
   transition: all 0.2s;
   font-family: inherit;
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .tab:hover {
-  color: var(--color-primary, #2A64F5);
+  color: var(--color-primary, #3182ce);
   background: var(--color-gray-100, #f7fafc);
 }
 
 .tabActive {
-  color: var(--color-primary, #2A64F5);
-  border-bottom-color: var(--color-primary, #2A64F5);
+  color: var(--color-primary, #3182ce);
+  border-bottom-color: var(--color-primary, #3182ce);
 }
 
 .tabIcon {
@@ -144,7 +163,7 @@
 /* Content */
 .content {
   flex: 1;
-  padding: 2rem;
+  padding: 0;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 1.5rem;
@@ -732,12 +751,17 @@
 }
 
 .historyCardsGrid {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  display: flex;
   gap: 0.75rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  padding-bottom: 0.25rem;
 }
 
 .historyCardsGrid .card {
+  flex: 0 0 220px;
+  min-width: 220px;
   padding: 0.875rem;
   background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
   border: 1px solid #e8eaed;
@@ -1049,7 +1073,7 @@
   .content {
     grid-template-columns: 1fr;
     gap: 1.5rem;
-    padding: 1.5rem;
+    padding: 0;
   }
 
   .leftColumn,
@@ -1075,16 +1099,20 @@
 
 @media (max-width: 1024px) {
   .content {
-    padding: 1.5rem;
+    padding: 0;
   }
 
-  .tabContainer {
+  .tabsContainer {
+    margin: 0 -1.5rem 1.5rem -1.5rem;
+  }
+
+  .tabsContainer {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
   }
 
-  .tabContainer::-webkit-scrollbar {
+  .tabsContainer::-webkit-scrollbar {
     display: none;
   }
 
@@ -1095,7 +1123,7 @@
 
 @media (max-width: 768px) {
   .header {
-    padding: 1rem;
+    padding: 0;
   }
 
   .headerLeft {
@@ -1124,9 +1152,10 @@
     justify-content: center;
   }
 
-  .tabContainer {
+  .tabsContainer {
     padding: 0 1rem;
     gap: 0.25rem;
+    margin: 0 -1rem 1.25rem -1rem;
   }
 
   .tab {
@@ -1140,7 +1169,7 @@
   }
 
   .content {
-    padding: 1rem;
+    padding: 0;
     gap: 1rem;
   }
 
@@ -1222,7 +1251,7 @@
     font-size: 0.75rem;
   }
 
-  .tabContainer {
+  .tabsContainer {
     padding: 0 0.5rem;
   }
 
@@ -1288,14 +1317,7 @@
     grid-template-columns: 1fr;
     gap: 0.625rem;
   }
-
-  .historyCardsGrid {
-    grid-template-columns: repeat(2, 1fr);
-  }
 }
 
 @media (max-width: 768px) {
-  .historyCardsGrid {
-    grid-template-columns: 1fr;
-  }
 }

@@ -2,19 +2,30 @@ import React, { useState, useMemo } from 'react';
 import styles from '../styles/PatientDetails.module.css';
 import { PatientDetailsProps } from '../types/PatientDetails.types';
 import { MOCK_DATA } from '../constants/dataConstants';
+import { STRING_CONSTANTS } from '../constants/stringConstants';
+import { PatientTab, Gender } from '../types/enums';
+import { 
+  InfoList, 
+  PatientHistoryGrid, 
+  SimpleTabList,
+  CollapsibleCardWithIcon,
+  MedicationList,
+  AppointmentList,
+  PageHeader
+} from './shared';
 
-enum PatientTab {
-  OVERVIEW = 'overview',
-  MEDICAL_HISTORY = 'medical-history',
-}
-
-const PatientDetails: React.FC<PatientDetailsProps> = ({ patientId, onBack }) => {
+const PatientDetails: React.FC<PatientDetailsProps> = ({ 
+  patientId, 
+  onBack,
+  onScheduleAppointment,
+  onEditPatient,
+}) => {
   // Get patient from mock data
   const patient = useMemo(() => {
     return MOCK_DATA.PATIENTS.find(p => p.id === patientId) || MOCK_DATA.PATIENTS[0];
   }, [patientId]);
 
-  const [_isEditing, setIsEditing] = useState(false);
+  const [, setIsEditing] = useState(false);
   const [activeTab, setActiveTab] = useState<PatientTab>(PatientTab.OVERVIEW);
   const [collapsedSections, setCollapsedSections] = useState({
     currentMedications: false,
@@ -51,7 +62,15 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({ patientId, onBack }) =>
   const handleEditClick = () => {
     setIsEditing(true);
     console.log('Edit patient:', patient.id);
-    // TODO: Implement edit functionality
+    if (onEditPatient) {
+      onEditPatient();
+    }
+  };
+
+  const handleScheduleAppointment = () => {
+    if (onScheduleAppointment) {
+      onScheduleAppointment();
+    }
   };
 
   const formatDate = (dateString: string): string => {
@@ -66,43 +85,35 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({ patientId, onBack }) =>
   return (
     <div className={styles.patientDetails}>
       {/* Header */}
-      <div className={styles.header}>
-        <div className={styles.headerLeft}>
-          <button className={styles.backButton} onClick={handleBackClick}>
-            <span className={styles.materialSymbolsIcon}>arrow_back</span>
-            Back
-          </button>
-          <h1 className={styles.pageTitle}>Patient Details</h1>
-        </div>
-        <div className={styles.headerActions}>
-          <button className={styles.actionButton}>
-            <span className={styles.materialSymbolsIcon}>calendar_today</span>
-            Schedule Appointment
-          </button>
-          <button className={styles.editButton} onClick={handleEditClick}>
-            <span className={styles.materialSymbolsIcon}>edit</span>
-            Edit Patient
-          </button>
-        </div>
-      </div>
+      <PageHeader 
+        title={`${patient.firstName} ${patient.lastName}`}
+        subtitle={`${calculateAge(patient.dateOfBirth)}y, ${patient.gender} • ${patient.bloodType}`}
+        onBack={handleBackClick}
+        rightContent={
+          <div className={styles.headerActions}>
+            <button className={styles.actionButton} onClick={handleScheduleAppointment} type="button">
+              <span className={styles.materialSymbolsIcon}>calendar_today</span>
+              {STRING_CONSTANTS.BUTTONS.SCHEDULE_APPOINTMENT}
+            </button>
+            <button className={styles.editButton} onClick={handleEditClick}>
+              <span className={styles.materialSymbolsIcon}>edit</span>
+              {STRING_CONSTANTS.BUTTONS.EDIT_PATIENT}
+            </button>
+          </div>
+        }
+        styles={styles}
+      />
 
       {/* Tabs */}
-      <div className={styles.tabsContainer}>
-        <button
-          className={activeTab === PatientTab.OVERVIEW ? `${styles.tab} ${styles.activeTab}` : styles.tab}
-          onClick={() => setActiveTab(PatientTab.OVERVIEW)}
-        >
-          <span className={styles.materialSymbolsIcon}>overview</span>
-          Overview
-        </button>
-        <button
-          className={activeTab === PatientTab.MEDICAL_HISTORY ? `${styles.tab} ${styles.activeTab}` : styles.tab}
-          onClick={() => setActiveTab(PatientTab.MEDICAL_HISTORY)}
-        >
-          <span className={styles.materialSymbolsIcon}>medical_information</span>
-          Medical History
-        </button>
-      </div>
+      <SimpleTabList 
+        tabs={[
+          { id: PatientTab.OVERVIEW, icon: 'overview', label: STRING_CONSTANTS.TABS.OVERVIEW },
+          { id: PatientTab.MEDICAL_HISTORY, icon: 'medical_information', label: STRING_CONSTANTS.TABS.MEDICAL_HISTORY },
+        ]}
+        activeTab={activeTab}
+        onTabChange={(tab) => setActiveTab(tab as PatientTab)}
+        styles={styles}
+      />
 
       {/* Content Grid */}
       <div className={styles.contentGrid}>
@@ -114,7 +125,7 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({ patientId, onBack }) =>
           <div className={styles.overviewCard}>
             <div className={styles.overviewCardHeader}>
               <span className={styles.materialSymbolsIcon}>person</span>
-              <h3>Personal Information</h3>
+              <h3>{STRING_CONSTANTS.LABELS.PERSONAL_INFORMATION}</h3>
             </div>
             <div className={styles.personalInfoContent}>
               <div className={styles.profilePhotoSection}>
@@ -126,30 +137,30 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({ patientId, onBack }) =>
                 <div className={styles.infoRow}>
                   <span className={styles.infoLabel}>
                     <span className={styles.materialSymbolsIcon}>badge</span>
-                    Full Name
+                    {STRING_CONSTANTS.PATIENT_LABELS.FULL_NAME}
                   </span>
                   <span className={styles.infoValue}>{patient.firstName} {patient.lastName}</span>
                 </div>
               <div className={styles.infoRow}>
                 <span className={styles.infoLabel}>
                   <span className={styles.materialSymbolsIcon}>cake</span>
-                  Date of Birth
+                  {STRING_CONSTANTS.PATIENT_LABELS.DATE_OF_BIRTH}
                 </span>
-                <span className={styles.infoValue}>{formatDate(patient.dateOfBirth)} ({calculateAge(patient.dateOfBirth)} years)</span>
+                <span className={styles.infoValue}>{formatDate(patient.dateOfBirth)} ({calculateAge(patient.dateOfBirth)} {STRING_CONSTANTS.PATIENT_LABELS.YEARS})</span>
               </div>
               <div className={styles.infoRow}>
                 <span className={styles.infoLabel}>
                   <span className={styles.materialSymbolsIcon}>
-                    {patient.gender === 'Male' ? 'male' : patient.gender === 'Female' ? 'female' : 'transgender'}
+                    {patient.gender === Gender.MALE ? 'male' : patient.gender === Gender.FEMALE ? 'female' : 'transgender'}
                   </span>
-                  Gender
+                  {STRING_CONSTANTS.PATIENT_LABELS.GENDER}
                 </span>
                 <span className={styles.infoValue}>{patient.gender}</span>
               </div>
               <div className={styles.infoRow}>
                 <span className={styles.infoLabel}>
                   <span className={styles.materialSymbolsIcon}>water_drop</span>
-                  Blood Type
+                  {STRING_CONSTANTS.PATIENT_LABELS.BLOOD_TYPE}
                 </span>
                 <span className={`${styles.infoValue} ${styles.bloodTypeBadge}`}>{patient.bloodType}</span>
               </div>
@@ -161,30 +172,17 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({ patientId, onBack }) =>
           <div className={styles.overviewCard}>
             <div className={styles.overviewCardHeader}>
               <span className={styles.materialSymbolsIcon}>contact_phone</span>
-              <h3>Contact Information</h3>
+              <h3>{STRING_CONSTANTS.LABELS.CONTACT_INFORMATION}</h3>
             </div>
             <div className={`${styles.overviewCardContent} ${styles.threeColumnContent}`}>
-              <div className={styles.infoRow}>
-                <span className={styles.infoLabel}>
-                  <span className={styles.materialSymbolsIcon}>call</span>
-                  Phone Number
-                </span>
-                <span className={styles.infoValue}>{patient.phoneNumber}</span>
-              </div>
-              <div className={styles.infoRow}>
-                <span className={styles.infoLabel}>
-                  <span className={styles.materialSymbolsIcon}>email</span>
-                  Email Address
-                </span>
-                <span className={styles.infoValue}>{patient.email}</span>
-              </div>
-              <div className={styles.infoRow}>
-                <span className={styles.infoLabel}>
-                  <span className={styles.materialSymbolsIcon}>home</span>
-                  Address
-                </span>
-                <span className={styles.infoValue}>{patient.address}</span>
-              </div>
+              <InfoList 
+                items={[
+                  { icon: 'call', label: STRING_CONSTANTS.PATIENT_LABELS.PHONE_NUMBER, value: patient.phoneNumber },
+                  { icon: 'email', label: STRING_CONSTANTS.PATIENT_LABELS.EMAIL_ADDRESS, value: patient.email },
+                  { icon: 'home', label: STRING_CONSTANTS.PATIENT_LABELS.ADDRESS, value: patient.address },
+                ]}
+                styles={styles}
+              />
             </div>
           </div>
 
@@ -192,30 +190,17 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({ patientId, onBack }) =>
           <div className={styles.overviewCard}>
             <div className={styles.overviewCardHeader}>
               <span className={styles.materialSymbolsIcon}>emergency</span>
-              <h3>Emergency Contact</h3>
+              <h3>{STRING_CONSTANTS.LABELS.EMERGENCY_CONTACT_LABEL}</h3>
             </div>
             <div className={`${styles.overviewCardContent} ${styles.threeColumnContent}`}>
-              <div className={styles.infoRow}>
-                <span className={styles.infoLabel}>
-                  <span className={styles.materialSymbolsIcon}>person</span>
-                  Name
-                </span>
-                <span className={styles.infoValue}>{patient.emergencyContact.name}</span>
-              </div>
-              <div className={styles.infoRow}>
-                <span className={styles.infoLabel}>
-                  <span className={styles.materialSymbolsIcon}>family_restroom</span>
-                  Relationship
-                </span>
-                <span className={styles.infoValue}>{patient.emergencyContact.relationship}</span>
-              </div>
-              <div className={styles.infoRow}>
-                <span className={styles.infoLabel}>
-                  <span className={styles.materialSymbolsIcon}>call</span>
-                  Phone Number
-                </span>
-                <span className={styles.infoValue}>{patient.emergencyContact.phoneNumber}</span>
-              </div>
+              <InfoList 
+                items={[
+                  { icon: 'person', label: STRING_CONSTANTS.PATIENT_LABELS.NAME, value: patient.emergencyContact.name },
+                  { icon: 'family_restroom', label: STRING_CONSTANTS.PATIENT_LABELS.RELATIONSHIP, value: patient.emergencyContact.relationship },
+                  { icon: 'call', label: STRING_CONSTANTS.PATIENT_LABELS.PHONE_NUMBER, value: patient.emergencyContact.phoneNumber },
+                ]}
+                styles={styles}
+              />
             </div>
           </div>
         </div>
@@ -224,157 +209,53 @@ const PatientDetails: React.FC<PatientDetailsProps> = ({ patientId, onBack }) =>
 
         {activeTab === PatientTab.MEDICAL_HISTORY && (
           <>
-            {/* History Cards Grid */}
-            <div className={styles.historyCardsGrid}>
-              {/* Allergies */}
-              <div className={styles.historyCard}>
-                <div className={styles.historyCardHeader}>
-                  <span className={styles.materialSymbolsIcon}>warning</span>
-                  <h3>Known Allergies</h3>
-                </div>
-                <div className={styles.historyCardContent}>
-                  {patient.allergies.length > 0 ? (
-                    patient.allergies.map((allergy, index) => (
-                      <div key={index} className={styles.historyItem}>{allergy}</div>
-                    ))
-                  ) : (
-                    <div className={styles.historyItem}>No known allergies</div>
-                  )}
-                </div>
-              </div>
-
-              {/* Family History */}
-              <div className={styles.historyCard}>
-                <div className={styles.historyCardHeader}>
-                  <span className={styles.materialSymbolsIcon}>family_restroom</span>
-                  <h3>Family History</h3>
-                </div>
-                <div className={styles.historyCardContent}>
-                  <div className={styles.historyItem}>Father: Heart Disease</div>
-                  <div className={styles.historyItem}>Mother: Diabetes</div>
-                </div>
-              </div>
-
-              {/* Surgical History */}
-              <div className={styles.historyCard}>
-                <div className={styles.historyCardHeader}>
-                  <span className={styles.materialSymbolsIcon}>surgical</span>
-                  <h3>Past Surgeries</h3>
-                </div>
-                <div className={styles.historyCardContent}>
-                  <div className={styles.historyItem}>Appendectomy (2015)</div>
-                </div>
-              </div>
-
-              {/* Social History */}
-              <div className={styles.historyCard}>
-                <div className={styles.historyCardHeader}>
-                  <span className={styles.materialSymbolsIcon}>groups</span>
-                  <h3>Lifestyle & Habits</h3>
-                </div>
-                <div className={styles.historyCardContent}>
-                  <div className={styles.historyItem}>Non-smoker</div>
-                  <div className={styles.historyItem}>Occasional alcohol use</div>
-                  <div className={styles.historyItem}>Regular exercise (3x/week)</div>
-                </div>
-              </div>
-
-              {/* Previous Conditions */}
-              <div className={styles.historyCard}>
-                <div className={styles.historyCardHeader}>
-                  <span className={styles.materialSymbolsIcon}>medical_information</span>
-                  <h3>Previous Conditions</h3>
-                </div>
-                <div className={styles.historyCardContent}>
-                  <div className={styles.historyItem}>Hypertension (Diagnosed 2020)</div>
-                  <div className={styles.historyItem}>Type 2 Diabetes (Diagnosed 2018)</div>
-                  <div className={styles.historyItem}>Seasonal Allergies</div>
-                </div>
-              </div>
-            </div>
+            {/* History Cards Grid - Single function call */}
+            <PatientHistoryGrid 
+              data={{
+                allergies: patient.allergies,
+                familyHistory: MOCK_DATA.DEFAULT_PATIENT_HISTORY.familyHistory as unknown as string[],
+                surgeries: MOCK_DATA.DEFAULT_PATIENT_HISTORY.surgeries as unknown as string[],
+                lifestyle: MOCK_DATA.DEFAULT_PATIENT_HISTORY.lifestyle as unknown as string[],
+                conditions: MOCK_DATA.DEFAULT_PATIENT_HISTORY.conditions as unknown as string[],
+              }}
+              styles={styles}
+              variant="historyCard"
+            />
 
             {/* Current Medications */}
-            <div className={styles.collapsibleCard}>
-              <button 
-                className={styles.cardHeaderButton}
-                onClick={() => toggleSection('currentMedications')}
-              >
-                <div className={styles.cardHeaderLeft}>
-                  <span className={styles.materialSymbolsIcon}>medication</span>
-                  <h2>Current Medications</h2>
-                </div>
-                <span className={styles.materialSymbolsIcon}>
-                  {collapsedSections.currentMedications ? 'expand_more' : 'expand_less'}
-                </span>
-              </button>
-              {!collapsedSections.currentMedications && (
-                <div className={styles.cardContent}>
-                  <div className={styles.medicationsList}>
-                    {patient.medications.length > 0 ? (
-                      patient.medications.map((medication, index) => (
-                        <div key={index} className={styles.medItem}>
-                          <div className={styles.medItemContent}>
-                            <div className={styles.medItemName}>{medication}</div>
-                            <div className={styles.medItemDetails}>
-                              Dosage and frequency details would go here
-                            </div>
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <div className={styles.medItem}>
-                        <div className={styles.medItemContent}>
-                          <div className={styles.medItemName}>No current medications</div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
+            <CollapsibleCardWithIcon 
+              icon="medication"
+              title={STRING_CONSTANTS.PATIENT_LABELS.CURRENT_MEDICATIONS}
+              isCollapsed={collapsedSections.currentMedications}
+              onToggle={() => toggleSection('currentMedications')}
+              styles={styles}
+            >
+              <MedicationList 
+                medications={patient.medications.length > 0 
+                  ? patient.medications.map(med => ({ name: med, details: STRING_CONSTANTS.PATIENT_LABELS.DOSAGE_DETAILS }))
+                  : [{ name: STRING_CONSTANTS.PATIENT_LABELS.NO_CURRENT_MEDICATIONS, details: '' }]
+                }
+                styles={styles}
+              />
+            </CollapsibleCardWithIcon>
 
             {/* Previous Appointments */}
-            <div className={styles.collapsibleCard}>
-              <button 
-                className={styles.cardHeaderButton}
-                onClick={() => toggleSection('previousAppointments')}
-              >
-                <div className={styles.cardHeaderLeft}>
-                  <span className={styles.materialSymbolsIcon}>event_note</span>
-                  <h2>Previous Appointments</h2>
-                </div>
-                <span className={styles.materialSymbolsIcon}>
-                  {collapsedSections.previousAppointments ? 'expand_more' : 'expand_less'}
-                </span>
-              </button>
-              {!collapsedSections.previousAppointments && (
-                <div className={styles.cardContent}>
-                  <div className={styles.appointmentsList}>
-                    <div className={styles.appointmentItem}>
-                      <span className={styles.appointmentText}>Nov 1, 2024 - Routine Checkup</span>
-                      <button className={styles.viewButton}>
-                        <span className={styles.materialSymbolsIcon}>visibility</span>
-                        View
-                      </button>
-                    </div>
-                    <div className={styles.appointmentItem}>
-                      <span className={styles.appointmentText}>Oct 15, 2024 - Follow-up</span>
-                      <button className={styles.viewButton}>
-                        <span className={styles.materialSymbolsIcon}>visibility</span>
-                        View
-                      </button>
-                    </div>
-                    <div className={styles.appointmentItem}>
-                      <span className={styles.appointmentText}>Sep 20, 2024 - Blood Test Review</span>
-                      <button className={styles.viewButton}>
-                        <span className={styles.materialSymbolsIcon}>visibility</span>
-                        View
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              )}
-            </div>
+            <CollapsibleCardWithIcon 
+              icon="event_note"
+              title={STRING_CONSTANTS.PATIENT_LABELS.PREVIOUS_APPOINTMENTS}
+              isCollapsed={collapsedSections.previousAppointments}
+              onToggle={() => toggleSection('previousAppointments')}
+              styles={styles}
+            >
+              <AppointmentList 
+                appointments={[
+                  { id: '1', date: 'Nov 1, 2024', type: 'Routine Checkup' },
+                  { id: '2', date: 'Oct 15, 2024', type: 'Follow-up' },
+                  { id: '3', date: 'Sep 20, 2024', type: 'Blood Test Review' },
+                ]}
+                styles={styles}
+              />
+            </CollapsibleCardWithIcon>
           </>
         )}
       </div>

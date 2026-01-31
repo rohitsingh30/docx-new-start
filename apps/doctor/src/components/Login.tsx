@@ -92,6 +92,22 @@ const Login: React.FC = () => {
   };
 
   /**
+   * Handle dev login button click
+   */
+  const handleDevLogin = async () => {
+    // Clear previous errors
+    setErrors({});
+    
+    try {
+      await devLogin();
+    } catch (error) {
+      setErrors({
+        general: error instanceof Error ? error.message : ERROR_MESSAGES.LOGIN_FAILED,
+      });
+    }
+  };
+
+  /**
    * Handle input change and clear errors
    */
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -245,7 +261,7 @@ const Login: React.FC = () => {
               {isDevelopment && (
                 <button
                   type="button"
-                  onClick={devLogin}
+                  onClick={handleDevLogin}
                   className={styles.devBypassButton}
                   disabled={isLoading}
                   title={STRING_CONSTANTS.TITLES.DEV_QUICK_LOGIN}
@@ -259,11 +275,11 @@ const Login: React.FC = () => {
             <div className={styles.footer}>
               <p className={styles.copyright}>{STRING_CONSTANTS.LABELS.COPYRIGHT}</p>
               <div className={styles.footerLinks}>
-                <a href="#" className={styles.footerLink}>{STRING_CONSTANTS.LABELS.HELP}</a>
+                <button type="button" className={styles.footerLink}>{STRING_CONSTANTS.LABELS.HELP}</button>
                 <span className={styles.footerSeparator}>·</span>
-                <a href="#" className={styles.footerLink}>{STRING_CONSTANTS.LABELS.PRIVACY}</a>
+                <button type="button" className={styles.footerLink}>{STRING_CONSTANTS.LABELS.PRIVACY}</button>
                 <span className={styles.footerSeparator}>·</span>
-                <a href="#" className={styles.footerLink}>{STRING_CONSTANTS.LABELS.TERMS}</a>
+                <button type="button" className={styles.footerLink}>{STRING_CONSTANTS.LABELS.TERMS}</button>
               </div>
             </div>
 

@@ -28,7 +28,7 @@ const VitalsModal: React.FC<VitalsModalProps> = ({ isOpen, onClose, onSave, curr
       <form onSubmit={handleSubmit} className={styles.form}>
         <div className={styles.formGroup}>
           <label className={styles.label}>
-            <span className="material-symbols-outlined">favorite</span>
+            <span className={styles.materialIcon}>favorite</span>
             {STRING_CONSTANTS.LABELS.HEART_RATE}
           </label>
           <input
@@ -36,14 +36,14 @@ const VitalsModal: React.FC<VitalsModalProps> = ({ isOpen, onClose, onSave, curr
             className={styles.input}
             value={vitals.heartRate}
             onChange={(e) => handleChange('heartRate', e.target.value)}
-            placeholder="e.g., 72 bpm"
+            placeholder={STRING_CONSTANTS.PLACEHOLDERS.HEART_RATE}
             required
           />
         </div>
 
         <div className={styles.formGroup}>
           <label className={styles.label}>
-            <span className="material-symbols-outlined">monitor_heart</span>
+            <span className={styles.materialIcon}>monitor_heart</span>
             {STRING_CONSTANTS.LABELS.BLOOD_PRESSURE}
           </label>
           <input
@@ -51,14 +51,14 @@ const VitalsModal: React.FC<VitalsModalProps> = ({ isOpen, onClose, onSave, curr
             className={styles.input}
             value={vitals.bloodPressure}
             onChange={(e) => handleChange('bloodPressure', e.target.value)}
-            placeholder="e.g., 120/80 mmHg"
+            placeholder={STRING_CONSTANTS.PLACEHOLDERS.BLOOD_PRESSURE}
             required
           />
         </div>
 
         <div className={styles.formGroup}>
           <label className={styles.label}>
-            <span className="material-symbols-outlined">thermostat</span>
+            <span className={styles.materialIcon}>thermostat</span>
             {STRING_CONSTANTS.LABELS.TEMPERATURE}
           </label>
           <input
@@ -66,14 +66,14 @@ const VitalsModal: React.FC<VitalsModalProps> = ({ isOpen, onClose, onSave, curr
             className={styles.input}
             value={vitals.temperature}
             onChange={(e) => handleChange('temperature', e.target.value)}
-            placeholder="e.g., 98.6°F"
+            placeholder={STRING_CONSTANTS.PLACEHOLDERS.TEMPERATURE}
             required
           />
         </div>
 
         <div className={styles.formGroup}>
           <label className={styles.label}>
-            <span className="material-symbols-outlined">scale</span>
+            <span className={styles.materialIcon}>scale</span>
             {STRING_CONSTANTS.LABELS.WEIGHT}
           </label>
           <input
@@ -81,7 +81,7 @@ const VitalsModal: React.FC<VitalsModalProps> = ({ isOpen, onClose, onSave, curr
             className={styles.input}
             value={vitals.weight}
             onChange={(e) => handleChange('weight', e.target.value)}
-            placeholder="e.g., 150 lbs"
+            placeholder={STRING_CONSTANTS.PLACEHOLDERS.WEIGHT}
             required
           />
         </div>

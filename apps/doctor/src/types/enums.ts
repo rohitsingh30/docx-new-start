@@ -10,6 +10,15 @@ export enum Gender {
 }
 
 /**
+ * Gender values from backend
+ */
+export enum ApiGender {
+  MALE = 'MALE',
+  FEMALE = 'FEMALE',
+  OTHER = 'OTHER'
+}
+
+/**
  * Blood type options
  */
 export enum BloodType {
@@ -24,6 +33,20 @@ export enum BloodType {
 }
 
 /**
+ * Blood type values from backend
+ */
+export enum ApiBloodType {
+  A_POSITIVE = 'A_POSITIVE',
+  A_NEGATIVE = 'A_NEGATIVE',
+  B_POSITIVE = 'B_POSITIVE',
+  B_NEGATIVE = 'B_NEGATIVE',
+  AB_POSITIVE = 'AB_POSITIVE',
+  AB_NEGATIVE = 'AB_NEGATIVE',
+  O_POSITIVE = 'O_POSITIVE',
+  O_NEGATIVE = 'O_NEGATIVE'
+}
+
+/**
  * Appointment status
  */
 export enum AppointmentStatus {
@@ -32,6 +55,18 @@ export enum AppointmentStatus {
   COMPLETED = 'Completed',
   CANCELLED = 'Cancelled',
   NO_SHOW = 'No-Show'
+}
+
+/**
+ * Appointment status values from backend
+ */
+export enum ApiAppointmentStatus {
+  SCHEDULED = 'SCHEDULED',
+  CONFIRMED = 'CONFIRMED',
+  IN_PROGRESS = 'IN_PROGRESS',
+  COMPLETED = 'COMPLETED',
+  CANCELLED = 'CANCELLED',
+  NO_SHOW = 'NO_SHOW'
 }
 
 /**
@@ -160,6 +195,42 @@ export enum TabType {
   INVOICES = 'invoices',
   NOTIFICATIONS = 'notifications',
   SETTINGS = 'settings'
+}
+
+/**
+ * Patient detail page tabs
+ */
+export enum PatientTab {
+  OVERVIEW = 'overview',
+  MEDICAL_HISTORY = 'medical-history'
+}
+
+/**
+ * Settings page tabs
+ */
+export enum SettingsTab {
+  PROFILE = 'profile',
+  ACCOUNT = 'account',
+  PREFERENCES = 'preferences'
+}
+
+/**
+ * Consultation tabs
+ */
+export enum ConsultationTab {
+  MEDICAL_HISTORY = 'medical-history',
+  SYMPTOMS = 'symptoms',
+  TREATMENT = 'treatment',
+  FOLLOWUP = 'followup'
+}
+
+/**
+ * Theme modes
+ */
+export enum ThemeMode {
+  LIGHT = 'light',
+  DARK = 'dark',
+  AUTO = 'auto'
 }
 
 /**

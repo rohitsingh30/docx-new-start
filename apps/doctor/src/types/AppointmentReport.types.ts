@@ -2,4 +2,5 @@
 export interface AppointmentReportProps {
   appointmentId: string;
   onBack: () => void;
+  onCreateInvoice?: () => void;
 }

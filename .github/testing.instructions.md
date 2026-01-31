@@ -1,34 +1,44 @@
+````instructions
 # Testing Instructions
 
 ## Coverage Requirements
 
-- **80% minimum** (statements, functions, lines)
-- **75% branches**
-- **100% coverage** for: Auth, payments, data mutations, security
+| Metric | Target |
+|--------|--------|
+| Statements | 80% |
+| Functions | 80% |
+| Lines | 80% |
+| Branches | 75% |
+| **Critical paths** | **100%** |
+
+Critical = Auth, payments, data mutations, security
 
 ---
 
 ## Test Stack
 
-- Jest + React Testing Library
-- @testing-library/user-event (interactions)
-- @testing-library/jest-dom (matchers)
-- MSW (API mocking)
-- Supertest (backend)
+| Tool | Purpose |
+|------|---------|
+| Jest | Test runner |
+| React Testing Library | Component tests |
+| @testing-library/user-event | User interactions |
+| @testing-library/jest-dom | DOM matchers |
+| MSW | API mocking |
+| Supertest | Backend API tests |
 
 ---
 
 ## Test Pyramid
 
 ```
-       E2E (10%)          ← Few, slow, expensive
-     Integration (30%)    ← Moderate
-   Unit Tests (60%)       ← Many, fast, cheap
+       E2E (10%)          ← Few, slow, critical flows only
+     Integration (30%)    ← Component interactions
+   Unit Tests (60%)       ← Fast, isolated, most tests
 ```
 
 ---
 
-## Component Test (AAA Pattern)
+## AAA Pattern (Arrange-Act-Assert)
 
 ```typescript
 import { render, screen } from '@testing-library/react';
@@ -37,18 +47,17 @@ import { DoctorCard } from './DoctorCard';
 import { Gender } from '../types/enums';
 
 describe('DoctorCard', () => {
-  const mockDoctor = {
-    id: '1',
-    name: 'Dr. Smith',
-    gender: Gender.MALE,
-    specialization: 'Cardiology',
-  };
-
-  it('renders doctor information', () => {
+  it('displays doctor information', () => {
     // Arrange
-    render(<DoctorCard doctor={mockDoctor} />);
+    const doctor = {
+      id: '1',
+      name: 'Dr. Smith',
+      gender: Gender.MALE,
+      specialization: 'Cardiology',
+    };
     
-    // Act - (component renders)
+    // Act
+    render(<DoctorCard doctor={doctor} />);
     
     // Assert
     expect(screen.getByText('Dr. Smith')).toBeInTheDocument();
@@ -72,23 +81,67 @@ describe('DoctorCard', () => {
 
 ---
 
-## Form Test Example
+## Common Queries (Priority Order)
+
+```typescript
+// 1. By role (preferred - accessible)
+screen.getByRole('button', { name: /submit/i })
+screen.getByRole('textbox', { name: /email/i })
+screen.getByRole('heading', { level: 1 })
+
+// 2. By label (forms)
+screen.getByLabelText(/password/i)
+
+// 3. By text (visible content)
+screen.getByText(/welcome/i)
+
+// 4. By placeholder (inputs)
+screen.getByPlaceholderText(/search/i)
+
+// 5. By test ID (last resort)
+screen.getByTestId('doctor-card-123')
+```
+
+---
+
+## Async Testing
+
+```typescript
+it('loads and displays data', async () => {
+  render(<DoctorList />);
+  
+  // Loading state
+  expect(screen.getByText(/loading/i)).toBeInTheDocument();
+  
+  // Wait for data (findBy = async)
+  const doctor = await screen.findByText('Dr. Smith');
+  expect(doctor).toBeInTheDocument();
+  
+  // Verify loading gone (queryBy = returns null if not found)
+  expect(screen.queryByText(/loading/i)).not.toBeInTheDocument();
+});
+```
+
+---
+
+## Form Testing
 
 ```typescript
 describe('DoctorForm', () => {
-  it('submits valid doctor data', async () => {
-    // Arrange
+  it('submits with valid data', async () => {
     const onSubmit = jest.fn();
     const user = userEvent.setup();
     render(<DoctorForm onSubmit={onSubmit} />);
     
-    // Act - Fill form
+    // Fill form
     await user.type(screen.getByLabelText(/name/i), 'Dr. Johnson');
     await user.selectOptions(screen.getByLabelText(/gender/i), Gender.FEMALE);
     await user.type(screen.getByLabelText(/email/i), 'dr@example.com');
+    
+    // Submit
     await user.click(screen.getByRole('button', { name: /submit/i }));
     
-    // Assert
+    // Verify
     expect(onSubmit).toHaveBeenCalledWith({
       name: 'Dr. Johnson',
       gender: Gender.FEMALE,
@@ -97,15 +150,12 @@ describe('DoctorForm', () => {
   });
 
   it('shows validation error for invalid email', async () => {
-    // Arrange
     const user = userEvent.setup();
     render(<DoctorForm onSubmit={jest.fn()} />);
     
-    // Act
     await user.type(screen.getByLabelText(/email/i), 'invalid');
     await user.click(screen.getByRole('button', { name: /submit/i }));
     
-    // Assert
     expect(screen.getByText(/invalid email/i)).toBeInTheDocument();
   });
 });
@@ -118,29 +168,20 @@ describe('DoctorForm', () => {
 ```typescript
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { UserRole } from '../types/enums';
 
 const server = setupServer(
   rest.get('/api/doctor/patients', (req, res, ctx) => {
-    return res(
-      ctx.json({
-        success: true,
-        data: [
-          { id: '1', name: 'John Doe', age: 30 },
-          { id: '2', name: 'Jane Smith', age: 25 },
-        ],
-      })
-    );
+    return res(ctx.json({
+      success: true,
+      data: [{ id: '1', name: 'John Doe', age: 30 }],
+    }));
   }),
-
+  
   rest.post('/api/auth/login', (req, res, ctx) => {
-    return res(
-      ctx.json({
-        success: true,
-        token: 'fake-jwt-token',
-        role: UserRole.DOCTOR,
-      })
-    );
+    return res(ctx.json({
+      success: true,
+      token: 'test-token',
+    }));
   })
 );
 
@@ -151,7 +192,7 @@ afterAll(() => server.close());
 
 ---
 
-## Backend API Test (Supertest)
+## Backend API Tests (Supertest)
 
 ```typescript
 import request from 'supertest';
@@ -159,95 +200,61 @@ import app from '../app';
 import { UserRole } from '../types/enums';
 
 describe('POST /api/doctor/patients/:id/notes', () => {
-  it('adds medical note', async () => {
-    // Arrange
+  it('adds medical note with valid auth', async () => {
     const token = generateTestToken({ userId: '123', role: UserRole.DOCTOR });
     
-    // Act
     const res = await request(app)
       .post('/api/doctor/patients/456/notes')
       .set('Authorization', `Bearer ${token}`)
-      .send({ note: 'Patient shows improvement' });
+      .send({ note: 'Patient improving' });
     
-    // Assert
     expect(res.status).toBe(201);
     expect(res.body.success).toBe(true);
-    expect(res.body.data.note).toBe('Patient shows improvement');
   });
 
   it('returns 401 without auth', async () => {
-    // Act
     const res = await request(app)
       .post('/api/doctor/patients/456/notes')
       .send({ note: 'Test' });
     
-    // Assert
     expect(res.status).toBe(401);
+  });
+
+  it('returns 403 for wrong role', async () => {
+    const token = generateTestToken({ userId: '123', role: UserRole.PATIENT });
+    
+    const res = await request(app)
+      .post('/api/doctor/patients/456/notes')
+      .set('Authorization', `Bearer ${token}`)
+      .send({ note: 'Test' });
+    
+    expect(res.status).toBe(403);
   });
 });
 ```
 
 ---
 
-## Test Organization
+## Test File Organization
 
 ```
 src/
 ├── components/
 │   ├── DoctorCard.tsx
-│   └── DoctorCard.test.tsx          ← Co-located tests
+│   └── DoctorCard.test.tsx      ← Co-located
 ├── utils/
-│   ├── formUtils.ts
-│   └── formUtils.test.ts
-└── __tests__/                        ← Integration tests
-    ├── setup.ts
-    └── DoctorFlow.integration.test.tsx
+│   ├── formatDate.ts
+│   └── formatDate.test.ts       ← Co-located
+└── __tests__/                    ← Integration tests
+    └── DoctorFlow.test.tsx
 ```
 
 ---
 
-## Common Queries
+## Test Utilities
 
 ```typescript
-// By role (preferred)
-screen.getByRole('button', { name: /submit/i })
-screen.getByRole('textbox', { name: /email/i })
-
-// By label
-screen.getByLabelText(/password/i)
-
-// By text
-screen.getByText(/welcome/i)
-
-// By test ID (last resort)
-screen.getByTestId('doctor-card-123')
-```
-
----
-
-## Async Testing
-
-```typescript
-it('loads doctor data', async () => {
-  render(<DoctorList />);
-  
-  // Wait for loading to finish
-  expect(screen.getByText(/loading/i)).toBeInTheDocument();
-  
-  // Wait for data to appear
-  const doctorName = await screen.findByText('Dr. Smith');
-  expect(doctorName).toBeInTheDocument();
-  
-  // Verify loading disappeared
-  expect(screen.queryByText(/loading/i)).not.toBeInTheDocument();
-});
-```
-
----
-
-## Test Utils (setup.ts)
-
-```typescript
+// test-utils.ts
 import { render } from '@testing-library/react';
 import { AuthProvider } from '../contexts/AuthContext';
 import { UserRole } from '../types/enums';
@@ -279,31 +286,44 @@ npm test
 # Watch mode
 npm test -- --watch
 
-# Coverage
+# Coverage report
 npm test -- --coverage
 
 # Specific file
 npm test DoctorCard.test.tsx
 
-# Update snapshots
-npm test -- -u
+# Specific test name
+npm test -- -t "displays doctor"
 ```
 
 ---
 
-## Key Rules
+## What to Test
+
+| Component Type | Test For |
+|----------------|----------|
+| Display | Renders correct data |
+| Form | Validation, submission |
+| Interactive | Click handlers, state changes |
+| Conditional | Shows/hides based on state |
+| Async | Loading, success, error states |
+| API | Request/response handling |
+
+---
+
+## Rules Summary
 
 ❌ **NEVER:**
 - Test implementation details
-- Use `any` in tests
-- Skip error cases
+- Use `any` in test code
+- Skip error case tests
 - Mock everything (prefer real logic)
 - Commit failing tests
 
 ✅ **ALWAYS:**
-- Test user-facing behavior
-- Use AAA pattern (Arrange, Act, Assert)
+- Test user-visible behavior
+- Use AAA pattern
 - Test error states
 - Use enums in test data
 - Run tests before committing
-- Aim for 80%+ coverage
+````

@@ -1,115 +1,118 @@
+````instructions
 # Project Instructions
+
+## Overview
+
+DocX is a healthcare platform with **three separate React apps** sharing common patterns:
+- **Doctor App** (Priority 1) - `/apps/doctor`
+- **Patient App** - `/apps/patient`  
+- **Admin App** - `/apps/admin`
+
+---
 
 ## Architecture
 
-**Three separate React apps sharing common library:**
-- Doctor App (priority 1)
-- Patient App  
-- Admin App
-
-Located: `/apps/doctor`, `/apps/patient`, `/apps/admin`
+```
+docx/
+├── apps/
+│   ├── doctor/       # React 19 + TypeScript
+│   ├── patient/      # React 19 + TypeScript
+│   └── admin/        # React 19 + TypeScript
+├── backend/          # Node.js + Express + MongoDB/Mongoose
+└── packages/shared/  # Shared components (future)
+```
 
 ---
 
 ## Core Principles
 
-1. **NO STRING LITERALS** - Define ALL strings in enums or constants (see Enum Usage below)
-2. **Enum-first** - NO hardcoded string literals, all fixed values in enums
-3. **String constants** - All UI text in `constants/stringConstants.ts`
-4. **Shared components** - `/packages/shared` for reuse
-5. **Sequential development** - Doctor → Patient → Admin
-6. **All CSS in styles/** - `/apps/[app]/src/styles/*.module.css` (NO color files elsewhere)
+| # | Principle | Rule |
+|---|-----------|------|
+| 1 | **No String Literals** | ALL strings in enums or `stringConstants.ts` |
+| 2 | **Enum-First** | Fixed values → `enums.ts`, UI text → `stringConstants.ts` |
+| 3 | **Type Everything** | Strict TypeScript, zero `any` |
+| 4 | **CSS in styles/** | All CSS modules in `/src/styles/` |
+| 5 | **Sequential Dev** | Doctor → Patient → Admin |
+| 6 | **Mocks = Truth** | `/mocks/*.html` are the source of truth |
 
 ---
 
-## String Literals Rule (CRITICAL)
+## The String Literals Rule (CRITICAL)
 
-**NEVER use hardcoded string literals anywhere in code.**
+**NEVER use hardcoded strings anywhere in code.**
 
-### Two Types of Strings:
+### Two Categories:
 
-1. **Fixed/Enumerable Values** → Define in `enums.ts`
-   - Gender, Status, Types, Roles, etc.
-   - Any value that represents a fixed set of options
-
-2. **UI Text (labels, buttons, messages)** → Define in `stringConstants.ts`
-   - Button text, labels, placeholders, error messages
-   - Any text visible to users
+| Category | Where | Example |
+|----------|-------|---------|
+| Fixed Values | `types/enums.ts` | Gender, Status, Roles |
+| UI Text | `constants/stringConstants.ts` | Buttons, Labels, Messages |
 
 ### Examples:
 
 ```typescript
-// ❌ WRONG - String literals
+// ❌ WRONG
 const status = 'active';
 if (type === 'general') { ... }
 <button>Save</button>
-<input placeholder="Enter name" />
 
-// ✅ CORRECT - Use enums and constants
+// ✅ CORRECT
 const status = DoctorStatus.ACTIVE;
 if (type === AppointmentType.GENERAL) { ... }
 <button>{STRING_CONSTANTS.BUTTONS.SAVE}</button>
-<input placeholder={STRING_CONSTANTS.PLACEHOLDERS.ENTER_NAME} />
 ```
 
 ---
 
-## Enum Usage (MANDATORY)
-
-**Define in `/apps/[app]/src/types/enums.ts`:**
-
-```typescript
-export enum Gender { MALE = 'Male', FEMALE = 'Female', OTHER = 'Other' }
-export enum DoctorStatus { ACTIVE = 'Active', INACTIVE = 'Inactive' }
-export enum BloodType { A_POSITIVE = 'A+', O_NEGATIVE = 'O-' }
-export enum AppointmentStatus { SCHEDULED = 'Scheduled', COMPLETED = 'Completed' }
-```
-
-**❌ NEVER:** `gender: 'Male'` or `if (status === 'active')` or `<h1>Dashboard</h1>`
-**✅ ALWAYS:** `gender: Gender.MALE` or `if (status === DoctorStatus.ACTIVE)` or `<h1>{STRING_CONSTANTS.LABELS.DASHBOARD}</h1>`
-
----
-
-## File Structure
+## File Organization
 
 ```
 apps/doctor/src/
-├── components/       # React components
-├── styles/          # ALL CSS files (*.module.css, index.css)
+├── components/       # React components (no inline interfaces)
+├── modals/          # Modal components
+├── styles/          # ALL CSS modules
 ├── types/
-│   └── enums.ts     # ALL enums here
-├── constants/       # String constants, form configs
-├── utils/           # Helper functions
-└── hooks/           # Custom hooks
+│   ├── enums.ts     # ALL enums
+│   └── *.types.ts   # Component interfaces
+├── constants/
+│   ├── stringConstants.ts   # UI text
+│   └── dataConstants.ts     # Mock data
+├── services/        # API calls
+├── contexts/        # React contexts
+├── hooks/           # Custom hooks
+└── utils/           # Helpers
 ```
 
 ---
 
 ## Development Workflow
 
-1. Check `/apps/[app]/mocks/` for design specs
-2. Extract exact values from mocks (use Playwright to verify)
-3. Implement with enums + constants (no hardcoded values)
-4. Add CSS to `styles/` folder
-5. Verify with Playwright before completing
+1. **Check Mock** → `/apps/[app]/mocks/[Page].html`
+2. **Extract Values** → Colors, sizes, text from mock
+3. **Define Constants** → Add to enums/stringConstants FIRST
+4. **Implement** → Use constants, never hardcode
+5. **Style** → CSS modules in `/styles/`
+6. **Verify** → Compare with mock visually
 
 ---
 
-## Key Rules
+## Quick Reference
 
-- **NO STRING LITERALS** - All strings must be in enums or stringConstants.ts (ZERO tolerance)
-- **Mocks are source of truth** for design
-- **ALL fixed values** in `types/enums.ts` (Gender, Status, Types, etc.)
-- **ALL UI text** in `constants/stringConstants.ts` (buttons, labels, messages)
-- **ALL CSS** in `styles/` folder (no color files elsewhere)
-- **Type everything** - strict TypeScript mode
-- **No any types** - explicit types required
+| Need | Location |
+|------|----------|
+| Enum values | `src/types/enums.ts` |
+| UI strings | `src/constants/stringConstants.ts` |
+| Mock data | `src/constants/dataConstants.ts` |
+| Component types | `src/types/[Component].types.ts` |
+| Styles | `src/styles/[Component].module.css` |
+| Design reference | `mocks/[Page].html` |
 
-### Quick Check Before Completing Work:
+---
 
-```bash
-# Should return ZERO results (except imports, classNames)
-grep -n '"[A-Za-z]' src/components/YourComponent.tsx | grep -v "import\|from\|className"
-```
+## Related Instructions
 
-If this returns any results, you have string literal violations that MUST be fixed.
+- [frontend.instructions.md](./frontend.instructions.md) - React & component patterns
+- [backend.instructions.md](./backend.instructions.md) - API & database patterns
+- [uiux.instructions.md](./uiux.instructions.md) - CSS variables & design system
+- [testing.instructions.md](./testing.instructions.md) - Testing standards
+````

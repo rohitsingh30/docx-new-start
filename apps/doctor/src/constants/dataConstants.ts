@@ -10,6 +10,53 @@ export const DATA_CONSTANTS = {
   GENDER_OPTIONS: EnumHelpers.getGenderValues(),
   BLOOD_TYPES: EnumHelpers.getBloodTypeValues(),
   APPOINTMENT_STATUSES: EnumHelpers.getAppointmentStatusValues(),
+  DEV_PATIENT_SHORTCUTS: [
+    {
+      firstName: 'Devon',
+      lastName: 'Lane',
+      dateOfBirth: '1992-02-12',
+      gender: Gender.FEMALE,
+      phoneNumber: '(555) 410-0021',
+      email: 'devon.lane@docx.dev',
+      address: '12 Bay Street',
+      bloodType: BloodType.A_POSITIVE,
+      allergies: 'Peanuts',
+      medications: 'Vitamin D',
+      emergencyContactName: 'Riley Lane',
+      emergencyContactRelationship: 'Sibling',
+      emergencyContactPhone: '(555) 410-0022',
+    },
+    {
+      firstName: 'Jordan',
+      lastName: 'Nguyen',
+      dateOfBirth: '1987-09-06',
+      gender: Gender.MALE,
+      phoneNumber: '(555) 410-0031',
+      email: 'jordan.nguyen@docx.dev',
+      address: '48 North Road',
+      bloodType: BloodType.O_NEGATIVE,
+      allergies: 'Latex',
+      medications: 'Metformin',
+      emergencyContactName: 'Avery Nguyen',
+      emergencyContactRelationship: 'Partner',
+      emergencyContactPhone: '(555) 410-0032',
+    },
+    {
+      firstName: 'Avery',
+      lastName: 'Patel',
+      dateOfBirth: '1998-04-21',
+      gender: Gender.OTHER,
+      phoneNumber: '(555) 410-0041',
+      email: 'avery.patel@docx.dev',
+      address: '90 Market Lane',
+      bloodType: BloodType.B_POSITIVE,
+      allergies: 'Pollen',
+      medications: 'Ibuprofen',
+      emergencyContactName: 'Sam Patel',
+      emergencyContactRelationship: 'Parent',
+      emergencyContactPhone: '(555) 410-0042',
+    },
+  ],
 } as const;
 
 // Mock data for demonstration
@@ -319,6 +366,47 @@ export const MOCK_DATA = {
     total: 350,
     status: 'Paid',
   },
+
+  // Consultation quick-add options
+  COMMON_SYMPTOMS: ['Fever', 'Cough', 'Headache', 'Fatigue', 'Nausea', 'Chest Pain'],
+  COMMON_TESTS: ['CBC', 'Blood Sugar', 'Lipid Profile', 'ECG', 'X-Ray', 'Urine Test'],
+  COMMON_MEDICINES: ['Paracetamol', 'Ibuprofen', 'Amoxicillin', 'Azithromycin', 'Omeprazole', 'Metformin'],
+
+  // Patient History Card Configurations (for rendering history grids)
+  PATIENT_HISTORY_CONFIG: [
+    { key: 'allergies', icon: 'warning', titleKey: 'KNOWN_ALLERGIES' },
+    { key: 'familyHistory', icon: 'family_restroom', titleKey: 'FAMILY_HISTORY' },
+    { key: 'surgeries', icon: 'surgical', titleKey: 'PAST_SURGERIES' },
+    { key: 'lifestyle', icon: 'groups', titleKey: 'LIFESTYLE_HABITS' },
+    { key: 'conditions', icon: 'medical_information', titleKey: 'PREVIOUS_CONDITIONS' },
+  ] as const,
+
+  // Default patient history data (mock)
+  DEFAULT_PATIENT_HISTORY: {
+    allergies: ['Penicillin (Rash)', 'Pollen (Seasonal)'],
+    familyHistory: ['Father: Heart Disease', 'Mother: Diabetes'],
+    surgeries: ['Appendectomy (2015)'],
+    lifestyle: ['Non-smoker', 'Occasional alcohol use', 'Regular exercise (3x/week)'],
+    conditions: ['Hypertension (Diagnosed 2020)', 'Type 2 Diabetes (Diagnosed 2018)', 'Seasonal Allergies'],
+  } as const,
+
+  // Vitals configuration (for rendering vitals display/edit)
+  VITALS_CONFIG: [
+    { key: 'heartRate', icon: 'favorite', labelKey: 'HEART_RATE', placeholderKey: 'HEART_RATE', shortLabel: 'HR' },
+    { key: 'bloodPressure', icon: 'monitor_heart', labelKey: 'BLOOD_PRESSURE', placeholderKey: 'BLOOD_PRESSURE', shortLabel: 'BP' },
+    { key: 'temperature', icon: 'thermostat', labelKey: 'TEMPERATURE', placeholderKey: 'TEMPERATURE', shortLabel: 'Temp' },
+    { key: 'weight', icon: 'scale', labelKey: 'WEIGHT', placeholderKey: 'WEIGHT', shortLabel: 'Weight' },
+  ] as const,
+
+  // Extended vitals configuration (for consultation with 6 vitals)
+  VITALS_CONFIG_EXTENDED: [
+    { key: 'heartRate', icon: 'favorite', labelKey: 'HEART_RATE', placeholderKey: 'HEART_RATE', shortLabel: 'HR' },
+    { key: 'bloodPressure', icon: 'monitor_heart', labelKey: 'BLOOD_PRESSURE', placeholderKey: 'BLOOD_PRESSURE', shortLabel: 'BP' },
+    { key: 'temperature', icon: 'thermostat', labelKey: 'TEMPERATURE', placeholderKey: 'TEMPERATURE', shortLabel: 'Temp' },
+    { key: 'weight', icon: 'scale', labelKey: 'WEIGHT', placeholderKey: 'WEIGHT', shortLabel: 'Weight' },
+    { key: 'respiratoryRate', icon: 'air', labelKey: 'RESPIRATORY_RATE', placeholderKey: 'RESPIRATORY_RATE', shortLabel: 'RR' },
+    { key: 'oxygenSaturation', icon: 'bloodtype', labelKey: 'OXYGEN_SATURATION', placeholderKey: 'OXYGEN_SATURATION', shortLabel: 'SpO₂' },
+  ] as const,
 };
 
 // Application-level configuration  

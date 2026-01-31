@@ -3,21 +3,42 @@ import styles from '../styles/Invoice.module.css';
 import { MOCK_DATA } from '../constants/dataConstants';
 import { STRING_CONSTANTS } from '../constants/stringConstants';
 import { InvoiceProps } from '../types/Invoice.types';
+import { StatsGrid, PageHeader } from './shared';
 
-const Invoice: React.FC<InvoiceProps> = ({ invoiceId, onBack }) => {
-  const [viewMode, setViewMode] = useState<'list' | 'detail'>(invoiceId ? 'detail' : 'list');
+const Invoice: React.FC<InvoiceProps> = ({ invoiceId, createMode, onBack }) => {
+  const [viewMode, setViewMode] = useState<'list' | 'detail' | 'create'>(
+    createMode ? 'create' : (invoiceId ? 'detail' : 'list')
+  );
   const [selectedId, setSelectedId] = useState(invoiceId);
 
   const mockInvoices = MOCK_DATA.INVOICES;
   const stats = MOCK_DATA.INVOICE_STATS;
   const invoiceDetail = {
     ...MOCK_DATA.INVOICE_DETAIL,
-    id: selectedId || MOCK_DATA.INVOICE_DETAIL.id,
+    id: selectedId || 'INV-0000', // Default ID for create mode UI placeholder
+  };
+
+  const handleCreateSave = () => {
+    window.alert('Invoice generated successfully!');
+    if (onBack) onBack();
+    else setViewMode('list');
   };
 
   const handleViewInvoice = (id: string) => {
     setSelectedId(id);
     setViewMode('detail');
+  };
+
+  const handleSendEmail = () => {
+    window.alert(STRING_CONSTANTS.MESSAGES.ACTION_COMPLETED);
+  };
+
+  const handleExportPdf = () => {
+    window.alert(STRING_CONSTANTS.MESSAGES.ACTION_COMPLETED);
+  };
+
+  const handleNewInvoice = () => {
+    setViewMode('create');
   };
 
   const handleBackToList = () => {
@@ -33,29 +54,42 @@ const Invoice: React.FC<InvoiceProps> = ({ invoiceId, onBack }) => {
     }
   };
 
-  if (viewMode === 'detail') {
+  if (viewMode === 'detail' || viewMode === 'create') {
+    const isCreate = viewMode === 'create';
+    
     return (
       <div className={styles.container}>
-        <div className={styles.header}>
-          <button className={styles.backButton} onClick={onBack || handleBackToList}>
-            <span className={styles.materialIcon}>arrow_back</span>
-            {STRING_CONSTANTS.BUTTONS.BACK}
-          </button>
-          <div className={styles.headerActions}>
-            <button className={styles.actionBtn}>
-              <span className={styles.materialIcon}>email</span>
-              {STRING_CONSTANTS.BUTTONS.SEND_EMAIL}
-            </button>
-            <button className={styles.actionBtn} onClick={() => window.print()}>
-              <span className={styles.materialIcon}>print</span>
-              {STRING_CONSTANTS.BUTTONS.PRINT}
-            </button>
-            <button className={styles.actionBtn}>
-              <span className={styles.materialIcon}>download</span>
-              {STRING_CONSTANTS.BUTTONS.EXPORT_PDF}
-            </button>
-          </div>
-        </div>
+        <PageHeader 
+          title={isCreate ? STRING_CONSTANTS.LABELS.NEW_INVOICE : `${STRING_CONSTANTS.LABELS.INVOICE_HEADER} ${invoiceDetail.id}`}
+          subtitle={isCreate ? 'Create a new invoice' : `${invoiceDetail.patient} • ${invoiceDetail.date}`}
+          onBack={onBack || handleBackToList}
+          rightContent={
+            <div className={styles.headerActions}>
+              {!isCreate ? (
+                <>
+                  <button className={styles.actionBtn} onClick={handleSendEmail} type="button">
+                    <span className={styles.materialIcon}>email</span>
+                    {STRING_CONSTANTS.BUTTONS.SEND_EMAIL}
+                  </button>
+                  <button className={styles.actionBtn} onClick={() => window.print()}>
+                    <span className={styles.materialIcon}>print</span>
+                    {STRING_CONSTANTS.BUTTONS.PRINT}
+                  </button>
+                  <button className={styles.actionBtn} onClick={handleExportPdf} type="button">
+                    <span className={styles.materialIcon}>download</span>
+                    {STRING_CONSTANTS.BUTTONS.EXPORT_PDF}
+                  </button>
+                </>
+              ) : (
+                <button className={styles.newBtn} onClick={handleCreateSave} type="button">
+                  <span className={styles.materialIcon}>check</span>
+                  Generate Invoice
+                </button>
+              )}
+            </div>
+          }
+          styles={styles}
+        />
 
         <div className={styles.invoice}>
           <div className={styles.invoiceHeader}>
@@ -86,26 +120,28 @@ const Invoice: React.FC<InvoiceProps> = ({ invoiceId, onBack }) => {
             </div>
           </div>
 
-          <table className={styles.table}>
-            <thead>
-              <tr>
-                <th>{STRING_CONSTANTS.LABELS.DESCRIPTION_HEADER}</th>
-                <th>{STRING_CONSTANTS.LABELS.QTY_HEADER}</th>
-                <th>{STRING_CONSTANTS.LABELS.UNIT_PRICE_HEADER}</th>
-                <th>{STRING_CONSTANTS.LABELS.TOTAL_HEADER}</th>
-              </tr>
-            </thead>
-            <tbody>
-              {invoiceDetail.items.map((item, i) => (
-                <tr key={i}>
-                  <td>{item.description}</td>
-                  <td>{item.qty}</td>
-                  <td>${item.price.toFixed(2)}</td>
-                  <td>${item.total.toFixed(2)}</td>
+          <div className={styles.tableWrapper}>
+            <table className={styles.table}>
+              <thead>
+                <tr>
+                  <th>{STRING_CONSTANTS.LABELS.DESCRIPTION_HEADER}</th>
+                  <th>{STRING_CONSTANTS.LABELS.QTY_HEADER}</th>
+                  <th>{STRING_CONSTANTS.LABELS.UNIT_PRICE_HEADER}</th>
+                  <th>{STRING_CONSTANTS.LABELS.TOTAL_HEADER}</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {invoiceDetail.items.map((item, i) => (
+                  <tr key={i}>
+                    <td>{item.description}</td>
+                    <td>{item.qty}</td>
+                    <td>${item.price.toFixed(2)}</td>
+                    <td>${item.total.toFixed(2)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
           <div className={styles.totals}>
             <div className={styles.totalRow}>
@@ -149,41 +185,22 @@ const Invoice: React.FC<InvoiceProps> = ({ invoiceId, onBack }) => {
           </button>
         )}
         <h1 className={styles.pageTitle}>{STRING_CONSTANTS.LABELS.INVOICES}</h1>
-        <button className={styles.newBtn}>
+        <button className={styles.newBtn} onClick={handleNewInvoice} type="button">
           <span className={styles.materialIcon}>add</span>
           {STRING_CONSTANTS.BUTTONS.NEW_INVOICE}
         </button>
       </div>
 
-      <div className={styles.statsGrid}>
-        <div className={styles.statCard}>
-          <span className={styles.materialIcon}>attach_money</span>
-          <div>
-            <div className={styles.statValue}>${stats.totalRevenue.toLocaleString()}</div>
-            <div className={styles.statLabel}>{STRING_CONSTANTS.LABELS.TOTAL_REVENUE}</div>
-          </div>
-        </div>
-        <div className={styles.statCard}>
-          <span className={styles.materialIcon}>pending</span>
-          <div>
-            <div className={styles.statValue}>${stats.pending.toLocaleString()}</div>
-            <div className={styles.statLabel}>{STRING_CONSTANTS.LABELS.PENDING_PAYMENTS}</div>
-          </div>
-        </div>
-        <div className={styles.statCard}>
-          <span className={styles.materialIcon}>description</span>
-          <div>
-            <div className={styles.statValue}>{stats.invoicesThisMonth}</div>
-            <div className={styles.statLabel}>{STRING_CONSTANTS.LABELS.INVOICES_THIS_MONTH}</div>
-          </div>
-        </div>
-        <div className={styles.statCard}>
-          <span className={styles.materialIcon}>check_circle</span>
-          <div>
-            <div className={styles.statValue}>{stats.paidInvoices}</div>
-            <div className={styles.statLabel}>{STRING_CONSTANTS.LABELS.PAID_INVOICES}</div>
-          </div>
-        </div>
+      <div className={styles.statsContainer}>
+        <StatsGrid 
+          stats={[
+            { title: STRING_CONSTANTS.LABELS.TOTAL_REVENUE, value: `$${stats.totalRevenue.toLocaleString()}` },
+            { title: STRING_CONSTANTS.LABELS.PENDING_PAYMENTS, value: `$${stats.pending.toLocaleString()}` },
+            { title: STRING_CONSTANTS.LABELS.INVOICES_THIS_MONTH, value: stats.invoicesThisMonth },
+            { title: STRING_CONSTANTS.LABELS.PAID_INVOICES, value: stats.paidInvoices },
+          ]}
+          styles={styles}
+        />
       </div>
 
       <div className={styles.content}>
@@ -205,7 +222,8 @@ const Invoice: React.FC<InvoiceProps> = ({ invoiceId, onBack }) => {
           </select>
         </div>
 
-        <table className={styles.table}>
+        <div className={styles.tableWrapper}>
+          <table className={styles.table}>
           <thead>
             <tr>
               <th>{STRING_CONSTANTS.LABELS.INVOICE_ID_HEADER}</th>
@@ -238,6 +256,7 @@ const Invoice: React.FC<InvoiceProps> = ({ invoiceId, onBack }) => {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   );

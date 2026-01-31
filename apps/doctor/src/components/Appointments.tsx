@@ -1,10 +1,11 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import styles from '../styles/Appointments.module.css';
 import { AppointmentsProps, AppointmentListItem } from '../types/Appointments.types';
-import { MOCK_DATA } from '../constants/dataConstants';
 import { STRING_CONSTANTS } from '../constants/stringConstants';
 import { AppointmentStatus, AppointmentFilterTab, AppointmentSortType } from '../types/enums';
 import { getStatusClassName, getStatusLabel } from '../utils/statusUtils';
+import { TabList } from './shared';
+import { useAppointmentsData } from '../hooks/useAppointmentsData';
 
 const Appointments: React.FC<AppointmentsProps> = ({
   onAppointmentClick,
@@ -18,11 +19,10 @@ const Appointments: React.FC<AppointmentsProps> = ({
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 5;
 
-  // Get appointments from mock data
-  const appointments: AppointmentListItem[] = MOCK_DATA.APPOINTMENTS.map(apt => ({
-    ...apt,
-    room: `Room ${200 + parseInt(apt.id)}`,
-  }));
+  const { data: appointmentsData } = useAppointmentsData();
+  const appointments: AppointmentListItem[] = useMemo(() => {
+    return appointmentsData || [];
+  }, [appointmentsData]);
 
   const handleAppointmentClick = useCallback((appointmentId: string) => {
     if (onAppointmentClick) {
@@ -140,71 +140,39 @@ const Appointments: React.FC<AppointmentsProps> = ({
       </div>
 
       {/* Filter Tabs */}
-      <div className={styles.tabContainer}>
-        <div className={styles.tabsWrapper}>
-          <button
-            className={activeTab === AppointmentFilterTab.ALL ? `${styles.tab} ${styles.tabActive}` : styles.tab}
-            onClick={() => handleTabChange(AppointmentFilterTab.ALL)}
-            type="button"
-          >
-            <span className={`${styles.materialIcon} ${styles.tabIcon}`}>list_alt</span>
-            All Appointments
-            <span className={styles.tabCount}>{counts.all}</span>
-          </button>
-          <button
-            className={activeTab === AppointmentFilterTab.TODAY ? `${styles.tab} ${styles.tabActive}` : styles.tab}
-            onClick={() => handleTabChange(AppointmentFilterTab.TODAY)}
-            type="button"
-          >
-            <span className={`${styles.materialIcon} ${styles.tabIcon}`}>today</span>
-            Today
-            <span className={styles.tabCount}>{counts.today}</span>
-          </button>
-          <button
-            className={activeTab === AppointmentFilterTab.UPCOMING ? `${styles.tab} ${styles.tabActive}` : styles.tab}
-            onClick={() => handleTabChange(AppointmentFilterTab.UPCOMING)}
-            type="button"
-          >
-            <span className={`${styles.materialIcon} ${styles.tabIcon}`}>event</span>
-            Upcoming
-            <span className={styles.tabCount}>{counts.upcoming}</span>
-          </button>
-          <button
-            className={activeTab === AppointmentFilterTab.COMPLETED ? `${styles.tab} ${styles.tabActive}` : styles.tab}
-            onClick={() => handleTabChange(AppointmentFilterTab.COMPLETED)}
-            type="button"
-          >
-            <span className={`${styles.materialIcon} ${styles.tabIcon}`}>check_circle</span>
-            Completed
-            <span className={styles.tabCount}>{counts.completed}</span>
-          </button>
-          <button
-            className={activeTab === AppointmentFilterTab.CANCELLED ? `${styles.tab} ${styles.tabActive}` : styles.tab}
-            onClick={() => handleTabChange(AppointmentFilterTab.CANCELLED)}
-            type="button"
-          >
-            <span className={`${styles.materialIcon} ${styles.tabIcon}`}>cancel</span>
-            Cancelled
-            <span className={styles.tabCount}>{counts.cancelled}</span>
-          </button>
-        </div>
-        <div className={styles.tabControls}>
-          <div className={styles.filterGroup}>
-            <span className={`${styles.materialIcon} ${styles.controlIcon}`}>filter_list</span>
-            <select
-              className={styles.select}
-              value={filterType}
-              onChange={(e) => handleFilterChange(e.target.value)}
-            >
-              <option value="all">{STRING_CONSTANTS.OPTIONS.ALL_TYPES}</option>
-              <option value="general">{STRING_CONSTANTS.OPTIONS.GENERAL_CHECKUP}</option>
-              <option value="followup">{STRING_CONSTANTS.OPTIONS.FOLLOW_UP}</option>
-              <option value="consultation">{STRING_CONSTANTS.OPTIONS.CONSULTATION}</option>
-              <option value="physical">{STRING_CONSTANTS.OPTIONS.PHYSICAL_EXAM}</option>
-              <option value="lab">{STRING_CONSTANTS.OPTIONS.LAB_REVIEW}</option>
-            </select>
-          </div>
-          <div className={styles.filterGroup}>
+      <div className={styles.tabsContainer}>
+        <div className={styles.tabsRow}>
+          <TabList 
+            tabs={[
+              { id: AppointmentFilterTab.ALL, icon: 'list_alt', label: STRING_CONSTANTS.TABS.ALL_APPOINTMENTS, count: counts.all },
+              { id: AppointmentFilterTab.TODAY, icon: 'today', label: STRING_CONSTANTS.TABS.TODAY, count: counts.today },
+              { id: AppointmentFilterTab.UPCOMING, icon: 'event', label: STRING_CONSTANTS.TABS.UPCOMING, count: counts.upcoming },
+              { id: AppointmentFilterTab.COMPLETED, icon: 'check_circle', label: STRING_CONSTANTS.TABS.COMPLETED, count: counts.completed },
+              { id: AppointmentFilterTab.CANCELLED, icon: 'cancel', label: STRING_CONSTANTS.TABS.CANCELLED, count: counts.cancelled },
+            ]}
+            activeTab={activeTab}
+            onTabChange={(tab) => handleTabChange(tab as AppointmentFilterTab)}
+            styles={styles}
+            containerClass={styles.tabsWrapper}
+            activeClass={styles.tabActive}
+          />
+          <div className={styles.tabControls}>
+            <div className={styles.filterGroup}>
+              <span className={`${styles.materialIcon} ${styles.controlIcon}`}>filter_list</span>
+              <select
+                className={styles.select}
+                value={filterType}
+                onChange={(e) => handleFilterChange(e.target.value)}
+              >
+                <option value="all">{STRING_CONSTANTS.OPTIONS.ALL_TYPES}</option>
+                <option value="general">{STRING_CONSTANTS.OPTIONS.GENERAL_CHECKUP}</option>
+                <option value="followup">{STRING_CONSTANTS.OPTIONS.FOLLOW_UP}</option>
+                <option value="consultation">{STRING_CONSTANTS.OPTIONS.CONSULTATION}</option>
+                <option value="physical">{STRING_CONSTANTS.OPTIONS.PHYSICAL_EXAM}</option>
+                <option value="lab">{STRING_CONSTANTS.OPTIONS.LAB_REVIEW}</option>
+              </select>
+            </div>
+            <div className={styles.filterGroup}>
             <span className={`${styles.materialIcon} ${styles.controlIcon}`}>sort</span>
             <select
               className={styles.select}
@@ -217,6 +185,7 @@ const Appointments: React.FC<AppointmentsProps> = ({
               <option value={AppointmentSortType.TYPE}>{STRING_CONSTANTS.OPTIONS.SORT_BY_TYPE}</option>
             </select>
           </div>
+          </div>
         </div>
       </div>
 
@@ -224,7 +193,7 @@ const Appointments: React.FC<AppointmentsProps> = ({
       <div className={styles.appointmentsList}>
         {filteredAppointments.length === 0 ? (
           <div className={styles.emptyState}>
-            No appointments found matching the current filters.
+            {STRING_CONSTANTS.EMPTY_APPOINTMENTS.NO_APPOINTMENTS_FOUND}
           </div>
         ) : (
           paginatedAppointments.map((appointment) => {
@@ -261,7 +230,7 @@ const Appointments: React.FC<AppointmentsProps> = ({
                   type="button"
                   style={{ cursor: 'pointer', pointerEvents: 'auto' }}
                 >
-                  View Details
+                  {STRING_CONSTANTS.BUTTONS.VIEW}
                 </button>
               </div>
             </div>
@@ -275,8 +244,8 @@ const Appointments: React.FC<AppointmentsProps> = ({
       {filteredAppointments.length > itemsPerPage && (
         <div className={styles.pagination}>
           <div className={styles.paginationInfo}>
-            Showing <span className={styles.paginationHighlight}>{startIndex + 1}-{Math.min(endIndex, filteredAppointments.length)}</span> of{' '}
-            <span className={styles.paginationHighlight}>{filteredAppointments.length}</span> appointments
+            {STRING_CONSTANTS.PAGINATION.SHOWING} <span className={styles.paginationHighlight}>{startIndex + 1}-{Math.min(endIndex, filteredAppointments.length)}</span> {STRING_CONSTANTS.PAGINATION.OF}{' '}
+            <span className={styles.paginationHighlight}>{filteredAppointments.length}</span> {STRING_CONSTANTS.PAGINATION.APPOINTMENTS}
           </div>
           <div className={styles.paginationControls}>
             <button 

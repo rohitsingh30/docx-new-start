@@ -1,6 +1,8 @@
 import React from 'react';
 import styles from '../styles/PatientCard.module.css';
 import { PatientCardProps } from '../types/Patient.types';
+import { STRING_CONSTANTS } from '../constants/stringConstants';
+import { Gender } from '../types/enums';
 
 const PatientCard: React.FC<PatientCardProps> = ({ patient, onViewDetails }) => {
   // Calculate age from date of birth
@@ -21,6 +23,17 @@ const PatientCard: React.FC<PatientCardProps> = ({ patient, onViewDetails }) => 
     }
   };
 
+  const getGenderIcon = (gender: string): string => {
+    switch (gender) {
+      case Gender.MALE:
+        return 'male';
+      case Gender.FEMALE:
+        return 'female';
+      default:
+        return 'transgender';
+    }
+  };
+
   return (
     <div className={styles.patientCard}>
       <div className={styles.patientContent}>
@@ -36,11 +49,11 @@ const PatientCard: React.FC<PatientCardProps> = ({ patient, onViewDetails }) => 
         <div className={styles.patientTags}>
           <span className={styles.infoTag}>
             <span className={styles.materialSymbolsIcon}>cake</span>
-            {calculateAge(patient.dateOfBirth)} years
+            {calculateAge(patient.dateOfBirth)} {STRING_CONSTANTS.PATIENT_LABELS.YEARS}
           </span>
           <span className={styles.infoTag}>
             <span className={styles.materialSymbolsIcon}>
-              {patient.gender === 'Male' ? 'male' : patient.gender === 'Female' ? 'female' : 'transgender'}
+              {getGenderIcon(patient.gender)}
             </span>
             {patient.gender}
           </span>
@@ -52,7 +65,7 @@ const PatientCard: React.FC<PatientCardProps> = ({ patient, onViewDetails }) => 
 
         <div className={styles.patientActions}>
           <button className={styles.viewButton} onClick={handleViewDetails}>
-            View Details
+            {STRING_CONSTANTS.BUTTONS.VIEW}
           </button>
         </div>
       </div>

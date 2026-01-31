@@ -4,8 +4,9 @@ import { MOCK_DATA } from '../constants/dataConstants';
 import { STRING_CONSTANTS } from '../constants/stringConstants';
 import { Gender } from '../types/enums';
 import { AppointmentReportProps } from '../types/AppointmentReport.types';
+import { PageHeader } from './shared';
 
-const AppointmentReport: React.FC<AppointmentReportProps> = ({ appointmentId, onBack }) => {
+const AppointmentReport: React.FC<AppointmentReportProps> = ({ appointmentId, onBack, onCreateInvoice }) => {
   const appointmentData = MOCK_DATA.APPOINTMENT_DETAILS;
   
   const report = {
@@ -29,22 +30,30 @@ const AppointmentReport: React.FC<AppointmentReportProps> = ({ appointmentId, on
 
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
-        <button className={styles.backButton} onClick={onBack}>
-          <span className={styles.materialIcon}>arrow_back</span>
-          {STRING_CONSTANTS.BUTTONS.BACK_TO_APPOINTMENTS}
-        </button>
-        <div className={styles.headerActions}>
-          <button className={styles.actionBtn} onClick={() => window.print()}>
-            <span className={styles.materialIcon}>print</span>
-            {STRING_CONSTANTS.BUTTONS.PRINT}
-          </button>
-          <button className={styles.actionBtn}>
-            <span className={styles.materialIcon}>download</span>
-            {STRING_CONSTANTS.BUTTONS.EXPORT_PDF}
-          </button>
-        </div>
-      </div>
+      <PageHeader 
+        title={STRING_CONSTANTS.LABELS.APPOINTMENT_REPORT}
+        subtitle={`${report.patientName} • ${report.date} at ${report.time}`}
+        onBack={onBack}
+        rightContent={
+          <div className={styles.headerActions}>
+            {onCreateInvoice && (
+              <button className={styles.actionBtn} onClick={onCreateInvoice}>
+                <span className={styles.materialIcon}>receipt</span>
+                {STRING_CONSTANTS.BUTTONS.NEW_INVOICE}
+              </button>
+            )}
+            <button className={styles.actionBtn} onClick={() => window.print()}>
+              <span className={styles.materialIcon}>print</span>
+              {STRING_CONSTANTS.BUTTONS.PRINT}
+            </button>
+            <button className={styles.actionBtn}>
+              <span className={styles.materialIcon}>download</span>
+              {STRING_CONSTANTS.BUTTONS.EXPORT_PDF}
+            </button>
+          </div>
+        }
+        styles={styles}
+      />
 
       <div className={styles.report}>
         <div className={styles.reportHeader}>

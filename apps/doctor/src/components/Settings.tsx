@@ -1,60 +1,69 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from '../styles/Settings.module.css';
 import { SettingsProps } from '../types/Settings.types';
-
-enum SettingsTab {
-  PROFILE = 'profile',
-  ACCOUNT = 'account',
-  PREFERENCES = 'preferences',
-}
+import { STRING_CONSTANTS } from '../constants/stringConstants';
+import { SettingsTab, ThemeMode } from '../types/enums';
+import { SimpleTabList, InfoList, FormFieldList } from './shared';
 
 const Settings: React.FC<SettingsProps> = ({ onShowInvoices }) => {
   const [activeTab, setActiveTab] = useState<SettingsTab>(SettingsTab.PROFILE);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [themeMode, setThemeMode] = useState<ThemeMode>(ThemeMode.AUTO);
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = themeMode;
+  }, [themeMode]);
+
+  const handleActionFeedback = () => {
+    window.alert(STRING_CONSTANTS.MESSAGES.ACTION_COMPLETED);
+  };
+
+  const getThemeButtonClassName = (mode: ThemeMode) => {
+    return mode === themeMode ? `${styles.themeButton} ${styles.active}` : styles.themeButton;
+  };
 
   return (
     <div className={styles.settings}>
       {/* Header */}
       <div className={styles.header}>
-        <h1 className={styles.pageTitle}>Settings</h1>
+        <h1 className={styles.pageTitle}>{STRING_CONSTANTS.SETTINGS_LABELS.SETTINGS}</h1>
         <div className={styles.themeSelector}>
-          <button className={styles.themeButton}>
+          <button 
+            className={getThemeButtonClassName(ThemeMode.LIGHT)}
+            onClick={() => setThemeMode(ThemeMode.LIGHT)}
+            type="button"
+          >
             <span className={styles.materialSymbolsIcon}>light_mode</span>
           </button>
-          <button className={styles.themeButton}>
+          <button 
+            className={getThemeButtonClassName(ThemeMode.DARK)}
+            onClick={() => setThemeMode(ThemeMode.DARK)}
+            type="button"
+          >
             <span className={styles.materialSymbolsIcon}>dark_mode</span>
           </button>
-          <button className={`${styles.themeButton} ${styles.active}`}>
+          <button 
+            className={getThemeButtonClassName(ThemeMode.AUTO)}
+            onClick={() => setThemeMode(ThemeMode.AUTO)}
+            type="button"
+          >
             <span className={styles.materialSymbolsIcon}>brightness_auto</span>
           </button>
         </div>
       </div>
 
       {/* Tabs */}
-      <div className={styles.tabsContainer}>
-        <button
-          className={activeTab === SettingsTab.PROFILE ? `${styles.tab} ${styles.activeTab}` : styles.tab}
-          onClick={() => setActiveTab(SettingsTab.PROFILE)}
-        >
-          <span className={styles.materialSymbolsIcon}>person</span>
-          Profile
-        </button>
-        <button
-          className={activeTab === SettingsTab.ACCOUNT ? `${styles.tab} ${styles.activeTab}` : styles.tab}
-          onClick={() => setActiveTab(SettingsTab.ACCOUNT)}
-        >
-          <span className={styles.materialSymbolsIcon}>lock</span>
-          Account & Security
-        </button>
-        <button
-          className={activeTab === SettingsTab.PREFERENCES ? `${styles.tab} ${styles.activeTab}` : styles.tab}
-          onClick={() => setActiveTab(SettingsTab.PREFERENCES)}
-        >
-          <span className={styles.materialSymbolsIcon}>tune</span>
-          Preferences
-        </button>
-      </div>
+      <SimpleTabList 
+        tabs={[
+          { id: SettingsTab.PROFILE, icon: 'person', label: STRING_CONSTANTS.TABS.PROFILE },
+          { id: SettingsTab.ACCOUNT, icon: 'lock', label: STRING_CONSTANTS.TABS.ACCOUNT_SECURITY },
+          { id: SettingsTab.PREFERENCES, icon: 'tune', label: STRING_CONSTANTS.TABS.PREFERENCES },
+        ]}
+        activeTab={activeTab}
+        onTabChange={(tab) => setActiveTab(tab as SettingsTab)}
+        styles={styles}
+      />
 
       {/* Content Area */}
       <div className={styles.content}>
@@ -64,14 +73,14 @@ const Settings: React.FC<SettingsProps> = ({ onShowInvoices }) => {
               <div className={styles.settingCard}>
                 <div className={styles.settingCardHeader}>
                   <span className={styles.materialSymbolsIcon}>person</span>
-                  <h3>Profile Information</h3>
+                  <h3>{STRING_CONSTANTS.SETTINGS_LABELS.PROFILE_INFORMATION}</h3>
                   {!isEditingProfile && (
                     <button 
                       className={styles.editButton}
                       onClick={() => setIsEditingProfile(true)}
                     >
                       <span className={styles.materialSymbolsIcon}>edit</span>
-                      Edit
+                      {STRING_CONSTANTS.BUTTONS.EDIT}
                     </button>
                   )}
                 </div>
@@ -84,13 +93,13 @@ const Settings: React.FC<SettingsProps> = ({ onShowInvoices }) => {
                           <span className={styles.materialSymbolsIcon}>person</span>
                         </div>
                         <div className={styles.profilePhotoActions}>
-                          <button className={styles.primaryButton}>
+                          <button className={styles.primaryButton} onClick={handleActionFeedback} type="button">
                             <span className={styles.materialSymbolsIcon}>upload</span>
-                            Change Photo
+                            {STRING_CONSTANTS.SETTINGS_LABELS.CHANGE_PHOTO}
                           </button>
-                          <button className={styles.secondaryButton}>
+                          <button className={styles.secondaryButton} onClick={handleActionFeedback} type="button">
                             <span className={styles.materialSymbolsIcon}>delete</span>
-                            Remove
+                            {STRING_CONSTANTS.SETTINGS_LABELS.REMOVE}
                           </button>
                         </div>
                       </div>
@@ -99,35 +108,40 @@ const Settings: React.FC<SettingsProps> = ({ onShowInvoices }) => {
 
                       <div className={styles.formGrid}>
                         <div className={styles.formGroup}>
-                          <label>First Name</label>
+                          <label>{STRING_CONSTANTS.SETTINGS_LABELS.FIRST_NAME}</label>
                           <input type="text" defaultValue="John" />
                         </div>
                         <div className={styles.formGroup}>
-                          <label>Last Name</label>
+                          <label>{STRING_CONSTANTS.SETTINGS_LABELS.LAST_NAME}</label>
                           <input type="text" defaultValue="Smith" />
                         </div>
                         <div className={styles.formGroup}>
-                          <label>Phone Number</label>
+                          <label>{STRING_CONSTANTS.PATIENT_LABELS.PHONE_NUMBER}</label>
                           <input type="tel" defaultValue="+1 (555) 123-4567" />
                         </div>
                         <div className={styles.formGroup}>
-                          <label>Email Address</label>
+                          <label>{STRING_CONSTANTS.PATIENT_LABELS.EMAIL_ADDRESS}</label>
                           <input type="email" defaultValue="dr.smith@hospital.com" />
                         </div>
                       </div>
                       <div className={styles.cardActions}>
-                        <button 
+                          <button 
                           className={styles.primaryButton}
-                          onClick={() => setIsEditingProfile(false)}
+                            onClick={() => {
+                              setIsEditingProfile(false);
+                              handleActionFeedback();
+                            }}
+                            type="button"
                         >
                           <span className={styles.materialSymbolsIcon}>save</span>
-                          Save Changes
+                          {STRING_CONSTANTS.SETTINGS_LABELS.SAVE_CHANGES}
                         </button>
                         <button 
                           className={styles.secondaryButton}
-                          onClick={() => setIsEditingProfile(false)}
+                            onClick={() => setIsEditingProfile(false)}
+                            type="button"
                         >
-                          Cancel
+                          {STRING_CONSTANTS.BUTTONS.CANCEL}
                         </button>
                       </div>
                     </>
@@ -140,22 +154,15 @@ const Settings: React.FC<SettingsProps> = ({ onShowInvoices }) => {
                         </div>
                       </div>
 
-                      <div className={styles.infoRow}>
-                        <span className={styles.infoLabel}>First Name</span>
-                        <span className={styles.infoValue}>John</span>
-                      </div>
-                      <div className={styles.infoRow}>
-                        <span className={styles.infoLabel}>Last Name</span>
-                        <span className={styles.infoValue}>Smith</span>
-                      </div>
-                                            <div className={styles.infoRow}>
-                        <span className={styles.infoLabel}>Phone Number</span>
-                        <span className={styles.infoValue}>+1 (555) 123-4567</span>
-                      </div>
-                      <div className={styles.infoRow}>
-                        <span className={styles.infoLabel}>Email Address</span>
-                        <span className={styles.infoValue}>dr.smith@hospital.com</span>
-                      </div>
+                      <InfoList 
+                        items={[
+                          { label: STRING_CONSTANTS.SETTINGS_LABELS.FIRST_NAME, value: 'John' },
+                          { label: STRING_CONSTANTS.SETTINGS_LABELS.LAST_NAME, value: 'Smith' },
+                          { label: STRING_CONSTANTS.PATIENT_LABELS.PHONE_NUMBER, value: '+1 (555) 123-4567' },
+                          { label: STRING_CONSTANTS.PATIENT_LABELS.EMAIL_ADDRESS, value: 'dr.smith@hospital.com' },
+                        ]}
+                        styles={styles}
+                      />
                     </div>
                   )}
                 </div>
@@ -165,29 +172,22 @@ const Settings: React.FC<SettingsProps> = ({ onShowInvoices }) => {
               <div className={styles.settingCard}>
                 <div className={styles.settingCardHeader}>
                   <span className={styles.materialSymbolsIcon}>badge</span>
-                  <h3>Professional Details</h3>
+                  <h3>{STRING_CONSTANTS.SETTINGS_LABELS.PROFESSIONAL_DETAILS}</h3>
                 </div>
                 <div className={styles.settingCardContent}>
-                  <div className={styles.formGrid}>
-                    <div className={styles.formGroup}>
-                      <label>Specialization</label>
-                      <input type="text" defaultValue="General Practitioner" />
-                    </div>
-                    <div className={styles.formGroup}>
-                      <label>Education</label>
-                      <input type="text" defaultValue="MD, Harvard Medical School" />
-                    </div>
-                    <div className={styles.formGroup}>
-                      <label>License Number</label>
-                      <input type="text" defaultValue="MD-12345" />
-                    </div>
-                    <div className={styles.formGroup}>
-                      <label>Years of Experience</label>
-                      <input type="number" defaultValue="15" />
-                    </div>
-                  </div>
+                  <FormFieldList 
+                    fields={[
+                      { name: 'specialization', label: STRING_CONSTANTS.SETTINGS_LABELS.SPECIALIZATION, defaultValue: 'General Practitioner' },
+                      { name: 'education', label: STRING_CONSTANTS.SETTINGS_LABELS.EDUCATION, defaultValue: 'MD, Harvard Medical School' },
+                      { name: 'licenseNumber', label: STRING_CONSTANTS.SETTINGS_LABELS.LICENSE_NUMBER, defaultValue: 'MD-12345' },
+                      { name: 'yearsOfExperience', label: STRING_CONSTANTS.SETTINGS_LABELS.YEARS_OF_EXPERIENCE, type: 'number', defaultValue: 15 },
+                    ]}
+                    styles={styles}
+                  />
                   <div className={styles.cardActions}>
-                    <button className={styles.primaryButton}>Save Changes</button>
+                    <button className={styles.primaryButton} onClick={handleActionFeedback} type="button">
+                      {STRING_CONSTANTS.SETTINGS_LABELS.SAVE_CHANGES}
+                    </button>
                   </div>
                 </div>
               </div>
@@ -196,21 +196,23 @@ const Settings: React.FC<SettingsProps> = ({ onShowInvoices }) => {
               <div className={styles.settingCard}>
                 <div className={styles.settingCardHeader}>
                   <span className={styles.materialSymbolsIcon}>schedule</span>
-                  <h3>Working Hours</h3>
+                  <h3>{STRING_CONSTANTS.SETTINGS_LABELS.WORKING_HOURS}</h3>
                 </div>
                 <div className={styles.settingCardContent}>
                   <div className={styles.formGrid}>
                     <div className={styles.formGroup}>
-                      <label>Start Time</label>
+                      <label>{STRING_CONSTANTS.SETTINGS_LABELS.START_TIME}</label>
                       <input type="time" defaultValue="09:00" />
                     </div>
                     <div className={styles.formGroup}>
-                      <label>End Time</label>
+                      <label>{STRING_CONSTANTS.SETTINGS_LABELS.END_TIME}</label>
                       <input type="time" defaultValue="17:00" />
                     </div>
                   </div>
                   <div className={styles.cardActions}>
-                    <button className={styles.primaryButton}>Save Changes</button>
+                    <button className={styles.primaryButton} onClick={handleActionFeedback} type="button">
+                      {STRING_CONSTANTS.SETTINGS_LABELS.SAVE_CHANGES}
+                    </button>
                   </div>
                 </div>
               </div>
@@ -260,16 +262,21 @@ const Settings: React.FC<SettingsProps> = ({ onShowInvoices }) => {
                         <div className={styles.cardActions}>
                           <button 
                             className={styles.primaryButton}
-                            onClick={() => setIsChangingPassword(false)}
+                            onClick={() => {
+                              setIsChangingPassword(false);
+                              handleActionFeedback();
+                            }}
+                            type="button"
                           >
                             <span className={styles.materialSymbolsIcon}>save</span>
-                            Update Password
+                            {STRING_CONSTANTS.SETTINGS_LABELS.UPDATE_PASSWORD}
                           </button>
                           <button 
                             className={styles.secondaryButton}
                             onClick={() => setIsChangingPassword(false)}
+                            type="button"
                           >
-                            Cancel
+                            {STRING_CONSTANTS.BUTTONS.CANCEL}
                           </button>
                         </div>
                       </>
@@ -323,7 +330,9 @@ const Settings: React.FC<SettingsProps> = ({ onShowInvoices }) => {
                           <p>San Francisco, CA • Last active: 2 hours ago</p>
                         </div>
                       </div>
-                      <button className={styles.dangerButton}>Revoke</button>
+                      <button className={styles.dangerButton} onClick={handleActionFeedback} type="button">
+                        {STRING_CONSTANTS.SETTINGS_LABELS.REVOKE}
+                      </button>
                     </div>
                   </div>
                 </div>
@@ -426,9 +435,9 @@ const Settings: React.FC<SettingsProps> = ({ onShowInvoices }) => {
 
             {/* Save Button at Bottom */}
             <div className={styles.preferenceActions}>
-              <button className={styles.primaryButton}>
+              <button className={styles.primaryButton} onClick={handleActionFeedback} type="button">
                 <span className={styles.materialSymbolsIcon}>save</span>
-                Save Preferences
+                {STRING_CONSTANTS.SETTINGS_LABELS.SAVE_PREFERENCES}
               </button>
             </div>
           </div>

@@ -11,7 +11,7 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
         <div className={styles.modalHeader}>
           <h2 className={styles.modalTitle}>{title}</h2>
           <button className={styles.closeButton} onClick={onClose}>
-            <span className="material-symbols-outlined">close</span>
+            <span className={styles.materialIcon}>close</span>
           </button>
         </div>
         <div className={styles.modalBody}>

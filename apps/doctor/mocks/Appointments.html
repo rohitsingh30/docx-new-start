@@ -103,21 +103,21 @@
 </nav>
 
 <!-- Main Content Area -->
-<main class="flex-1 overflow-y-auto px-8 py-6">
+<main class="flex-1 overflow-y-auto px-8 py-6 flex flex-col gap-6">
 <!-- Header -->
-<div class="flex items-start justify-between mb-6">
-<div>
+<div class="flex items-start justify-between mb-6 flex-wrap gap-4">
+<div class="flex-1 min-w-0">
 <h1 class="text-3xl font-bold text-[#1a202c] dark:text-white mb-2">Appointments</h1>
 <p class="text-sm text-[#718096] dark:text-gray-400">Manage and track all your appointments</p>
 </div>
-<button class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors shadow-sm">
+<button class="flex items-center gap-2 px-4 py-2 bg-primary text-white rounded-lg hover:bg-primary/90 transition-colors shadow-sm whitespace-nowrap">
 <span class="material-symbols-outlined text-xl"> add </span>
 <span class="text-sm font-medium">New Appointment</span>
 </button>
 </div>
 
 <!-- Filter Tabs -->
-<div class="flex gap-2 mb-6 border-b border-gray-200 dark:border-gray-700">
+<div class="flex gap-2 mb-6 border-b border-gray-200 dark:border-gray-700 flex-wrap overflow-x-auto">
 <button class="px-4 py-2 text-sm font-medium text-primary border-b-2 border-primary">
 All Appointments
 <span class="ml-2 px-2 py-0.5 bg-primary/10 text-primary rounded-full text-xs">24</span>

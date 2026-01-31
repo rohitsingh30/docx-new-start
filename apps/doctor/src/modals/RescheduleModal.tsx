@@ -24,8 +24,8 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({
       <form onSubmit={handleSubmit} className={styles.form}>
         <div className={styles.formGroup}>
           <label className={styles.label}>
-            <span className="material-symbols-outlined">calendar_today</span>
-            New Date
+            <span className={styles.materialIcon}>calendar_today</span>
+            {STRING_CONSTANTS.MODAL_LABELS.NEW_DATE}
           </label>
           <input
             type="date"
@@ -38,8 +38,8 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({
 
         <div className={styles.formGroup}>
           <label className={styles.label}>
-            <span className="material-symbols-outlined">schedule</span>
-            New Time
+            <span className={styles.materialIcon}>schedule</span>
+            {STRING_CONSTANTS.MODAL_LABELS.NEW_TIME}
           </label>
           <input
             type="time"
@@ -55,7 +55,7 @@ const RescheduleModal: React.FC<RescheduleModalProps> = ({
             {STRING_CONSTANTS.BUTTONS.CANCEL}
           </button>
           <button type="submit" className={styles.saveButton}>
-            Confirm Reschedule
+            {STRING_CONSTANTS.MODAL_LABELS.CONFIRM_RESCHEDULE}
           </button>
         </div>
       </form>

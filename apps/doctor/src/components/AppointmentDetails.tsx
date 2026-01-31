@@ -5,6 +5,21 @@ import { MOCK_DATA } from '../constants/dataConstants';
 import { STRING_CONSTANTS } from '../constants/stringConstants';
 import { getStatusClassName, getStatusLabel } from '../utils/statusUtils';
 import { AppointmentTab } from '../types/enums';
+import { 
+  DetailsList, 
+  VitalsSection, 
+  PatientHistoryGrid, 
+  SimpleTabList,
+  Card,
+  CardWithGrid,
+  CollapsibleCardWithIcon,
+  ActionButtons,
+  MedicationList,
+  AppointmentList,
+  SymptomTags,
+  DurationDisplay,
+  PageHeader
+} from './shared';
 
 const AppointmentDetails: React.FC<AppointmentDetailsProps> = ({
   appointmentId,
@@ -44,14 +59,6 @@ const AppointmentDetails: React.FC<AppointmentDetailsProps> = ({
     }));
   };
 
-  const handleBackClick = () => {
-    if (onBack) {
-      onBack();
-    } else {
-      window.history.back();
-    }
-  };
-
   const handleEditVitals = () => {
     setIsEditingVitals(true);
   };
@@ -75,7 +82,7 @@ const AppointmentDetails: React.FC<AppointmentDetailsProps> = ({
     console.log('Vitals saved:', vitalsData);
   };
 
-  const handleVitalChange = (field: keyof typeof vitalsData, value: string) => {
+  const handleVitalChange = (field: string, value: string) => {
     setVitalsData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -95,31 +102,21 @@ const AppointmentDetails: React.FC<AppointmentDetailsProps> = ({
       {/* Patient Info & Appointment Details in 2 columns */}
       <div className={styles.overviewGrid}>
         {/* Patient Information */}
-        <div className={styles.card}>
-          <div className={styles.cardHeader}>
-            <h2 className={styles.cardTitle}>{STRING_CONSTANTS.LABELS.PATIENT_INFORMATION}</h2>
-          </div>
+        <Card title={STRING_CONSTANTS.LABELS.PATIENT_INFORMATION} styles={styles}>
           <div className={styles.patientInfo}>
             <div className={styles.patientAvatar}>
               <img src={appointmentData.patient.avatar} alt={appointmentData.patient.name} />
             </div>
             <div className={styles.patientDetails}>
-              <div className={styles.detailRow}>
-                <span className={styles.detailLabel}>{STRING_CONSTANTS.LABELS.PATIENT_NAME}</span>
-                <span className={styles.detailValue}>{appointmentData.patient.name}</span>
-              </div>
-              <div className={styles.detailRow}>
-                <span className={styles.detailLabel}>{STRING_CONSTANTS.LABELS.PATIENT_ID}</span>
-                <span className={styles.detailValue}>{appointmentData.patient.patientId}</span>
-              </div>
-              <div className={styles.detailRow}>
-                <span className={styles.detailLabel}>{STRING_CONSTANTS.LABELS.AGE_GENDER}</span>
-                <span className={styles.detailValue}>{appointmentData.patient.age} / {appointmentData.patient.gender}</span>
-              </div>
-              <div className={styles.detailRow}>
-                <span className={styles.detailLabel}>{STRING_CONSTANTS.LABELS.BLOOD_TYPE}</span>
-                <span className={styles.detailValue}>{appointmentData.patient.bloodType}</span>
-              </div>
+              <DetailsList 
+                items={[
+                  { label: STRING_CONSTANTS.LABELS.PATIENT_NAME, value: appointmentData.patient.name },
+                  { label: STRING_CONSTANTS.LABELS.PATIENT_ID, value: appointmentData.patient.patientId },
+                  { label: STRING_CONSTANTS.LABELS.AGE_GENDER, value: `${appointmentData.patient.age} / ${appointmentData.patient.gender}` },
+                  { label: STRING_CONSTANTS.LABELS.BLOOD_TYPE, value: appointmentData.patient.bloodType },
+                ]}
+                styles={styles}
+              />
             </div>
           </div>
           
@@ -145,368 +142,117 @@ const AppointmentDetails: React.FC<AppointmentDetailsProps> = ({
                 </div>
               )}
             </div>
-            {!isEditingVitals ? (
-              <div className={styles.vitalsCompact}>
-                <div className={styles.vitalCompactItem}>
-                  <span className={`${styles.materialIcon} ${styles.vitalCompactIcon}`}>favorite</span>
-                  <div className={styles.vitalCompactInfo}>
-                    <span className={styles.vitalCompactLabel}>{STRING_CONSTANTS.LABELS.HEART_RATE}</span>
-                    <span className={styles.vitalCompactValue}>{vitalsData.heartRate}</span>
-                  </div>
-                </div>
-                <div className={styles.vitalCompactItem}>
-                  <span className={`${styles.materialIcon} ${styles.vitalCompactIcon}`}>monitor_heart</span>
-                  <div className={styles.vitalCompactInfo}>
-                    <span className={styles.vitalCompactLabel}>{STRING_CONSTANTS.LABELS.BLOOD_PRESSURE}</span>
-                    <span className={styles.vitalCompactValue}>{vitalsData.bloodPressure}</span>
-                  </div>
-                </div>
-                <div className={styles.vitalCompactItem}>
-                  <span className={`${styles.materialIcon} ${styles.vitalCompactIcon}`}>thermostat</span>
-                  <div className={styles.vitalCompactInfo}>
-                    <span className={styles.vitalCompactLabel}>{STRING_CONSTANTS.LABELS.TEMPERATURE}</span>
-                    <span className={styles.vitalCompactValue}>{vitalsData.temperature}</span>
-                  </div>
-                </div>
-                <div className={styles.vitalCompactItem}>
-                  <span className={`${styles.materialIcon} ${styles.vitalCompactIcon}`}>scale</span>
-                  <div className={styles.vitalCompactInfo}>
-                    <span className={styles.vitalCompactLabel}>{STRING_CONSTANTS.LABELS.WEIGHT}</span>
-                    <span className={styles.vitalCompactValue}>{vitalsData.weight}</span>
-                  </div>
-                </div>
-              </div>
-            ) : (
-              <div className={styles.vitalsEditForm}>
-                <div className={styles.vitalEditItem}>
-                  <label className={styles.vitalEditLabel}>
-                    <span className={`${styles.materialIcon} ${styles.vitalEditIcon}`}>favorite</span>
-                    {STRING_CONSTANTS.LABELS.HEART_RATE}
-                  </label>
-                  <input
-                    type="text"
-                    className={styles.vitalEditInput}
-                    value={vitalsData.heartRate}
-                    onChange={(e) => handleVitalChange('heartRate', e.target.value)}
-                    placeholder={STRING_CONSTANTS.PLACEHOLDERS.HEART_RATE}
-                  />
-                </div>
-                <div className={styles.vitalEditItem}>
-                  <label className={styles.vitalEditLabel}>
-                    <span className={`${styles.materialIcon} ${styles.vitalEditIcon}`}>monitor_heart</span>
-                    {STRING_CONSTANTS.LABELS.BLOOD_PRESSURE}
-                  </label>
-                  <input
-                    type="text"
-                    className={styles.vitalEditInput}
-                    value={vitalsData.bloodPressure}
-                    onChange={(e) => handleVitalChange('bloodPressure', e.target.value)}
-                    placeholder={STRING_CONSTANTS.PLACEHOLDERS.BLOOD_PRESSURE}
-                  />
-                </div>
-                <div className={styles.vitalEditItem}>
-                  <label className={styles.vitalEditLabel}>
-                    <span className={`${styles.materialIcon} ${styles.vitalEditIcon}`}>thermostat</span>
-                    {STRING_CONSTANTS.LABELS.TEMPERATURE}
-                  </label>
-                  <input
-                    type="text"
-                    className={styles.vitalEditInput}
-                    value={vitalsData.temperature}
-                    onChange={(e) => handleVitalChange('temperature', e.target.value)}
-                    placeholder={STRING_CONSTANTS.PLACEHOLDERS.TEMPERATURE}
-                  />
-                </div>
-                <div className={styles.vitalEditItem}>
-                  <label className={styles.vitalEditLabel}>
-                    <span className={`${styles.materialIcon} ${styles.vitalEditIcon}`}>scale</span>
-                    {STRING_CONSTANTS.LABELS.WEIGHT}
-                  </label>
-                  <input
-                    type="text"
-                    className={styles.vitalEditInput}
-                    value={vitalsData.weight}
-                    onChange={(e) => handleVitalChange('weight', e.target.value)}
-                    placeholder={STRING_CONSTANTS.PLACEHOLDERS.WEIGHT}
-                  />
-                </div>
-              </div>
-            )}
+            <VitalsSection data={vitalsData} isEditing={isEditingVitals} onChange={handleVitalChange} styles={styles} />
           </div>
-        </div>
+        </Card>
 
         {/* Appointment Details */}
-        <div className={styles.card}>
-          <div className={styles.cardHeader}>
-            <h2 className={styles.cardTitle}>{STRING_CONSTANTS.LABELS.APPOINTMENT_DETAILS}</h2>
-          </div>
-          <div className={styles.appointmentGrid}>
-            <div className={styles.detailRow}>
-              <span className={styles.detailLabel}>{STRING_CONSTANTS.LABELS.APPOINTMENT_TYPE}</span>
-              <span className={styles.detailValue}>{appointmentData.appointment.type}</span>
-            </div>
-            <div className={styles.detailRow}>
-              <span className={styles.detailLabel}>{STRING_CONSTANTS.LABELS.STATUS}</span>
-              <span className={`${styles.statusBadge} ${getStatusClassName(appointmentData.appointment.status, styles)}`}>
-                {getStatusLabel(appointmentData.appointment.status)}
-              </span>
-            </div>
-            <div className={styles.detailRow}>
-              <span className={styles.detailLabel}>{STRING_CONSTANTS.LABELS.DATE}</span>
-              <span className={styles.detailValue}>{appointmentData.appointment.date}</span>
-            </div>
-            <div className={styles.detailRow}>
-              <span className={styles.detailLabel}>{STRING_CONSTANTS.LABELS.TIME}</span>
-              <span className={styles.detailValue}>{appointmentData.appointment.time}</span>
-            </div>
-            <div className={styles.detailRow}>
-              <span className={styles.detailLabel}>{STRING_CONSTANTS.LABELS.DURATION}</span>
-              <span className={styles.detailValue}>{appointmentData.appointment.duration}</span>
-            </div>
-            <div className={styles.detailRow}>
-              <span className={styles.detailLabel}>{STRING_CONSTANTS.LABELS.ROOM}</span>
-              <span className={styles.detailValue}>{appointmentData.appointment.room}</span>
-            </div>
-          </div>
-          
-          {/* Actions in Appointment Details */}
-          <div className={styles.appointmentActions}>
-            <button className={styles.actionButton} onClick={onReschedule}>
-              <span className={`${styles.materialIcon} ${styles.actionIcon}`}>schedule</span>
-              <span>{STRING_CONSTANTS.BUTTONS.RESCHEDULE}</span>
-            </button>
-            <button className={styles.actionButton} onClick={onStart}>
-              <span className={`${styles.materialIcon} ${styles.actionIcon}`}>play_arrow</span>
-              <span>{STRING_CONSTANTS.BUTTONS.START_APPOINTMENT}</span>
-            </button>
-            <button className={styles.actionButton} onClick={onCancel}>
-              <span className={`${styles.materialIcon} ${styles.actionIcon}`}>cancel</span>
-              <span>{STRING_CONSTANTS.BUTTONS.CANCEL_APPOINTMENT}</span>
-            </button>
-            <button className={styles.actionButton} onClick={onAddNotes}>
-              <span className={`${styles.materialIcon} ${styles.actionIcon}`}>note_add</span>
-              <span>{STRING_CONSTANTS.BUTTONS.ADD_NOTES}</span>
-            </button>
-          </div>
-        </div>
+        <CardWithGrid 
+          title={STRING_CONSTANTS.LABELS.APPOINTMENT_DETAILS}
+          items={[
+            { label: STRING_CONSTANTS.LABELS.APPOINTMENT_TYPE, value: appointmentData.appointment.type },
+            { 
+              label: STRING_CONSTANTS.LABELS.STATUS, 
+              value: getStatusLabel(appointmentData.appointment.status),
+              valueClassName: `${styles.statusBadge} ${getStatusClassName(appointmentData.appointment.status, styles)}`
+            },
+            { label: STRING_CONSTANTS.LABELS.DATE, value: appointmentData.appointment.date },
+            { label: STRING_CONSTANTS.LABELS.TIME, value: appointmentData.appointment.time },
+            { label: STRING_CONSTANTS.LABELS.DURATION, value: appointmentData.appointment.duration },
+            { label: STRING_CONSTANTS.LABELS.ROOM, value: appointmentData.appointment.room },
+          ]}
+          gridClassName={styles.appointmentGrid}
+          styles={styles}
+        >
+          <ActionButtons 
+            actions={[
+              { icon: 'schedule', label: STRING_CONSTANTS.BUTTONS.RESCHEDULE, onClick: onReschedule },
+              { icon: 'play_arrow', label: STRING_CONSTANTS.BUTTONS.START_APPOINTMENT, onClick: onStart },
+              { icon: 'cancel', label: STRING_CONSTANTS.BUTTONS.CANCEL_APPOINTMENT, onClick: onCancel },
+              { icon: 'note_add', label: STRING_CONSTANTS.BUTTONS.ADD_NOTES, onClick: onAddNotes },
+            ]}
+            styles={styles}
+          />
+        </CardWithGrid>
       </div>
 
       {/* Chief Complaint */}
-      <div className={styles.card}>
-        <div className={styles.cardHeader}>
-          <h2 className={styles.cardTitle}>{STRING_CONSTANTS.LABELS.CHIEF_COMPLAINT}</h2>
-        </div>
+      <Card title={STRING_CONSTANTS.LABELS.CHIEF_COMPLAINT} styles={styles}>
         <p className={styles.complaintDescription}>{appointmentData.chiefComplaint.description}</p>
-        <div className={styles.symptomSection}>
-          <span className={styles.symptomsLabel}>{STRING_CONSTANTS.LABELS.SYMPTOMS}:</span>
-          <div className={styles.symptomsList}>
-            {appointmentData.chiefComplaint.symptoms.map((symptom, index) => (
-              <span key={index} className={styles.symptomTag}>{symptom}</span>
-            ))}
-          </div>
-        </div>
-        <div className={styles.durationSection}>
-          <span className={styles.durationLabel}>{STRING_CONSTANTS.LABELS.DURATION}:</span>
-          <span className={styles.durationText}>{appointmentData.chiefComplaint.duration}</span>
-        </div>
-      </div>
+        <SymptomTags 
+          label={STRING_CONSTANTS.LABELS.SYMPTOMS}
+          symptoms={appointmentData.chiefComplaint.symptoms}
+          styles={styles}
+        />
+        <DurationDisplay 
+          label={STRING_CONSTANTS.LABELS.DURATION}
+          value={appointmentData.chiefComplaint.duration}
+          styles={styles}
+        />
+      </Card>
     </div>
   );
 
   const renderMedicalHistoryTab = () => (
     <div className={styles.tabContent}>
-      {/* History Cards Grid */}
-      <div className={styles.historyCardsGrid}>
-        {/* Allergies */}
-        <div className={styles.card}>
-          <div className={styles.statCard}>
-            <div className={styles.statCardHeader}>
-              <span className={`${styles.materialIcon} ${styles.statCardIcon}`}>warning</span>
-              <h3 className={styles.statCardTitle}>Known Allergies</h3>
-            </div>
-          </div>
-          <div className={styles.statCardContent}>
-            <div className={styles.statCardItem}>Penicillin (Rash)</div>
-            <div className={styles.statCardItem}>Pollen (Seasonal)</div>
-          </div>
-        </div>
-
-        {/* Family History */}
-        <div className={styles.card}>
-          <div className={styles.statCard}>
-            <div className={styles.statCardHeader}>
-              <span className={`${styles.materialIcon} ${styles.statCardIcon}`}>family_restroom</span>
-              <h3 className={styles.statCardTitle}>Family History</h3>
-            </div>
-          </div>
-          <div className={styles.statCardContent}>
-            <div className={styles.statCardItem}>Father: Heart Disease</div>
-            <div className={styles.statCardItem}>Mother: Diabetes</div>
-          </div>
-        </div>
-
-        {/* Surgical History */}
-        <div className={styles.card}>
-          <div className={styles.statCard}>
-            <div className={styles.statCardHeader}>
-              <span className={`${styles.materialIcon} ${styles.statCardIcon}`}>surgical</span>
-              <h3 className={styles.statCardTitle}>Past Surgeries</h3>
-            </div>
-          </div>
-          <div className={styles.statCardContent}>
-            <div className={styles.statCardItem}>Appendectomy (2015)</div>
-          </div>
-        </div>
-
-        {/* Social History */}
-        <div className={styles.card}>
-          <div className={styles.statCard}>
-            <div className={styles.statCardHeader}>
-              <span className={`${styles.materialIcon} ${styles.statCardIcon}`}>groups</span>
-              <h3 className={styles.statCardTitle}>Lifestyle & Habits</h3>
-            </div>
-          </div>
-          <div className={styles.statCardContent}>
-            <div className={styles.statCardItem}>Non-smoker</div>
-            <div className={styles.statCardItem}>Occasional alcohol use</div>
-            <div className={styles.statCardItem}>Regular exercise (3x/week)</div>
-          </div>
-        </div>
-
-        {/* Previous Conditions */}
-        <div className={styles.card}>
-          <div className={styles.statCard}>
-            <div className={styles.statCardHeader}>
-              <span className={`${styles.materialIcon} ${styles.statCardIcon}`}>medical_information</span>
-              <h3 className={styles.statCardTitle}>Previous Conditions</h3>
-            </div>
-          </div>
-          <div className={styles.statCardContent}>
-            <div className={styles.statCardItem}>Hypertension (Diagnosed 2020)</div>
-            <div className={styles.statCardItem}>Type 2 Diabetes (Diagnosed 2018)</div>
-            <div className={styles.statCardItem}>Seasonal Allergies</div>
-          </div>
-        </div>
-      </div>
+      {/* History Cards Grid - Single function call */}
+      <PatientHistoryGrid styles={styles} />
 
       {/* Current Medications */}
-      <div className={styles.card}>
-        <button 
-          className={styles.cardHeaderButton}
-          onClick={() => toggleSection('currentMedications')}
-        >
-          <div className={styles.cardHeaderLeft}>
-            <span className={`${styles.materialIcon} ${styles.historyIcon}`}>medication</span>
-            <h2 className={styles.cardTitle}>{STRING_CONSTANTS.LABELS.CURRENT_MEDICATIONS}</h2>
-          </div>
-          <span className={styles.materialIcon}>
-            {collapsedSections.currentMedications ? 'expand_more' : 'expand_less'}
-          </span>
-        </button>
-        {!collapsedSections.currentMedications && (
-          <div className={styles.cardContent}>
-            <div className={styles.medicationsList}>
-              <div className={styles.medItem}>
-                <div className={styles.medItemContent}>
-                  <div className={styles.medItemName}>Metformin 500mg</div>
-                  <div className={styles.medItemDetails}>
-                    500mg • Twice daily • After meals • 30 days
-                  </div>
-                </div>
-              </div>
-              <div className={styles.medItem}>
-                <div className={styles.medItemContent}>
-                  <div className={styles.medItemName}>Lisinopril 10mg</div>
-                  <div className={styles.medItemDetails}>
-                    10mg • Once daily • Morning • 30 days
-                  </div>
-                </div>
-              </div>
-              <div className={styles.medItem}>
-                <div className={styles.medItemContent}>
-                  <div className={styles.medItemName}>Aspirin 81mg</div>
-                  <div className={styles.medItemDetails}>
-                    81mg • Once daily • Morning • Ongoing
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-      </div>
+      <CollapsibleCardWithIcon 
+        icon="medication"
+        title={STRING_CONSTANTS.LABELS.CURRENT_MEDICATIONS}
+        isCollapsed={collapsedSections.currentMedications}
+        onToggle={() => toggleSection('currentMedications')}
+        styles={styles}
+      >
+        <MedicationList 
+          medications={[
+            { name: 'Metformin 500mg', details: '500mg • Twice daily • After meals • 30 days' },
+            { name: 'Lisinopril 10mg', details: '10mg • Once daily • Morning • 30 days' },
+            { name: 'Aspirin 81mg', details: '81mg • Once daily • Morning • Ongoing' },
+          ]}
+          styles={styles}
+        />
+      </CollapsibleCardWithIcon>
 
       {/* Previous Appointments */}
-      <div className={styles.card}>
-        <button 
-          className={styles.cardHeaderButton}
-          onClick={() => toggleSection('previousAppointments')}
-        >
-          <div className={styles.cardHeaderLeft}>
-            <span className={`${styles.materialIcon} ${styles.historyIcon}`}>event_note</span>
-            <h2 className={styles.cardTitle}>{STRING_CONSTANTS.LABELS.PREVIOUS_APPOINTMENTS}</h2>
-          </div>
-          <span className={styles.materialIcon}>
-            {collapsedSections.previousAppointments ? 'expand_more' : 'expand_less'}
-          </span>
-        </button>
-        {!collapsedSections.previousAppointments && (
-          <div className={styles.cardContent}>
-            <div className={styles.appointmentsList}>
-              {appointmentData.previousAppointments.map((prevAppt) => (
-                <div key={prevAppt.id} className={styles.appointmentItem}>
-                  <span className={styles.appointmentText}>
-                    {prevAppt.date} - {prevAppt.type}
-                  </span>
-                  <button 
-                    className={styles.viewButton}
-                    onClick={() => onViewPreviousAppointment && onViewPreviousAppointment(prevAppt.id)}
-                  >
-                    <span className={styles.materialIcon}>visibility</span>
-                    View
-                  </button>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-      </div>
+      <CollapsibleCardWithIcon 
+        icon="event_note"
+        title={STRING_CONSTANTS.LABELS.PREVIOUS_APPOINTMENTS}
+        isCollapsed={collapsedSections.previousAppointments}
+        onToggle={() => toggleSection('previousAppointments')}
+        styles={styles}
+      >
+        <AppointmentList 
+          appointments={appointmentData.previousAppointments}
+          onViewAppointment={onViewPreviousAppointment}
+          styles={styles}
+        />
+      </CollapsibleCardWithIcon>
     </div>
   );
 
   return (
     <div className={styles.appointmentDetailsContainer}>
       {/* Header with Back Button */}
-      <div className={styles.header}>
-        <div className={styles.headerLeft}>
-          <button className={styles.backButton} onClick={handleBackClick}>
-            <span className={`${styles.materialIcon} ${styles.backIcon}`}>arrow_back</span>
-          </button>
-          <div className={styles.headerContent}>
-            <h1 className={styles.pageTitle}>{STRING_CONSTANTS.LABELS.APPOINTMENT_DETAILS}</h1>
-            <p className={styles.pageSubtitle}>
-              {appointmentData.patient.name} • {appointmentData.appointment.date} at {appointmentData.appointment.time}
-            </p>
-          </div>
-        </div>
-      </div>
+      <PageHeader 
+        title={STRING_CONSTANTS.LABELS.APPOINTMENT_DETAILS}
+        subtitle={`${appointmentData.patient.name} • ${appointmentData.appointment.date} at ${appointmentData.appointment.time}`}
+        onBack={onBack}
+        styles={styles}
+      />
 
       {/* Tabs Navigation */}
-      <div className={styles.tabsContainer}>
-        <button
-          className={activeTab === AppointmentTab.OVERVIEW ? `${styles.tab} ${styles.tabActive}` : styles.tab}
-          onClick={() => setActiveTab(AppointmentTab.OVERVIEW)}
-        >
-          <span className={`${styles.materialIcon} ${styles.tabIcon}`}>dashboard</span>
-          Overview
-        </button>
-        <button
-          className={activeTab === AppointmentTab.MEDICAL_HISTORY ? `${styles.tab} ${styles.tabActive}` : styles.tab}
-          onClick={() => setActiveTab(AppointmentTab.MEDICAL_HISTORY)}
-        >
-          <span className={`${styles.materialIcon} ${styles.tabIcon}`}>medical_information</span>
-          Medical History
-        </button>
-      </div>
+      <SimpleTabList 
+        tabs={[
+          { id: AppointmentTab.OVERVIEW, icon: 'dashboard', label: STRING_CONSTANTS.TABS.OVERVIEW },
+          { id: AppointmentTab.MEDICAL_HISTORY, icon: 'medical_information', label: STRING_CONSTANTS.TABS.MEDICAL_HISTORY },
+        ]}
+        activeTab={activeTab}
+        onTabChange={(tab) => setActiveTab(tab as AppointmentTab)}
+        styles={styles}
+      />
 
       {/* Tab Content */}
       <div className={styles.content}>

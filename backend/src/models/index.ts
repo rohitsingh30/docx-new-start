@@ -1,0 +1,9 @@
+export { UserModel } from './User.model';
+export { DoctorModel } from './Doctor.model';
+export { PatientModel } from './Patient.model';
+export { AppointmentModel } from './Appointment.model';
+export { ConsultationModel } from './Consultation.model';
+export { PrescriptionModel } from './Prescription.model';
+export { VitalsModel } from './Vitals.model';
+export { MedicalNoteModel } from './MedicalNote.model';
+export { MedicalRecordModel } from './MedicalRecord.model';

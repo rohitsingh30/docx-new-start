@@ -1,6 +1,8 @@
 // Dashboard-related types and interfaces
 import { AppointmentStatus } from './enums';
 
+export type TabType = 'dashboard' | 'patients' | 'appointments' | 'settings' | 'invoices';
+
 export interface DashboardStats {
   totalPatients: number;
   appointmentsToday: number;
@@ -35,6 +37,8 @@ export interface DashboardProps {
   activeSection?: string;
   onSectionChange?: (sectionId: string) => void;
   onAppointmentClick?: (appointmentId: string) => void;
+  onAddMedicalNote?: () => void;
+  onViewAllPatients?: () => void;
 }
 
 export interface StatCardProps {

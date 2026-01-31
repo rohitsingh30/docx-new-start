@@ -4,6 +4,8 @@ import { Patient } from './Patient.types';
 export interface PatientDetailsProps {
   patientId?: string;
   onBack?: () => void;
+  onScheduleAppointment?: () => void;
+  onEditPatient?: () => void;
 }
 
 export interface PatientDetailsState {

@@ -20,15 +20,16 @@
 
 .patientCard {
   background: white;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--color-border, #e2e8f0);
   border-radius: 0.5rem;
   padding: 1rem 1.25rem;
   transition: all 0.2s ease;
   margin: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .patientCard:hover {
-  border-color: #3182ce;
+  border-color: var(--color-primary, #3182ce);
   box-shadow: 0 2px 8px rgba(49, 130, 206, 0.1);
 }
 
@@ -74,7 +75,7 @@
   margin: 0;
   font-size: 0.9375rem;
   font-weight: 600;
-  color: #1a202c;
+  color: var(--color-text-primary, #1a202c);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -82,7 +83,7 @@
 
 .patientId {
   font-size: 0.6875rem;
-  color: #64748b;
+  color: var(--color-text-secondary, #4a5568);
   font-weight: 500;
   margin-top: 0.125rem;
 }
@@ -101,19 +102,19 @@
   align-items: center;
   gap: 0.25rem;
   padding: 0.25rem 0.625rem;
-  background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
-  border: 1px solid #e2e8f0;
-  border-radius: 4px;
+  background: var(--color-gray-100, #f7fafc);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 0.25rem;
   font-size: 0.75rem;
   font-weight: 500;
-  color: #4a5568;
+  color: var(--color-text-secondary, #4a5568);
   white-space: nowrap;
   transition: all 0.2s ease;
 }
 
 .infoTag:hover {
-  background: linear-gradient(135deg, #edf2f7 0%, #e2e8f0 100%);
-  border-color: #cbd5e0;
+  background: var(--color-gray-200, #e2e8f0);
+  border-color: var(--color-border, #e2e8f0);
 }
 
 .infoTag span.material-symbols-outlined {

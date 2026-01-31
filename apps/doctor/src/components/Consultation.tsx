@@ -2,10 +2,27 @@ import React, { useState } from 'react';
 import styles from '../styles/Consultation.module.css';
 import { ConsultationProps, VitalsData, Medication } from '../types/Consultation.types';
 import { STRING_CONSTANTS } from '../constants/stringConstants';
-
-const COMMON_SYMPTOMS = ['Fever', 'Cough', 'Headache', 'Fatigue', 'Nausea', 'Chest Pain'];
-const COMMON_TESTS = ['CBC', 'Blood Sugar', 'Lipid Profile', 'ECG', 'X-Ray', 'Urine Test'];
-const COMMON_MEDICINES = ['Paracetamol', 'Ibuprofen', 'Amoxicillin', 'Azithromycin', 'Omeprazole', 'Metformin'];
+import { MOCK_DATA } from '../constants/dataConstants';
+import { ConsultationTab } from '../types/enums';
+import { 
+  PatientHistoryGrid, 
+  VitalsSection, 
+  TabList, 
+  PageHeader,
+  CollapsibleCardWithIcon,
+  MedicationList,
+  AppointmentList,
+  CardWithHeaderAction,
+  QuickAddList,
+  TagList,
+  TextAreaCard,
+  InputFieldCard,
+  EditableHeaderCard,
+  SectionSeparator,
+  MedicationForm,
+  PrescriptionList,
+  LabTestList
+} from './shared';
 
 const Consultation: React.FC<ConsultationProps> = ({
   appointmentId,
@@ -16,7 +33,7 @@ const Consultation: React.FC<ConsultationProps> = ({
   onComplete,
   onCancel,
 }) => {
-  const [activeTab, setActiveTab] = useState<'medical-history' | 'symptoms' | 'treatment' | 'followup'>('medical-history');
+  const [activeTab, setActiveTab] = useState<ConsultationTab>(ConsultationTab.SYMPTOMS);
   
   const [vitals, setVitals] = useState<VitalsData>({
     heartRate: '72 bpm',
@@ -32,6 +49,8 @@ const Consultation: React.FC<ConsultationProps> = ({
   const [diagnosis, setDiagnosis] = useState('');
   const [medications, setMedications] = useState<Medication[]>([]);
   const [labTests, setLabTests] = useState<string[]>([]);
+  const [showLabTestForm, setShowLabTestForm] = useState(false);
+  const [currentLabTest, setCurrentLabTest] = useState('');
   const [followUpDate, setFollowUpDate] = useState('');
   const [notes, setNotes] = useState('');
   const [showMedicationForm, setShowMedicationForm] = useState(false);
@@ -55,7 +74,7 @@ const Consultation: React.FC<ConsultationProps> = ({
     }));
   };
 
-  const handleVitalChange = (field: keyof VitalsData, value: string) => {
+  const handleVitalChange = (field: string, value: string) => {
     setVitals(prev => ({ ...prev, [field]: value }));
   };
 
@@ -73,6 +92,24 @@ const Consultation: React.FC<ConsultationProps> = ({
     if (!labTests.includes(test)) {
       setLabTests([...labTests, test]);
     }
+  };
+
+  const handleAddCustomTest = () => {
+    setCurrentLabTest('');
+    setShowLabTestForm(true);
+  };
+
+  const saveLabTest = () => {
+    if (currentLabTest.trim()) {
+      addLabTest(currentLabTest.trim());
+      setShowLabTestForm(false);
+      setCurrentLabTest('');
+    }
+  };
+
+  const cancelLabTest = () => {
+    setShowLabTestForm(false);
+    setCurrentLabTest('');
   };
 
   const removeLabTest = (test: string) => {
@@ -151,747 +188,288 @@ const Consultation: React.FC<ConsultationProps> = ({
   return (
     <div className={styles.container}>
       {/* Header */}
-      <div className={styles.header}>
-        <div className={styles.headerLeft}>
-          <button className={styles.backButton} onClick={handleCancel}>
-            <span className={`${styles.materialIcon} ${styles.backIcon}`}>arrow_back</span>
-          </button>
-          <div className={styles.headerInfo}>
-            <h1 className={styles.headerTitle}>{STRING_CONSTANTS.LABELS.CONSULTATION_SESSION}</h1>
-            <p className={styles.headerSubtitle}>
-              {patientName} • {patientAge}y, {patientGender} • {appointmentType}
-            </p>
-          </div>
-        </div>
-        <div className={styles.headerActions}>
+      <PageHeader 
+        title={STRING_CONSTANTS.LABELS.CONSULTATION_SESSION}
+        subtitle={`${patientName} • ${patientAge}y, ${patientGender} • ${appointmentType}`}
+        onBack={handleCancel}
+        rightContent={
           <button className={styles.completeButton} onClick={handleComplete}>
             <span className={`${styles.materialIcon} ${styles.buttonIcon}`}>check_circle</span>
             {STRING_CONSTANTS.LABELS.COMPLETE_CONSULTATION}
           </button>
-        </div>
-      </div>
+        }
+        styles={styles}
+      />
 
       {/* Tab Navigation */}
-      <div className={styles.tabContainer}>
-        <button
-          className={activeTab === 'medical-history' ? `${styles.tab} ${styles.tabActive}` : styles.tab}
-          onClick={() => setActiveTab('medical-history')}
-        >
-          <span className={`${styles.materialIcon} ${styles.tabIcon}`}>medical_information</span>
-          Medical History
-        </button>
-        <button
-          className={activeTab === 'symptoms' ? `${styles.tab} ${styles.tabActive}` : styles.tab}
-          onClick={() => setActiveTab('symptoms')}
-        >
-          <span className={`${styles.materialIcon} ${styles.tabIcon}`}>symptoms</span>
-          {STRING_CONSTANTS.LABELS.TAB_SYMPTOMS_DIAGNOSIS}
-        </button>
-        <button
-          className={activeTab === 'treatment' ? `${styles.tab} ${styles.tabActive}` : styles.tab}
-          onClick={() => setActiveTab('treatment')}
-        >
-          <span className={`${styles.materialIcon} ${styles.tabIcon}`}>medication</span>
-          {STRING_CONSTANTS.LABELS.TAB_TREATMENT_PLAN}
-        </button>
-        <button
-          className={activeTab === 'followup' ? `${styles.tab} ${styles.tabActive}` : styles.tab}
-          onClick={() => setActiveTab('followup')}
-        >
-          <span className={`${styles.materialIcon} ${styles.tabIcon}`}>event</span>
-          {STRING_CONSTANTS.LABELS.TAB_FOLLOW_UP}
-        </button>
-      </div>
+        <TabList 
+          tabs={[
+            { id: ConsultationTab.MEDICAL_HISTORY, icon: 'medical_information', label: STRING_CONSTANTS.TABS.MEDICAL_HISTORY },
+            { id: ConsultationTab.SYMPTOMS, icon: 'symptoms', label: STRING_CONSTANTS.LABELS.TAB_SYMPTOMS_DIAGNOSIS },
+            { id: ConsultationTab.TREATMENT, icon: 'medication', label: STRING_CONSTANTS.LABELS.TAB_TREATMENT_PLAN },
+            { id: ConsultationTab.FOLLOWUP, icon: 'event', label: STRING_CONSTANTS.LABELS.TAB_FOLLOW_UP },
+          ]}
+          activeTab={activeTab}
+          onTabChange={(tab) => setActiveTab(tab as ConsultationTab)}
+          styles={styles}
+          containerClass={styles.tabsContainer}
+          activeClass={styles.tabActive}
+        />
 
       {/* Main Content */}
       <div className={styles.content}>
         {/* Medical History Tab */}
-        {activeTab === 'medical-history' && (
+        {activeTab === ConsultationTab.MEDICAL_HISTORY && (
         <div className={styles.singleColumn}>
-            {/* History Cards Grid */}
-            <div className={styles.historyCardsGrid}>
-              {/* Allergies */}
-              <div className={styles.card}>
-                <div className={styles.statCard}>
-                  <div className={styles.statCardHeader}>
-                    <span className={`${styles.materialIcon} ${styles.statCardIcon}`}>warning</span>
-                    <h3 className={styles.statCardTitle}>Known Allergies</h3>
-                  </div>
-                </div>
-                <div className={styles.statCardContent}>
-                  <div className={styles.statCardItem}>Penicillin (Rash)</div>
-                  <div className={styles.statCardItem}>Pollen (Seasonal)</div>
-                </div>
-              </div>
-
-              {/* Family History */}
-              <div className={styles.card}>
-                <div className={styles.statCard}>
-                  <div className={styles.statCardHeader}>
-                    <span className={`${styles.materialIcon} ${styles.statCardIcon}`}>family_restroom</span>
-                    <h3 className={styles.statCardTitle}>Family History</h3>
-                  </div>
-                </div>
-                <div className={styles.statCardContent}>
-                  <div className={styles.statCardItem}>Father: Heart Disease</div>
-                  <div className={styles.statCardItem}>Mother: Diabetes</div>
-                </div>
-              </div>
-
-              {/* Surgical History */}
-              <div className={styles.card}>
-                <div className={styles.statCard}>
-                  <div className={styles.statCardHeader}>
-                    <span className={`${styles.materialIcon} ${styles.statCardIcon}`}>surgical</span>
-                    <h3 className={styles.statCardTitle}>Past Surgeries</h3>
-                  </div>
-                </div>
-                <div className={styles.statCardContent}>
-                  <div className={styles.statCardItem}>Appendectomy (2015)</div>
-                </div>
-              </div>
-
-              {/* Social History */}
-              <div className={styles.card}>
-                <div className={styles.statCard}>
-                  <div className={styles.statCardHeader}>
-                    <span className={`${styles.materialIcon} ${styles.statCardIcon}`}>groups</span>
-                    <h3 className={styles.statCardTitle}>Lifestyle & Habits</h3>
-                  </div>
-                </div>
-                <div className={styles.statCardContent}>
-                  <div className={styles.statCardItem}>Non-smoker</div>
-                  <div className={styles.statCardItem}>Occasional alcohol use</div>
-                  <div className={styles.statCardItem}>Regular exercise (3x/week)</div>
-                </div>
-              </div>
-
-              {/* Previous Conditions */}
-              <div className={styles.card}>
-                <div className={styles.statCard}>
-                  <div className={styles.statCardHeader}>
-                    <span className={`${styles.materialIcon} ${styles.statCardIcon}`}>medical_information</span>
-                    <h3 className={styles.statCardTitle}>Previous Conditions</h3>
-                  </div>
-                </div>
-                <div className={styles.statCardContent}>
-                  <div className={styles.statCardItem}>Hypertension (Diagnosed 2020)</div>
-                  <div className={styles.statCardItem}>Type 2 Diabetes (Diagnosed 2018)</div>
-                  <div className={styles.statCardItem}>Seasonal Allergies</div>
-                </div>
-              </div>
-            </div>
+            {/* History Cards Grid - Single function call */}
+            <PatientHistoryGrid styles={styles} />
 
             {/* Vitals Card */}
-            <div className={styles.card}>
-              <div className={styles.cardHeader}>
-                <h2 className={styles.cardTitle}>{STRING_CONSTANTS.LABELS.RECENT_VITALS}</h2>
-                <button 
-                  className={styles.editButton}
-                  onClick={() => setIsEditingVitals(!isEditingVitals)}
-                >
-                  <span className={styles.materialIcon}>
-                    {isEditingVitals ? 'check' : 'edit'}
-                  </span>
-                  {isEditingVitals ? 'Save' : 'Edit'}
-                </button>
-              </div>
-              
-              {/* Compact row display */}
-              {!isEditingVitals && (
-                <div className={styles.vitalsRow}>
-                  <div className={styles.vitalItemCompact} title={STRING_CONSTANTS.LABELS.HEART_RATE}>
-                    <span className={`${styles.materialIcon} ${styles.vitalIconCompact}`}>favorite</span>
-                    <div className={styles.vitalInfoCompact}>
-                      <span className={styles.vitalLabelCompact}>HR</span>
-                      <span className={styles.vitalValueCompact}>{vitals.heartRate || '—'}</span>
-                    </div>
-                  </div>
-                  <div className={styles.vitalItemCompact} title={STRING_CONSTANTS.LABELS.BLOOD_PRESSURE}>
-                    <span className={`${styles.materialIcon} ${styles.vitalIconCompact}`}>monitor_heart</span>
-                    <div className={styles.vitalInfoCompact}>
-                      <span className={styles.vitalLabelCompact}>BP</span>
-                      <span className={styles.vitalValueCompact}>{vitals.bloodPressure || '—'}</span>
-                    </div>
-                  </div>
-                  <div className={styles.vitalItemCompact} title={STRING_CONSTANTS.LABELS.TEMPERATURE}>
-                    <span className={`${styles.materialIcon} ${styles.vitalIconCompact}`}>thermostat</span>
-                    <div className={styles.vitalInfoCompact}>
-                      <span className={styles.vitalLabelCompact}>Temp</span>
-                      <span className={styles.vitalValueCompact}>{vitals.temperature || '—'}</span>
-                    </div>
-                  </div>
-                  <div className={styles.vitalItemCompact} title={STRING_CONSTANTS.LABELS.WEIGHT}>
-                    <span className={`${styles.materialIcon} ${styles.vitalIconCompact}`}>scale</span>
-                    <div className={styles.vitalInfoCompact}>
-                      <span className={styles.vitalLabelCompact}>Weight</span>
-                      <span className={styles.vitalValueCompact}>{vitals.weight || '—'}</span>
-                    </div>
-                  </div>
-                  <div className={styles.vitalItemCompact} title={STRING_CONSTANTS.LABELS.RESPIRATORY_RATE}>
-                    <span className={`${styles.materialIcon} ${styles.vitalIconCompact}`}>air</span>
-                    <div className={styles.vitalInfoCompact}>
-                      <span className={styles.vitalLabelCompact}>RR</span>
-                      <span className={styles.vitalValueCompact}>{vitals.respiratoryRate || '—'}</span>
-                    </div>
-                  </div>
-                  <div className={styles.vitalItemCompact} title={STRING_CONSTANTS.LABELS.OXYGEN_SATURATION}>
-                    <span className={`${styles.materialIcon} ${styles.vitalIconCompact}`}>bloodtype</span>
-                    <div className={styles.vitalInfoCompact}>
-                      <span className={styles.vitalLabelCompact}>SpO₂</span>
-                      <span className={styles.vitalValueCompact}>{vitals.oxygenSaturation || '—'}</span>
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* Expanded edit form */}
-              {isEditingVitals && (
-                <div className={styles.vitalsGrid}>
-                  <div className={styles.vitalInput}>
-                    <label className={styles.vitalLabel}>
-                      <span className={`${styles.materialIcon} ${styles.vitalIcon}`}>favorite</span>
-                      {STRING_CONSTANTS.LABELS.HEART_RATE}
-                    </label>
-                    <input
-                      type="text"
-                      className={styles.input}
-                      value={vitals.heartRate}
-                      onChange={(e) => handleVitalChange('heartRate', e.target.value)}
-                      placeholder={STRING_CONSTANTS.PLACEHOLDERS.HEART_RATE}
-                    />
-                  </div>
-                  <div className={styles.vitalInput}>
-                    <label className={styles.vitalLabel}>
-                      <span className={`${styles.materialIcon} ${styles.vitalIcon}`}>monitor_heart</span>
-                      {STRING_CONSTANTS.LABELS.BLOOD_PRESSURE}
-                    </label>
-                    <input
-                      type="text"
-                      className={styles.input}
-                      value={vitals.bloodPressure}
-                      onChange={(e) => handleVitalChange('bloodPressure', e.target.value)}
-                      placeholder={STRING_CONSTANTS.PLACEHOLDERS.BLOOD_PRESSURE}
-                    />
-                  </div>
-                  <div className={styles.vitalInput}>
-                    <label className={styles.vitalLabel}>
-                      <span className={`${styles.materialIcon} ${styles.vitalIcon}`}>thermostat</span>
-                      {STRING_CONSTANTS.LABELS.TEMPERATURE}
-                    </label>
-                    <input
-                      type="text"
-                      className={styles.input}
-                      value={vitals.temperature}
-                      onChange={(e) => handleVitalChange('temperature', e.target.value)}
-                      placeholder={STRING_CONSTANTS.PLACEHOLDERS.TEMPERATURE}
-                    />
-                  </div>
-                  <div className={styles.vitalInput}>
-                    <label className={styles.vitalLabel}>
-                      <span className={`${styles.materialIcon} ${styles.vitalIcon}`}>scale</span>
-                      {STRING_CONSTANTS.LABELS.WEIGHT}
-                    </label>
-                    <input
-                      type="text"
-                      className={styles.input}
-                      value={vitals.weight}
-                      onChange={(e) => handleVitalChange('weight', e.target.value)}
-                      placeholder={STRING_CONSTANTS.PLACEHOLDERS.WEIGHT}
-                    />
-                  </div>
-                  <div className={styles.vitalInput}>
-                    <label className={styles.vitalLabel}>
-                      <span className={`${styles.materialIcon} ${styles.vitalIcon}`}>air</span>
-                      {STRING_CONSTANTS.LABELS.RESPIRATORY_RATE}
-                    </label>
-                    <input
-                      type="text"
-                      className={styles.input}
-                      value={vitals.respiratoryRate}
-                      onChange={(e) => handleVitalChange('respiratoryRate', e.target.value)}
-                      placeholder={STRING_CONSTANTS.PLACEHOLDERS.RESPIRATORY_RATE}
-                    />
-                  </div>
-                  <div className={styles.vitalInput}>
-                    <label className={styles.vitalLabel}>
-                      <span className={`${styles.materialIcon} ${styles.vitalIcon}`}>bloodtype</span>
-                      {STRING_CONSTANTS.LABELS.OXYGEN_SATURATION}
-                    </label>
-                    <input
-                      type="text"
-                      className={styles.input}
-                      value={vitals.oxygenSaturation}
-                      onChange={(e) => handleVitalChange('oxygenSaturation', e.target.value)}
-                      placeholder={STRING_CONSTANTS.PLACEHOLDERS.OXYGEN_SATURATION}
-                    />
-                  </div>
-                </div>
-              )}
-          </div>
+            <EditableHeaderCard 
+              title={STRING_CONSTANTS.LABELS.RECENT_VITALS}
+              isEditing={isEditingVitals}
+              onToggleEdit={() => setIsEditingVitals(!isEditingVitals)}
+              styles={styles}
+            >
+              <VitalsSection 
+                data={vitals} 
+                isEditing={isEditingVitals} 
+                onChange={handleVitalChange} 
+                styles={styles}
+                variant="extended"
+              />
+            </EditableHeaderCard>
 
           {/* Current Medications */}
-          <div className={styles.card}>
-            <button 
-              className={styles.cardHeaderButton}
-              onClick={() => toggleSection('currentMedications')}
-            >
-              <div className={styles.cardHeaderLeft}>
-                <span className={`${styles.materialIcon} ${styles.historyIcon}`}>medication</span>
-                <h2 className={styles.cardTitle}>{STRING_CONSTANTS.LABELS.CURRENT_MEDICATIONS}</h2>
-              </div>
-              <span className={styles.materialIcon}>
-                {collapsedSections.currentMedications ? 'expand_more' : 'expand_less'}
-              </span>
-            </button>
-            {!collapsedSections.currentMedications && (
-              <div className={styles.cardContent}>
-                <div className={styles.medicationsList}>
-                  <div className={styles.medItem}>
-                    <div className={styles.medItemContent}>
-                      <div className={styles.medItemName}>Metformin 500mg</div>
-                      <div className={styles.medItemDetails}>
-                        500mg • Twice daily • After meals • 30 days
-                      </div>
-                    </div>
-                  </div>
-                  <div className={styles.medItem}>
-                    <div className={styles.medItemContent}>
-                      <div className={styles.medItemName}>Lisinopril 10mg</div>
-                      <div className={styles.medItemDetails}>
-                        10mg • Once daily • Morning • 30 days
-                      </div>
-                    </div>
-                  </div>
-                  <div className={styles.medItem}>
-                    <div className={styles.medItemContent}>
-                      <div className={styles.medItemName}>Aspirin 81mg</div>
-                      <div className={styles.medItemDetails}>
-                        81mg • Once daily • Morning • Ongoing
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
+          <CollapsibleCardWithIcon 
+            icon="medication"
+            title={STRING_CONSTANTS.LABELS.CURRENT_MEDICATIONS}
+            isCollapsed={collapsedSections.currentMedications}
+            onToggle={() => toggleSection('currentMedications')}
+            styles={styles}
+          >
+            <MedicationList 
+              medications={[
+                { name: 'Metformin 500mg', details: '500mg • Twice daily • After meals • 30 days' },
+                { name: 'Lisinopril 10mg', details: '10mg • Once daily • Morning • 30 days' },
+                { name: 'Aspirin 81mg', details: '81mg • Once daily • Morning • Ongoing' },
+              ]}
+              styles={styles}
+            />
+          </CollapsibleCardWithIcon>
 
           {/* Previous Appointments */}
-          <div className={styles.card}>
-            <button 
-              className={styles.cardHeaderButton}
-              onClick={() => toggleSection('previousAppointments')}
-            >
-              <div className={styles.cardHeaderLeft}>
-                <span className={`${styles.materialIcon} ${styles.historyIcon}`}>event_note</span>
-                <h2 className={styles.cardTitle}>Previous Appointments</h2>
-              </div>
-              <span className={styles.materialIcon}>
-                {collapsedSections.previousAppointments ? 'expand_more' : 'expand_less'}
-              </span>
-            </button>
-            {!collapsedSections.previousAppointments && (
-              <div className={styles.cardContent}>
-                <div className={styles.appointmentsList}>
-                  <div className={styles.appointmentItem}>
-                    <span className={styles.appointmentText}>Nov 1, 2024 - Routine Checkup</span>
-                    <button className={styles.viewButton}>
-                      <span className={styles.materialIcon}>visibility</span>
-                      View
-                    </button>
-                  </div>
-                  <div className={styles.appointmentItem}>
-                    <span className={styles.appointmentText}>Oct 15, 2024 - Follow-up</span>
-                    <button className={styles.viewButton}>
-                      <span className={styles.materialIcon}>visibility</span>
-                      View
-                    </button>
-                  </div>
-                  <div className={styles.appointmentItem}>
-                    <span className={styles.appointmentText}>Sep 20, 2024 - Blood Test Review</span>
-                    <button className={styles.viewButton}>
-                      <span className={styles.materialIcon}>visibility</span>
-                      View
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
+          <CollapsibleCardWithIcon 
+            icon="event_note"
+            title="Previous Appointments"
+            isCollapsed={collapsedSections.previousAppointments}
+            onToggle={() => toggleSection('previousAppointments')}
+            styles={styles}
+          >
+            <AppointmentList 
+              appointments={[
+                { id: '1', date: 'Nov 1, 2024', type: 'Routine Checkup' },
+                { id: '2', date: 'Oct 15, 2024', type: 'Follow-up' },
+                { id: '3', date: 'Sep 20, 2024', type: 'Blood Test Review' },
+              ]}
+              styles={styles}
+            />
+          </CollapsibleCardWithIcon>
         </div>
         )}
 
         {/* Symptoms & Diagnosis Tab */}
-        {activeTab === 'symptoms' && (
+        {activeTab === ConsultationTab.SYMPTOMS && (
         <div className={styles.singleColumn}>
             {/* Symptoms */}
-            <div className={styles.card}>
-              <div className={styles.cardHeader}>
-                <h2 className={styles.cardTitle}>{STRING_CONSTANTS.LABELS.SYMPTOMS}</h2>
-                <button className={styles.addButton}>
-                  <span className={`${styles.materialIcon} ${styles.addIcon}`}>add</span>
-                  {STRING_CONSTANTS.LABELS.ADD_CUSTOM_SYMPTOM}
-                </button>
-              </div>
-              
-              <div className={styles.quickAddSection}>
-                {COMMON_SYMPTOMS.map(symptom => (
-                  <button
-                    key={symptom}
-                    className={styles.quickAddChip}
-                    onClick={() => addSymptom(symptom)}
-                  >
-                    <span className={`${styles.materialIcon} ${styles.chipIcon}`}>add</span>
-                    {symptom}
-                  </button>
-                ))}
-              </div>
-
-              <div className={styles.sectionSeparator}></div>
-
-              {symptoms.length > 0 && (
-                <div className={styles.tagsContainer}>
-                  {symptoms.map(symptom => (
-                    <div key={symptom} className={styles.tag}>
-                      {symptom}
-                      <button className={styles.tagRemove} onClick={() => removeSymptom(symptom)}>
-                        <span className={styles.materialIcon}>close</span>
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
+            <CardWithHeaderAction
+              title={STRING_CONSTANTS.LABELS.SYMPTOMS}
+              actionLabel={STRING_CONSTANTS.LABELS.ADD_CUSTOM_SYMPTOM}
+              onAction={() => {/* Add custom symptom */}}
+              styles={styles}
+            >
+              <QuickAddList 
+                items={MOCK_DATA.COMMON_SYMPTOMS}
+                onAdd={addSymptom}
+                styles={styles}
+              />
+              <SectionSeparator styles={styles} />
+              <TagList tags={symptoms} onRemove={removeSymptom} styles={styles} />
+            </CardWithHeaderAction>
 
             {/* Chief Complaint */}
-            <div className={styles.card}>
-              <div className={styles.cardHeader}>
-                <h2 className={styles.cardTitle}>{STRING_CONSTANTS.LABELS.CHIEF_COMPLAINT}</h2>
-              </div>
-              <textarea
-                className={styles.textarea}
-                value={chiefComplaint}
-                onChange={(e) => setChiefComplaint(e.target.value)}
-                placeholder={STRING_CONSTANTS.PLACEHOLDERS.CHIEF_COMPLAINT_TEXT}
-                rows={3}
-              />
-            </div>
+            <TextAreaCard 
+              title={STRING_CONSTANTS.LABELS.CHIEF_COMPLAINT}
+              value={chiefComplaint}
+              onChange={setChiefComplaint}
+              placeholder={STRING_CONSTANTS.PLACEHOLDERS.CHIEF_COMPLAINT_TEXT}
+              rows={3}
+              styles={styles}
+            />
 
             {/* Diagnosis */}
-            <div className={styles.card}>
-            <div className={styles.cardHeader}>
-              <h2 className={styles.cardTitle}>{STRING_CONSTANTS.LABELS.DIAGNOSIS}</h2>
-            </div>
-            <textarea
-              className={styles.textarea}
+            <TextAreaCard 
+              title={STRING_CONSTANTS.LABELS.DIAGNOSIS}
               value={diagnosis}
-              onChange={(e) => setDiagnosis(e.target.value)}
+              onChange={setDiagnosis}
               placeholder={STRING_CONSTANTS.PLACEHOLDERS.CLINICAL_DIAGNOSIS}
               rows={5}
+              styles={styles}
             />
-          </div>
         </div>
         )}
 
         {/* Treatment Plan Tab */}
-        {activeTab === 'treatment' && (
+        {activeTab === ConsultationTab.TREATMENT && (
         <div className={styles.singleColumn}>
           {/* Prescription */}
-          <div className={styles.card}>
-            <div className={styles.cardHeader}>
-              <h2 className={styles.cardTitle}>{STRING_CONSTANTS.LABELS.PRESCRIPTION}</h2>
-              <button className={styles.addButton} onClick={addMedication}>
-                <span className={`${styles.materialIcon} ${styles.addIcon}`}>add</span>
-                {STRING_CONSTANTS.LABELS.ADD_MEDICATION}
-              </button>
-            </div>
-
-            <div className={styles.quickAddScrollable}>
-              {COMMON_MEDICINES.map(medicine => (
-                <button key={medicine} className={styles.quickAddChip} onClick={addMedication}>
-                  <span className={`${styles.materialIcon} ${styles.chipIcon}`}>add</span>
-                  {medicine}
-                </button>
-              ))}
-            </div>
-
-            <div className={styles.sectionSeparator}></div>
+          <CardWithHeaderAction
+            title={STRING_CONSTANTS.LABELS.PRESCRIPTION}
+            actionLabel={STRING_CONSTANTS.LABELS.ADD_MEDICATION}
+            onAction={addMedication}
+            styles={styles}
+          >
+            <QuickAddList 
+              items={MOCK_DATA.COMMON_MEDICINES}
+              onAdd={addMedication}
+              styles={styles}
+              containerClassName={styles.quickAddScrollable}
+            />
+            <SectionSeparator styles={styles} />
             
             {showMedicationForm && currentMedication && (
+              <MedicationForm 
+                medication={currentMedication}
+                onFieldChange={updateMedicationField}
+                onSave={saveMedication}
+                onCancel={cancelMedication}
+                fieldConfigs={[
+                  { field: 'name', label: 'Medicine Name', placeholder: STRING_CONSTANTS.PLACEHOLDERS.MEDICATION_NAME, required: true },
+                  { field: 'dosage', label: 'Dosage', placeholder: STRING_CONSTANTS.PLACEHOLDERS.MEDICATION_DOSAGE, required: true },
+                  { field: 'frequency', label: 'Frequency', placeholder: STRING_CONSTANTS.PLACEHOLDERS.MEDICATION_FREQUENCY, required: true },
+                  { field: 'timing', label: 'Timing', placeholder: STRING_CONSTANTS.PLACEHOLDERS.MEDICATION_INSTRUCTIONS },
+                  { field: 'duration', label: 'Duration', placeholder: STRING_CONSTANTS.PLACEHOLDERS.MEDICATION_DURATION, required: true },
+                ]}
+                styles={styles}
+              />
+            )}
+
+            <PrescriptionList 
+              items={[
+                { id: '1', name: 'Metformin 500mg', details: '500mg • Twice daily • After meals • 30 days' },
+                { id: '2', name: 'Lisinopril 10mg', details: '10mg • Once daily • Morning • 30 days' },
+                { id: '3', name: 'Aspirin 81mg', details: '81mg • Once daily • After meals • 30 days' },
+                ...medications.map(med => ({
+                  id: med.id,
+                  name: med.name || 'New Medication',
+                  details: `${med.dosage} • ${med.frequency} • ${med.timing} • ${med.duration}`
+                }))
+              ]}
+              onEdit={(id) => {
+                const med = medications.find(m => m.id === id);
+                if (med) editMedication(med);
+              }}
+              onRemove={removeMedication}
+              styles={styles}
+            />
+          </CardWithHeaderAction>
+
+          {/* Lab Tests */}
+          <CardWithHeaderAction
+            title={STRING_CONSTANTS.LABELS.LAB_TESTS}
+            actionLabel={STRING_CONSTANTS.LABELS.ADD_CUSTOM_TEST}
+            onAction={handleAddCustomTest}
+            styles={styles}
+          >
+            <QuickAddList 
+              items={MOCK_DATA.COMMON_TESTS}
+              onAdd={addLabTest}
+              styles={styles}
+              containerClassName={styles.quickAddScrollable}
+            />
+            <SectionSeparator styles={styles} />
+
+            {showLabTestForm && (
               <div className={styles.medForm}>
                 <div className={styles.medFormHeader}>
-                  <h3 className={styles.medFormTitle}>Add Medication</h3>
+                  <h3 className={styles.medFormTitle}>{STRING_CONSTANTS.LABELS.ADD_CUSTOM_TEST}</h3>
                 </div>
                 <div className={styles.medFormGrid}>
                   <div className={styles.medFormField}>
-                    <label className={styles.medFormLabel}>Medicine Name *</label>
+                    <label className={styles.medFormLabel}>
+                      Test Name *
+                    </label>
                     <input
                       type="text"
                       className={styles.input}
-                      value={currentMedication.name}
-                      onChange={(e) => updateMedicationField('name', e.target.value)}
-                      placeholder={STRING_CONSTANTS.PLACEHOLDERS.MEDICATION_NAME}
-                    />
-                  </div>
-                  <div className={styles.medFormField}>
-                    <label className={styles.medFormLabel}>Dosage *</label>
-                    <input
-                      type="text"
-                      className={styles.input}
-                      value={currentMedication.dosage}
-                      onChange={(e) => updateMedicationField('dosage', e.target.value)}
-                      placeholder={STRING_CONSTANTS.PLACEHOLDERS.MEDICATION_DOSAGE}
-                    />
-                  </div>
-                  <div className={styles.medFormField}>
-                    <label className={styles.medFormLabel}>Frequency *</label>
-                    <input
-                      type="text"
-                      className={styles.input}
-                      value={currentMedication.frequency}
-                      onChange={(e) => updateMedicationField('frequency', e.target.value)}
-                      placeholder={STRING_CONSTANTS.PLACEHOLDERS.MEDICATION_FREQUENCY}
-                    />
-                  </div>
-                  <div className={styles.medFormField}>
-                    <label className={styles.medFormLabel}>Timing</label>
-                    <input
-                      type="text"
-                      className={styles.input}
-                      value={currentMedication.timing}
-                      onChange={(e) => updateMedicationField('timing', e.target.value)}
-                      placeholder={STRING_CONSTANTS.PLACEHOLDERS.MEDICATION_INSTRUCTIONS}
-                    />
-                  </div>
-                  <div className={styles.medFormField}>
-                    <label className={styles.medFormLabel}>Duration *</label>
-                    <input
-                      type="text"
-                      className={styles.input}
-                      value={currentMedication.duration}
-                      onChange={(e) => updateMedicationField('duration', e.target.value)}
-                      placeholder={STRING_CONSTANTS.PLACEHOLDERS.MEDICATION_DURATION}
+                      value={currentLabTest}
+                      onChange={(e) => setCurrentLabTest(e.target.value)}
+                      placeholder="Enter test name"
+                      autoFocus
                     />
                   </div>
                 </div>
                 <div className={styles.medFormActions}>
-                  <button className={styles.medFormCancel} onClick={cancelMedication}>
-                    Cancel
+                  <button className={styles.medFormCancel} onClick={cancelLabTest}>
+                    {STRING_CONSTANTS.BUTTONS.CANCEL}
                   </button>
-                  <button className={styles.medFormSave} onClick={saveMedication}>
-                    Save Medication
+                  <button className={styles.medFormSave} onClick={saveLabTest}>
+                    Add Test
                   </button>
                 </div>
               </div>
             )}
 
-            <div className={styles.prescriptionList}>
-              <div className={styles.medItem}>
-                <div className={styles.medItemContent}>
-                  <div className={styles.medItemName}>Metformin 500mg</div>
-                  <div className={styles.medItemDetails}>
-                    500mg • Twice daily • After meals • 30 days
-                  </div>
-                </div>
-                <button className={styles.medItemEdit}>
-                  <span className={styles.materialIcon}>edit</span>
-                </button>
-                <button className={styles.medItemRemove}>
-                  <span className={styles.materialIcon}>delete</span>
-                </button>
-              </div>
-              <div className={styles.medItem}>
-                <div className={styles.medItemContent}>
-                  <div className={styles.medItemName}>Lisinopril 10mg</div>
-                  <div className={styles.medItemDetails}>
-                    10mg • Once daily • Morning • 30 days
-                  </div>
-                </div>
-                <button className={styles.medItemEdit}>
-                  <span className={styles.materialIcon}>edit</span>
-                </button>
-                <button className={styles.medItemRemove}>
-                  <span className={styles.materialIcon}>delete</span>
-                </button>
-              </div>
-              <div className={styles.medItem}>
-                <div className={styles.medItemContent}>
-                  <div className={styles.medItemName}>Aspirin 81mg</div>
-                  <div className={styles.medItemDetails}>
-                    81mg • Once daily • After meals • 30 days
-                  </div>
-                </div>
-                <button className={styles.medItemEdit}>
-                  <span className={styles.materialIcon}>edit</span>
-                </button>
-                <button className={styles.medItemRemove}>
-                  <span className={styles.materialIcon}>delete</span>
-                </button>
-              </div>
-            </div>
-
-            {medications.map(med => (
-              <div key={med.id} className={styles.medItem}>
-                <div className={styles.medItemContent} onClick={() => editMedication(med)}>
-                  <div className={styles.medItemName}>{med.name || 'New Medication'}</div>
-                  <div className={styles.medItemDetails}>
-                    {med.dosage} • {med.frequency} • {med.timing} • {med.duration}
-                  </div>
-                </div>
-                <button className={styles.medItemRemove} onClick={() => removeMedication(med.id)}>
-                  <span className={styles.materialIcon}>delete</span>
-                </button>
-              </div>
-            ))}
-          </div>
-
-          {/* Lab Tests */}
-          <div className={styles.card}>
-            <div className={styles.cardHeader}>
-              <h2 className={styles.cardTitle}>{STRING_CONSTANTS.LABELS.LAB_TESTS}</h2>
-              <button className={styles.addButton}>
-                <span className={`${styles.materialIcon} ${styles.addIcon}`}>add</span>
-                {STRING_CONSTANTS.LABELS.ADD_CUSTOM_TEST}
-              </button>
-            </div>
-
-            <div className={styles.quickAddScrollable}>
-              {COMMON_TESTS.map(test => (
-                <button
-                  key={test}
-                  className={styles.quickAddChip}
-                  onClick={() => addLabTest(test)}
-                >
-                  <span className={`${styles.materialIcon} ${styles.chipIcon}`}>add</span>
-                  {test}
-                </button>
-              ))}
-            </div>
-
-            <div className={styles.sectionSeparator}></div>
-
-            <div className={styles.prescriptionList}>
-              <div className={styles.medItem}>
-                <div className={styles.medItemContent}>
-                  <div className={styles.medItemName}>Complete Blood Count (CBC)</div>
-                  <div className={styles.medItemDetails}>
-                    Fasting required • Sample: Blood • Priority: Routine
-                  </div>
-                </div>
-                <button className={styles.medItemEdit}>
-                  <span className={styles.materialIcon}>edit</span>
-                </button>
-                <button className={styles.medItemRemove}>
-                  <span className={styles.materialIcon}>delete</span>
-                </button>
-              </div>
-              <div className={styles.medItem}>
-                <div className={styles.medItemContent}>
-                  <div className={styles.medItemName}>Lipid Profile</div>
-                  <div className={styles.medItemDetails}>
-                    Fasting required • Sample: Blood • Priority: Routine
-                  </div>
-                </div>
-                <button className={styles.medItemEdit}>
-                  <span className={styles.materialIcon}>edit</span>
-                </button>
-                <button className={styles.medItemRemove}>
-                  <span className={styles.materialIcon}>delete</span>
-                </button>
-              </div>
-              <div className={styles.medItem}>
-                <div className={styles.medItemContent}>
-                  <div className={styles.medItemName}>HbA1c</div>
-                  <div className={styles.medItemDetails}>
-                    No fasting • Sample: Blood • Priority: Routine
-                  </div>
-                </div>
-                <button className={styles.medItemEdit}>
-                  <span className={styles.materialIcon}>edit</span>
-                </button>
-                <button className={styles.medItemRemove}>
-                  <span className={styles.materialIcon}>delete</span>
-                </button>
-              </div>
-              <div className={styles.medItem}>
-                <div className={styles.medItemContent}>
-                  <div className={styles.medItemName}>Kidney Function Test</div>
-                  <div className={styles.medItemDetails}>
-                    Fasting preferred • Sample: Blood & Urine • Priority: Routine
-                  </div>
-                </div>
-                <button className={styles.medItemEdit}>
-                  <span className={styles.materialIcon}>edit</span>
-                </button>
-                <button className={styles.medItemRemove}>
-                  <span className={styles.materialIcon}>delete</span>
-                </button>
-              </div>
-            </div>
-
-            {labTests.length > 0 && (
-              <div className={styles.prescriptionList}>
-                {labTests.map(test => (
-                  <div key={test} className={styles.medItem}>
-                    <div className={styles.medItemContent}>
-                      <div className={styles.medItemName}>{test}</div>
-                    </div>
-                    <button className={styles.medItemEdit}>
-                      <span className={styles.materialIcon}>edit</span>
-                    </button>
-                    <button className={styles.medItemRemove} onClick={() => removeLabTest(test)}>
-                      <span className={styles.materialIcon}>delete</span>
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+            <LabTestList  
+              tests={[
+                { id: '1', name: 'Complete Blood Count (CBC)', details: 'Fasting required • Sample: Blood • Priority: Routine' },
+                { id: '2', name: 'Lipid Profile', details: 'Fasting required • Sample: Blood • Priority: Routine' },
+                { id: '3', name: 'HbA1c', details: 'No fasting • Sample: Blood • Priority: Routine' },
+                { id: '4', name: 'Kidney Function Test', details: 'Fasting preferred • Sample: Blood & Urine • Priority: Routine' },
+                ...labTests.map((test, index) => ({ id: `custom-${index}`, name: test, details: '' }))
+              ]}
+              onRemove={(id) => {
+                const test = labTests.find((_, i) => `custom-${i}` === id);
+                if (test) removeLabTest(test);
+              }}
+              styles={styles}
+            />
+          </CardWithHeaderAction>
 
           {/* General Advice */}
-          <div className={styles.card}>
-            <div className={styles.cardHeader}>
-              <h2 className={styles.cardTitle}>General Advice</h2>
-            </div>
-            <textarea
-              className={styles.textarea}
-              placeholder={STRING_CONSTANTS.PLACEHOLDERS.GENERAL_ADVICE}
-              rows={5}
-            />
-          </div>
+          <TextAreaCard 
+            title="General Advice"
+            value=""
+            onChange={() => {}}
+            placeholder={STRING_CONSTANTS.PLACEHOLDERS.GENERAL_ADVICE}
+            rows={5}
+            styles={styles}
+          />
         </div>
         )}
 
         {/* Follow Up & Notes Tab */}
-        {activeTab === 'followup' && (
+        {activeTab === ConsultationTab.FOLLOWUP && (
         <div className={styles.singleColumn}>
           {/* Follow Up */}
-          <div className={styles.card}>
-            <div className={styles.cardHeader}>
-              <h2 className={styles.cardTitle}>{STRING_CONSTANTS.LABELS.FOLLOW_UP}</h2>
-            </div>
-            <div className={styles.sectionLabel}>Follow-up Date</div>
-            <input
-              type="date"
-              className={styles.input}
-              value={followUpDate}
-              onChange={(e) => setFollowUpDate(e.target.value)}
-            />
-          </div>
+          <InputFieldCard 
+            title={STRING_CONSTANTS.LABELS.FOLLOW_UP}
+            label="Follow-up Date"
+            type="date"
+            value={followUpDate}
+            onChange={setFollowUpDate}
+            styles={styles}
+          />
 
           {/* Consultation Notes */}
-          <div className={styles.card}>
-            <div className={styles.cardHeader}>
-              <h2 className={styles.cardTitle}>{STRING_CONSTANTS.LABELS.CONSULTATION_NOTES}</h2>
-            </div>
-            <textarea
-              className={styles.textarea}
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder={STRING_CONSTANTS.PLACEHOLDERS.ADDITIONAL_NOTES}
-              rows={10}
-            />
-          </div>
+          <TextAreaCard 
+            title={STRING_CONSTANTS.LABELS.CONSULTATION_NOTES}
+            value={notes}
+            onChange={setNotes}
+            placeholder={STRING_CONSTANTS.PLACEHOLDERS.ADDITIONAL_NOTES}
+            rows={10}
+            styles={styles}
+          />
         </div>
         )}
       </div>

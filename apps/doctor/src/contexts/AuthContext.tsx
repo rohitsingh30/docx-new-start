@@ -1,8 +1,8 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { AuthStatus } from '../types/enums';
 import { AuthContextState, LoginCredentials, User, AuthProviderProps } from '../types/Auth.types';
-import { ERROR_MESSAGES } from '../constants/stringConstants';
-import { MOCK_DATA } from '../constants/dataConstants';
+import authService from '../services/auth.service';
+import { ApiError } from '../services/api';
 
 // Create the auth context
 const AuthContext = createContext<AuthContextState | undefined>(undefined);
@@ -11,10 +11,12 @@ const AuthContext = createContext<AuthContextState | undefined>(undefined);
  * AuthProvider component to wrap the app
  * 
  * Features:
- * - Mock authentication using MOCK_DATA.USERS
+ * - Real authentication using backend API
  * - Login with email/password validation
+ * - JWT token management
  * - Logout with state cleanup
  * - devLogin() for quick testing (development only)
+ * - Automatic token validation on mount
  * - LocalStorage persistence
  * 
  * Usage:
@@ -26,87 +28,85 @@ const AuthContext = createContext<AuthContextState | undefined>(undefined);
  */
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [status, setStatus] = useState<AuthStatus>(AuthStatus.UNAUTHENTICATED);
+  const [status, setStatus] = useState<AuthStatus>(AuthStatus.LOADING);
 
   /**
-   * Login function - validates credentials against mock data
-   * In production, this will be replaced with an API call
+   * Initialize auth state from stored token
+   */
+  useEffect(() => {
+    const initAuth = async () => {
+      if (authService.hasValidToken()) {
+        try {
+          const currentUser = await authService.getCurrentUser();
+          setUser(currentUser);
+          setStatus(AuthStatus.AUTHENTICATED);
+        } catch (error) {
+          // Token invalid or expired
+          authService.logout();
+          setUser(null);
+          setStatus(AuthStatus.UNAUTHENTICATED);
+        }
+      } else {
+        setStatus(AuthStatus.UNAUTHENTICATED);
+      }
+    };
+
+    initAuth();
+  }, []);
+
+  /**
+   * Login function - calls backend API
    */
   const login = useCallback(async (credentials: LoginCredentials): Promise<void> => {
     setStatus(AuthStatus.LOADING);
 
     try {
-      // Simulate API call delay
-      await new Promise((resolve) => setTimeout(resolve, 800));
-
-      // Validate credentials
-      if (!credentials.email || !credentials.password) {
-        throw new Error(ERROR_MESSAGES.INVALID_CREDENTIALS);
-      }
-
-      // Check against mock user data
-      const authenticatedUser = MOCK_DATA.USERS.find(
-        (user) => 
-          user.email.toLowerCase() === credentials.email.toLowerCase() &&
-          user.password === credentials.password
-      );
-
-      if (!authenticatedUser) {
-        throw new Error(ERROR_MESSAGES.INVALID_CREDENTIALS);
-      }
-
-      // Create user object (excluding password)
-      const userWithoutPassword: User = {
-        id: authenticatedUser.id,
-        email: authenticatedUser.email,
-        name: authenticatedUser.name,
-        role: authenticatedUser.role,
-      };
-
-      setUser(userWithoutPassword);
+      const authenticatedUser = await authService.login(credentials);
+      setUser(authenticatedUser);
       setStatus(AuthStatus.AUTHENTICATED);
-
-      // Store in localStorage for persistence (in production, use secure tokens)
-      localStorage.setItem('docx_user', JSON.stringify(userWithoutPassword));
     } catch (error) {
       setStatus(AuthStatus.UNAUTHENTICATED);
-      throw error;
+      
+      // Transform API error to user-friendly message
+      const apiError = error as ApiError;
+      throw new Error(apiError.message || 'Login failed. Please try again.');
     }
   }, []);
 
   /**
    * Logout function - clears user and auth state
    */
-  const logout = useCallback(() => {
-    setUser(null);
-    setStatus(AuthStatus.UNAUTHENTICATED);
-    localStorage.removeItem('docx_user');
+  const logout = useCallback(async () => {
+    try {
+      await authService.logout();
+    } catch (error) {
+      console.error('Logout error:', error);
+    } finally {
+      setUser(null);
+      setStatus(AuthStatus.UNAUTHENTICATED);
+    }
   }, []);
 
   /**
    * Development-only bypass login
    * ONLY works when NODE_ENV is 'development'
-   * Automatically logs in as first mock user
+   * Automatically logs in with demo account (doctor@docx.com / demo123)
    */
-  const devLogin = useCallback(() => {
+  const devLogin = useCallback(async () => {
     if (process.env.NODE_ENV !== 'development') {
       console.warn('devLogin is only available in development mode');
       return;
     }
 
-    // Use first mock user for quick testing
-    const devUser = MOCK_DATA.USERS[0];
-    const userWithoutPassword: User = {
-      id: devUser.id,
-      email: devUser.email,
-      name: devUser.name,
-      role: devUser.role,
-    };
-
-    setUser(userWithoutPassword);
-    setStatus(AuthStatus.AUTHENTICATED);
-    localStorage.setItem('docx_user', JSON.stringify(userWithoutPassword));
-  }, []);
+    try {
+      await login({
+        email: 'doctor@docx.com',
+        password: 'demo123',
+      });
+    } catch (error) {
+      console.error('Dev login failed:', error);
+    }
+  }, [login]);
 
   /**
    * Check if user is authenticated

@@ -1,20 +1,25 @@
+````instructions
 # Backend Instructions
 
 ## Tech Stack
 
-- Node.js 18+ + TypeScript
-- Express/Fastify + PostgreSQL 15
-- Prisma/TypeORM, JWT, Zod
+- Node.js 18+ with TypeScript (strict)
+- Express.js for REST API
+- MongoDB with Mongoose
+- JWT for authentication
+- Zod for validation
 
 ---
 
 ## Core Rules
 
-1. **Enum-first** - NO string literals, use enums for roles, statuses
-2. **Type everything** - Strict TypeScript, no `any`
-3. **Validate all input** - Use Zod schemas
-4. **Error handling** - Consistent error responses
-5. **CORS for 3 apps** - doctor/patient/admin origins
+| # | Rule | Description |
+|---|------|-------------|
+| 1 | **Enum-First** | No string literals for roles, statuses |
+| 2 | **Type Everything** | Strict TypeScript, no `any` |
+| 3 | **Validate Input** | Zod schemas for all requests |
+| 4 | **Consistent Errors** | Standardized error responses |
+| 5 | **CORS Setup** | Allow doctor/patient/admin origins |
 
 ---
 
@@ -22,22 +27,23 @@
 
 ```
 backend/src/
-├── routes/         # API endpoints
-├── controllers/    # Business logic
-├── models/         # Database models (Prisma/TypeORM)
+├── routes/           # API endpoint definitions
+├── controllers/      # Request handlers
+├── services/         # Business logic
+├── middleware/       # Auth, validation, errors
 ├── types/
-│   └── enums.ts    # ALL enums (UserRole, Status, etc.)
-├── middleware/     # Auth, validation, error handling
-├── utils/          # Helper functions
-└── services/       # External services
+│   └── enums.ts      # ALL enums
+├── utils/            # Helpers (jwt, password, response)
+└── config/           # Environment config
 ```
 
 ---
 
 ## Enum Pattern
 
+**Define in `/types/enums.ts`:**
+
 ```typescript
-// types/enums.ts
 export enum UserRole {
   DOCTOR = 'DOCTOR',
   PATIENT = 'PATIENT',
@@ -57,32 +63,43 @@ export enum DoctorStatus {
 ```
 
 **Usage:**
-```typescript
-// ❌ NEVER
-if (user.role === 'DOCTOR') {}
 
-// ✅ ALWAYS
-if (user.role === UserRole.DOCTOR) {}
+```typescript
+// ❌ WRONG
+if (user.role === 'DOCTOR') { ... }
+
+// ✅ CORRECT
+if (user.role === UserRole.DOCTOR) { ... }
 ```
 
 ---
 
-## API Endpoints
+## API Response Format
 
-**Doctor:**
-- `GET /api/doctor/patients` - List patients
-- `POST /api/doctor/patients/:id/notes` - Add medical note
-- `GET /api/doctor/appointments` - Appointments
+```typescript
+// Success
+{
+  success: true,
+  data: { ... }
+}
 
-**Patient:**
-- `GET /api/patient/doctors` - Available doctors
-- `POST /api/patient/appointments` - Book appointment
-- `GET /api/patient/medical-records` - Records
+// Success with pagination
+{
+  success: true,
+  data: [...],
+  pagination: {
+    page: 1,
+    limit: 20,
+    total: 150
+  }
+}
 
-**Admin:**
-- `GET /api/admin/doctors` - All doctors
-- `POST /api/admin/doctors` - Create doctor
-- `GET /api/admin/analytics` - Reports
+// Error
+{
+  success: false,
+  message: "Error description"
+}
+```
 
 ---
 
@@ -97,7 +114,6 @@ const createDoctorSchema = z.object({
   name: z.string().min(2),
   gender: z.nativeEnum(Gender),
   specialization: z.string(),
-  role: z.literal(UserRole.DOCTOR),
 });
 
 // In controller
@@ -117,22 +133,72 @@ interface JWTPayload {
   role: UserRole;
 }
 
+// Generate token
 const generateToken = (payload: JWTPayload): string => {
-  return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '7d' });
+  return jwt.sign(payload, process.env.JWT_SECRET!, { expiresIn: '7d' });
 };
 
-// Middleware
-const authenticate = (req, res, next) => {
+// Auth middleware
+const authenticate = (req: Request, res: Response, next: NextFunction) => {
   const token = req.headers.authorization?.split(' ')[1];
-  const decoded = jwt.verify(token, process.env.JWT_SECRET) as JWTPayload;
-  req.user = decoded;
-  next();
+  if (!token) {
+    return res.status(401).json({ success: false, message: 'Unauthorized' });
+  }
+  
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JWTPayload;
+    req.user = decoded;
+    next();
+  } catch {
+    return res.status(401).json({ success: false, message: 'Invalid token' });
+  }
 };
 ```
 
 ---
 
-## CORS (3 Apps)
+## Role-Based Authorization
+
+```typescript
+const authorize = (...roles: UserRole[]) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    if (!roles.includes(req.user.role)) {
+      return res.status(403).json({ success: false, message: 'Forbidden' });
+    }
+    next();
+  };
+};
+
+// Usage
+router.get('/patients', authenticate, authorize(UserRole.DOCTOR), getPatients);
+```
+
+---
+
+## Error Handling
+
+```typescript
+class AppError extends Error {
+  constructor(public statusCode: number, public message: string) {
+    super(message);
+  }
+}
+
+// Usage
+if (!user) throw new AppError(404, 'User not found');
+
+// Global error handler
+app.use((err: AppError, req: Request, res: Response, next: NextFunction) => {
+  res.status(err.statusCode || 500).json({
+    success: false,
+    message: err.message || 'Internal server error',
+  });
+});
+```
+
+---
+
+## CORS Configuration
 
 ```typescript
 const allowedOrigins = [
@@ -140,6 +206,8 @@ const allowedOrigins = [
   'https://patient.docx.com',
   'https://admin.docx.com',
   'http://localhost:3000', // Dev
+  'http://localhost:3001',
+  'http://localhost:3002',
 ];
 
 app.use(cors({
@@ -150,135 +218,111 @@ app.use(cors({
 
 ---
 
-## Error Handling
+## API Endpoints
 
-```typescript
-class AppError extends Error {
-  constructor(
-    public statusCode: number,
-    public message: string,
-  ) {
-    super(message);
-  }
-}
+### Doctor Routes (`/api/doctor`)
 
-// Usage
-if (!user) {
-  throw new AppError(404, 'User not found');
-}
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/patients` | List doctor's patients |
+| GET | `/patients/:id` | Patient details |
+| POST | `/patients/:id/notes` | Add medical note |
+| GET | `/appointments` | Doctor's appointments |
+| PATCH | `/appointments/:id` | Update appointment |
 
-// Global error handler
-app.use((err, req, res, next) => {
-  res.status(err.statusCode || 500).json({
-    success: false,
-    message: err.message,
-  });
-});
-```
+### Patient Routes (`/api/patient`)
 
----
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/doctors` | Available doctors |
+| POST | `/appointments` | Book appointment |
+| GET | `/appointments` | My appointments |
+| GET | `/medical-records` | My records |
 
-## Database Model Example (Prisma)
+### Admin Routes (`/api/admin`)
 
-```prisma
-enum UserRole {
-  DOCTOR
-  PATIENT
-  ADMIN
-}
-
-enum Gender {
-  MALE
-  FEMALE
-  OTHER
-}
-
-model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  name      String
-  role      UserRole
-  gender    Gender
-  createdAt DateTime @default(now())
-}
-
-model Doctor {
-  id              String       @id @default(uuid())
-  userId          String       @unique
-  specialization  String
-  status          DoctorStatus @default(ACTIVE)
-  patients        Patient[]
-}
-```
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/doctors` | All doctors |
+| POST | `/doctors` | Create doctor |
+| PATCH | `/doctors/:id` | Update doctor |
+| GET | `/analytics` | Dashboard stats |
 
 ---
 
-## API Response Format
+## Mongoose Schema Pattern
 
 ```typescript
-// Success
-{
-  success: true,
-  data: { ... }
-}
-
-// Error
-{
-  success: false,
-  message: "Error description"
-}
-
-// List with pagination
-{
-  success: true,
-  data: [...],
-  pagination: {
-    page: 1,
-    limit: 20,
-    total: 150
-  }
-}
-```
-
----
-
-## Testing
-
-```typescript
-import request from 'supertest';
+import { Schema } from 'mongoose';
 import { UserRole } from '../types/enums';
 
-describe('POST /api/doctor/patients/:id/notes', () => {
-  it('should add medical note', async () => {
-    const token = generateToken({ userId: '123', role: UserRole.DOCTOR });
-    
-    const res = await request(app)
-      .post('/api/doctor/patients/456/notes')
-      .set('Authorization', `Bearer ${token}`)
-      .send({ note: 'Test note' });
-    
-    expect(res.status).toBe(201);
-    expect(res.body.success).toBe(true);
-  });
-});
+const UserSchema = new Schema(
+  {
+    id: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    name: { type: String, required: true },
+    role: { type: String, enum: Object.values(UserRole), required: true },
+  },
+  { timestamps: true, collection: 'users' }
+);
 ```
 
 ---
 
-## Key Rules
+## Controller Pattern
+
+```typescript
+// controllers/doctor.controller.ts
+import { Request, Response, NextFunction } from 'express';
+import { AppError } from '../utils/AppError';
+import { UserRole } from '../types/enums';
+
+export const getPatients = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const doctorId = req.user.userId;
+    const patients = await PatientModel.find({ doctorId, deletedAt: null }).lean();
+
+    res.json({ success: true, data: patients });
+  } catch (error) {
+    next(error);
+  }
+};
+```
+
+---
+
+## Quick Reference
+
+| Task | Pattern |
+|------|---------|
+| Check role | `user.role === UserRole.DOCTOR` |
+| Validate input | `schema.parse(req.body)` |
+| Return success | `res.json({ success: true, data })` |
+| Return error | `throw new AppError(404, 'Not found')` |
+| Require auth | `router.use(authenticate)` |
+| Check role | `authorize(UserRole.DOCTOR)` |
+
+---
+
+## Rules Summary
 
 ❌ **NEVER:**
-- String literals for roles/statuses
-- `any` types
-- Unvalidated input
-- Plain text passwords
-- Missing error handling
+- Use string literals for roles/statuses
+- Use `any` type
+- Skip input validation
+- Return unstructured responses
+- Expose sensitive errors to client
 
 ✅ **ALWAYS:**
-- Enums for fixed values
-- Type all functions
-- Validate with Zod
-- Hash passwords (bcrypt)
-- Try-catch blocks
-- JWT for auth
+- Use enums for fixed values
+- Type all functions and parameters
+- Validate with Zod schemas
+- Use consistent response format
+- Hash passwords with bcrypt
+- Use try-catch in controllers
+````

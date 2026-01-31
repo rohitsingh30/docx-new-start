@@ -14,11 +14,14 @@ import TopNav from './components/TopNav';
 import Login from './components/Login';
 import NotesModal from './modals/NotesModal';
 import RescheduleModal from './modals/RescheduleModal';
+import ActionModal from './modals/ActionModal';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { APP_CONFIG } from './constants/dataConstants';
 import { getCSSVariablesAsStyle } from './utils/cssUtils';
 import { TabType } from './types/Dashboard.types';
 import { ConsultationReport } from './types/Consultation.types';
+import { ActionModalState } from './types/ActionModal.types';
+import { STRING_CONSTANTS } from './constants/stringConstants';
 
 /**
  * Main application component with authentication
@@ -30,13 +33,23 @@ const AppContent: React.FC = () => {
   const [showConsultation, setShowConsultation] = useState(false);
   const [showAppointmentReport, setShowAppointmentReport] = useState(false);
   const [showInvoice, setShowInvoice] = useState(false);
-  const [showCreateInvoicePrompt, setShowCreateInvoicePrompt] = useState(false);
+  const [invoiceCreateMode, setInvoiceCreateMode] = useState(false);
+  // Removed showCreateInvoicePrompt
   const [selectedAppointmentId, setSelectedAppointmentId] = useState<string | undefined>(undefined);
   const [selectedPatientId, setSelectedPatientId] = useState<string | undefined>(undefined);
   const [showNotesModal, setShowNotesModal] = useState(false);
   const [showRescheduleModal, setShowRescheduleModal] = useState(false);
   const [completedConsultationData, setCompletedConsultationData] = useState<ConsultationReport | null>(null);
+  const [actionModal, setActionModal] = useState<ActionModalState | null>(null);
   const { isAuthenticated } = useAuth();
+
+  const openActionModal = (title: string, message: string, detail?: string) => {
+    setActionModal({ title, message, detail });
+  };
+
+  const closeActionModal = () => {
+    setActionModal(null);
+  };
 
   const handleShowAppointmentDetails = (appointmentId?: string) => {
     setSelectedAppointmentId(appointmentId);
@@ -85,6 +98,97 @@ const AppContent: React.FC = () => {
     setShowNotesModal(true);
   };
 
+  const handleAddMedicalNote = () => {
+    setShowNotesModal(true);
+  };
+
+  const handleViewAllPatients = () => {
+    setActiveTab('patients');
+  };
+
+  const handleNotifications = () => {
+    openActionModal(
+      STRING_CONSTANTS.LABELS.NOTIFICATIONS,
+      STRING_CONSTANTS.MESSAGES.FEATURE_COMING_SOON
+    );
+  };
+
+  const handleMessages = () => {
+    openActionModal(
+      STRING_CONSTANTS.LABELS.MESSAGES,
+      STRING_CONSTANTS.MESSAGES.FEATURE_COMING_SOON
+    );
+  };
+
+  const handleProfile = () => {
+    setActiveTab('settings');
+  };
+
+  const handleSearch = (query: string) => {
+    if (!query) {
+      openActionModal(
+        STRING_CONSTANTS.LABELS.SEARCH_RESULTS,
+        STRING_CONSTANTS.MESSAGES.FEATURE_COMING_SOON
+      );
+      return;
+    }
+
+    openActionModal(
+      STRING_CONSTANTS.LABELS.SEARCH_RESULTS,
+      STRING_CONSTANTS.MESSAGES.SEARCH_RESULTS_FOR,
+      query
+    );
+  };
+
+  const handleNewAppointment = () => {
+    openActionModal(
+      STRING_CONSTANTS.LABELS.NEW_APPOINTMENT,
+      STRING_CONSTANTS.MESSAGES.FEATURE_COMING_SOON
+    );
+  };
+
+  const handleScheduleAppointment = () => {
+    setActiveTab('appointments');
+    openActionModal(
+      STRING_CONSTANTS.LABELS.NEW_APPOINTMENT,
+      STRING_CONSTANTS.MESSAGES.FEATURE_COMING_SOON
+    );
+  };
+
+  const handleEditPatient = () => {
+    openActionModal(
+      STRING_CONSTANTS.LABELS.PATIENT_DETAILS,
+      STRING_CONSTANTS.MESSAGES.FEATURE_COMING_SOON
+    );
+  };
+
+  const handleViewRecords = () => {
+    setActiveTab('patients');
+  };
+
+  const handleCreatePrescription = () => {
+    openActionModal(
+      STRING_CONSTANTS.LABELS.PRESCRIPTION,
+      STRING_CONSTANTS.MESSAGES.FEATURE_COMING_SOON
+    );
+  };
+
+  const handleOrderLabTests = () => {
+    openActionModal(
+      STRING_CONSTANTS.LABELS.LAB_TESTS,
+      STRING_CONSTANTS.MESSAGES.FEATURE_COMING_SOON
+    );
+  };
+
+  const handleSaveNotes = (notes: string) => {
+    console.log('Saving notes:', notes);
+    openActionModal(
+      STRING_CONSTANTS.BUTTONS.SAVE_NOTES,
+      STRING_CONSTANTS.MESSAGES.SUCCESS_SAVE
+    );
+    setShowNotesModal(false);
+  };
+
   const handleCloseNotesModal = () => {
     setShowNotesModal(false);
   };
@@ -93,17 +197,14 @@ const AppContent: React.FC = () => {
     setShowRescheduleModal(false);
   };
 
-  const handleSaveNotes = (notes: string) => {
-    console.log('Saving notes:', notes);
-    // In a real app, send to API
-    alert('Notes saved successfully!');
-    setShowNotesModal(false);
-  };
-
   const handleConfirmReschedule = (newDate: string, newTime: string) => {
     console.log('Rescheduling to:', newDate, newTime);
     // In a real app, send to API
-    alert(`Appointment rescheduled to ${newDate} at ${newTime}!`);
+    openActionModal(
+      STRING_CONSTANTS.BUTTONS.RESCHEDULE,
+      STRING_CONSTANTS.MESSAGES.SUCCESS_SAVE,
+      `${newDate} ${STRING_CONSTANTS.LABELS.AT} ${newTime}`
+    );
     setShowRescheduleModal(false);
   };
 
@@ -111,17 +212,17 @@ const AppContent: React.FC = () => {
     console.log('Consultation completed:', report);
     setCompletedConsultationData(report);
     setShowConsultation(false);
-    setShowCreateInvoicePrompt(true);
+    setShowAppointmentReport(true);
   };
 
   const handleCreateInvoice = () => {
-    setShowCreateInvoicePrompt(false);
+    setShowAppointmentReport(false);
+    setInvoiceCreateMode(true);
     setShowInvoice(true);
     // In real app, pre-populate invoice with consultation data
   };
 
   const handleSkipInvoice = () => {
-    setShowCreateInvoicePrompt(false);
     setShowAppointmentDetails(false);
     setActiveTab('dashboard');
   };
@@ -154,6 +255,7 @@ const AppContent: React.FC = () => {
             setShowAppointmentReport(false);
             setShowAppointmentDetails(true);
           }}
+          onCreateInvoice={handleCreateInvoice}
         />
       );
     }
@@ -161,8 +263,10 @@ const AppContent: React.FC = () => {
     if (showInvoice) {
       return (
         <Invoice
+          createMode={invoiceCreateMode}
           onBack={() => {
             setShowInvoice(false);
+            setInvoiceCreateMode(false);
             setActiveTab('dashboard');
           }}
         />
@@ -174,6 +278,8 @@ const AppContent: React.FC = () => {
         <PatientDetails 
           patientId={selectedPatientId}
           onBack={handleBackFromPatientDetails}
+          onScheduleAppointment={handleScheduleAppointment}
+          onEditPatient={handleEditPatient}
         />
       );
     }
@@ -188,6 +294,10 @@ const AppContent: React.FC = () => {
           onCancel={handleCancelAppointment}
           onReschedule={handleReschedule}
           onAddNotes={handleAddNotes}
+          onViewRecords={handleViewRecords}
+          onCreatePrescription={handleCreatePrescription}
+          onOrderLabTests={handleOrderLabTests}
+          onSaveNotes={handleSaveNotes}
           onViewPreviousAppointment={(apptId) => {
             setSelectedAppointmentId(apptId);
             setShowAppointmentDetails(false);
@@ -203,6 +313,7 @@ const AppContent: React.FC = () => {
         return (
           <Appointments 
             onAppointmentClick={handleShowAppointmentDetails}
+            onNewAppointment={handleNewAppointment}
           />
         );
       case 'settings':
@@ -216,17 +327,33 @@ const AppContent: React.FC = () => {
             activeSection={activeTab} 
             onSectionChange={handleTabChange}
             onAppointmentClick={handleShowAppointmentDetails}
+            onAddMedicalNote={handleAddMedicalNote}
+            onViewAllPatients={handleViewAllPatients}
           />
         );
     }
   };
 
   const handleTabChange = (tab: string) => {
+    console.log('App handleTabChange called with:', tab, 'showConsultation:', showConsultation);
     setActiveTab(tab as TabType);
-    // Reset appointment details view when changing tabs
+    // Reset all detail views when changing tabs
     if (showAppointmentDetails) {
       setShowAppointmentDetails(false);
       setSelectedAppointmentId(undefined);
+    }
+    if (showPatientDetails) {
+      setShowPatientDetails(false);
+      setSelectedPatientId(undefined);
+    }
+    if (showConsultation) {
+      setShowConsultation(false);
+    }
+    if (showAppointmentReport) {
+      setShowAppointmentReport(false);
+    }
+    if (showInvoice) {
+      setShowInvoice(false);
     }
   };
 
@@ -243,14 +370,23 @@ const AppContent: React.FC = () => {
   return (
     <div className={styles.App} style={getCSSVariablesAsStyle()}>
       <div className={styles.appContainer}>
-        <TopNav />
+        <TopNav 
+          onNotifications={handleNotifications}
+          onMessages={handleMessages}
+          onProfile={handleProfile}
+          onSearch={handleSearch}
+        />
         <div className={styles.appLayout}>
           <LeftPane 
             activeSection={activeTab}
             onSectionChange={handleTabChange}
           />
           <main className={styles.mainContent}>
-            {renderContent()}
+            <div className={styles.pageShell}>
+              <div className={styles.pageContent}>
+                {renderContent()}
+              </div>
+            </div>
           </main>
         </div>
 
@@ -266,23 +402,13 @@ const AppContent: React.FC = () => {
           onConfirm={handleConfirmReschedule}
         />
 
-        {/* Invoice Creation Prompt */}
-        {showCreateInvoicePrompt && (
-          <div className={styles.modal}>
-            <div className={styles.modalContent}>
-              <h2>Consultation Completed!</h2>
-              <p>Would you like to create an invoice for this consultation?</p>
-              <div className={styles.modalActions}>
-                <button className={styles.primaryButton} onClick={handleCreateInvoice}>
-                  Create Invoice
-                </button>
-                <button className={styles.secondaryButton} onClick={handleSkipInvoice}>
-                  Skip for Now
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+        <ActionModal
+          isOpen={Boolean(actionModal)}
+          onClose={closeActionModal}
+          title={actionModal?.title || STRING_CONSTANTS.MESSAGES.LOADING}
+          message={actionModal?.message || STRING_CONSTANTS.MESSAGES.LOADING}
+          detail={actionModal?.detail}
+        />
       </div>
     </div>
   );

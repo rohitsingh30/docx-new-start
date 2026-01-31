@@ -8,6 +8,8 @@ export interface User {
   email: string;
   name: string;
   role: string;
+  doctorId?: string;
+  patientId?: string;
 }
 
 /**
@@ -25,8 +27,8 @@ export interface AuthContextState {
   user: User | null;
   status: AuthStatus;
   login: (credentials: LoginCredentials) => Promise<void>;
-  logout: () => void;
-  devLogin: () => void; // Development-only bypass
+  logout: () => Promise<void>;
+  devLogin: () => Promise<void>; // Development-only bypass
   isAuthenticated: boolean;
   isLoading: boolean;
 }

@@ -36,6 +36,14 @@ const LeftPane: React.FC<LeftPaneProps> = ({
   const navigationItems = NAVIGATION_CONSTANTS.MAIN_NAVIGATION;
   const { logout } = useAuth();
 
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (error) {
+      console.error('Logout failed:', error);
+    }
+  };
+
   return (
     <aside className={styles.leftPane}>
       <div className={styles.topSection}>
@@ -56,7 +64,7 @@ const LeftPane: React.FC<LeftPaneProps> = ({
       <div className={styles.bottomSection}>
         <button 
           className={styles.logoutButton}
-          onClick={logout}
+          onClick={handleLogout}
         >
           <span className={styles.materialIcon}>logout</span>
           <span>{STRING_CONSTANTS.BUTTONS.LOGOUT}</span>

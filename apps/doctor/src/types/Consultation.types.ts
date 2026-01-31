@@ -28,6 +28,7 @@ export interface VitalsData {
   weight: string;
   respiratoryRate: string;
   oxygenSaturation: string;
+  [key: string]: string;
 }
 
 export interface Medication {
